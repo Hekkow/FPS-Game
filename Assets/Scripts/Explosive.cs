@@ -6,6 +6,8 @@ public class Explosive : MonoBehaviour
 {
     public float radius;
     public float force;
+    public float explosionTime;
+    public GameObject explosionEffect;
     public void Explode()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
@@ -14,9 +16,20 @@ public class Explosive : MonoBehaviour
             Rigidbody rb = colliders[i].GetComponent<Rigidbody>();
             if (rb != null)
             {
+                StartCoroutine(RemoveEffect());
                 rb.AddExplosionForce(force, transform.position, radius);
             }
         }
+    }
+    IEnumerator RemoveEffect()
+    {
+        GameObject effect = Instantiate(explosionEffect, this.transform);
+        Destroy(this.gameObject.GetComponent<Renderer>());
+
+        yield return new WaitForSeconds(explosionTime);
+        Destroy(effect);
+        Destroy(this);
+
     }
 
 }

@@ -62,6 +62,7 @@ public class Enemy : MonoBehaviour
         viewAngle = viewAngleBeforeDetected;
         camera = Camera.main;
     }
+
     void Update()
     {
         if (!health.alive)

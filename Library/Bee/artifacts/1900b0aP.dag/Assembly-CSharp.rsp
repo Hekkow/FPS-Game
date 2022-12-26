@@ -107,6 +107,7 @@
 -define:ENABLE_TERRAIN
 -define:ENABLE_TILEMAP
 -define:ENABLE_TIMELINE
+-define:ENABLE_INPUT_SYSTEM
 -define:ENABLE_LEGACY_INPUT_MANAGER
 -define:CSHARP_7_OR_LATER
 -define:CSHARP_7_3_OR_NEWER
@@ -301,6 +302,7 @@
 -r:"C:/Program Files/Unity/Hub/Editor/2021.3.12f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/Variations/mono/Managed/UnityEngine.VRModule.dll"
 -r:"C:/Program Files/Unity/Hub/Editor/2021.3.12f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/Variations/mono/Managed/UnityEngine.WindModule.dll"
 -r:"C:/Program Files/Unity/Hub/Editor/2021.3.12f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/Variations/mono/Managed/UnityEngine.XRModule.dll"
+-r:"Library/Bee/artifacts/1900b0aP.dag/NavMeshComponents.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aP.dag/Unity.Services.Core.Analytics.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aP.dag/Unity.Services.Core.Environments.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aP.dag/Unity.Services.Core.ref.dll"
@@ -310,11 +312,29 @@
 -r:"Library/Bee/artifacts/1900b0aP.dag/Unity.VisualScripting.Flow.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aP.dag/Unity.VisualScripting.State.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aP.dag/UnityEngine.UI.ref.dll"
+"Assets/Scripts/Bounds.cs"
 "Assets/Scripts/Bullet.cs"
+"Assets/Scripts/CustomPhysics.cs"
+"Assets/Scripts/Damage.cs"
+"Assets/Scripts/Destructible.cs"
+"Assets/Scripts/Enemy.cs"
+"Assets/Scripts/Explosive.cs"
+"Assets/Scripts/GameManager.cs"
 "Assets/Scripts/Gun.cs"
+"Assets/Scripts/Health.cs"
+"Assets/Scripts/Helper.cs"
+"Assets/Scripts/Inventory.cs"
+"Assets/Scripts/Pickup.cs"
+"Assets/Scripts/Player.cs"
 "Assets/Scripts/PlayerCamera.cs"
+"Assets/Scripts/PlayerControls.cs"
 "Assets/Scripts/PlayerMovement.cs"
+"Assets/Scripts/PlayerOther.cs"
+"Assets/Scripts/SaveData.cs"
+"Assets/Scripts/SaveSystem.cs"
+"Assets/Scripts/Shoots.cs"
 "Assets/Scripts/UI.cs"
+"Assets/Scripts/Upgrades.cs"
 -langversion:9.0
 
 /deterministic

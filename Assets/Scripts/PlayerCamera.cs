@@ -7,7 +7,7 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] Player player;
     [SerializeField] Transform playerBody;
 
-    [SerializeField] PlayerControls input;
+    [SerializeField] InputManager input;
 
     float xRotation;
     float yRotation;

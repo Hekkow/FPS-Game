@@ -16,6 +16,7 @@
 -a="C:\MyGames\Game\Library\PlayerScriptAssemblies\Unity.Services.Core.Scheduler.dll"
 -a="C:\MyGames\Game\Library\PlayerScriptAssemblies\Unity.Services.Core.Environments.Internal.dll"
 -a="C:\MyGames\Game\Library\PlayerScriptAssemblies\Unity.Services.Core.Threading.dll"
+-a="C:\MyGames\Game\Library\PlayerScriptAssemblies\NavMeshComponents.dll"
 -a="C:\MyGames\Game\Library\PlayerScriptAssemblies\Unity.VisualScripting.State.dll"
 -a="C:\MyGames\Game\Library\PlayerScriptAssemblies\Unity.Services.Core.Device.dll"
 -a="C:\MyGames\Game\Library\PackageCache\com.unity.nuget.newtonsoft-json@3.0.2\Runtime\AOT\Newtonsoft.Json.dll"

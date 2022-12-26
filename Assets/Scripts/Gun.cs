@@ -7,7 +7,7 @@ public class Gun : MonoBehaviour
     [SerializeField] GameObject bulletPrefab;
     [SerializeField] Transform attackPoint;
     [SerializeField] Upgrades upgrades;
-    [SerializeField] PlayerControls input;
+    [SerializeField] InputManager input;
 
     Player player;
 

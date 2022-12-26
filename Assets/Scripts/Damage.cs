@@ -46,7 +46,7 @@ public class Damage : MonoBehaviour
             if (thrown)
             {
                 CustomPhysics.BounceUpAndBack(gameObject);
-                damage = 0;
+                Destroy(this);
             }
             Destructible destructible = collision.gameObject.GetComponent<Destructible>();
             if (destructible != null && collisionObjectHealth.currentHealth <= 0)

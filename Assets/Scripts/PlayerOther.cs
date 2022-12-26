@@ -8,14 +8,14 @@ using static UnityEditor.Progress;
 public class PlayerOther : MonoBehaviour
 {
     [SerializeField] GameManager gameManager;
-    PlayerControls input;
+    InputManager input;
     Transform handLocation;
 
     Player player;
 
     void Awake()
     {
-        input = gameManager.GetComponent<PlayerControls>();
+        input = gameManager.GetComponent<InputManager>();
         player = GetComponent<Player>();
         handLocation = transform.Find("Camera").Find("Hand Location");
     }
@@ -45,6 +45,10 @@ public class PlayerOther : MonoBehaviour
                 CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
                 AddDamage(item, player.throwDamage);   
             }
+        }
+        else if (input.punch)
+        {
+            StartCoroutine(Punch());
         }
         if (Inventory.HoldingItem())
         {
@@ -121,4 +125,22 @@ public class PlayerOther : MonoBehaviour
         damage.damage = throwDamage;
         damage.thrown = true;
     }
+    IEnumerator Punch()
+    {
+        Vector3 initialPosition = handLocation.localPosition;
+        Quaternion initialRotation = handLocation.localRotation;
+        handLocation.localPosition = new Vector3(0, 0, 2);
+        handLocation.localRotation = Quaternion.Euler(0, -110, -40);
+        Damage fist = handLocation.GetChild(0).AddComponent<Damage>();
+        fist.GetComponent<Collider>().enabled = true;
+
+        fist.damage = 99;
+        yield return new WaitForSeconds(0.1f);
+        fist.GetComponent<Collider>().enabled = false;
+
+        Destroy(fist);
+        handLocation.localPosition = initialPosition;
+        handLocation.localRotation = initialRotation;
+    }
+
 }

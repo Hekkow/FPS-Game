@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -10,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
 
     Player player;
     Transform groundCheck;
-    PlayerControls input;
+    InputManager input;
     Rigidbody rb;
     LayerMask groundMask;
     RaycastHit slopeHit;
@@ -23,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
     {
         player = GetComponent<Player>();
         groundCheck = transform.Find("Ground Check");
-        input = GameObject.Find("GameManager").GetComponent<PlayerControls>();
+        input = GameObject.Find("GameManager").GetComponent<InputManager>();
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         groundMask = LayerMask.GetMask("Ground");

@@ -7,6 +7,7 @@ using Unity.VisualScripting.FullSerializer;
 using UnityEditor;
 using UnityEngine.UI;
 using UnityEngine.Windows;
+using System.Linq;
 
 public class UI : MonoBehaviour {
     [SerializeField] GameObject gameManager;
@@ -14,23 +15,31 @@ public class UI : MonoBehaviour {
     [SerializeField] GameObject upgradeMenu;
     [SerializeField] GameObject upgradeBox;
     [SerializeField] GameObject pauseMenu;
-    PlayerControls input;
+    InputManager input;
     Health health;
     Upgrades upgrades;
     TMP_Text fpsText;
     TMP_Text healthText;
     TMP_Text speedText;
     GameObject openMenu;
+    float fps;
+    float minfps = 10000;
+    float maxfps = 0;
+    float averagefps;
+    List<float> fpsList;
     [HideInInspector] public static bool inMenu = false;
 
     void Start()
     {
-        input = gameManager.AddComponent<PlayerControls>();
+        fpsList = new List<float>();
+        input = gameManager.AddComponent<InputManager>();
         health = player.GetComponent<Health>();
         upgrades = player.GetComponent<Upgrades>();
         fpsText = gameObject.transform.Find("FPS").GetComponent<TMP_Text>();
         healthText = gameObject.transform.Find("Health").GetComponent<TMP_Text>();
         speedText = gameObject.transform.Find("Speed").GetComponent<TMP_Text>();
+        InvokeRepeating("PrintFPS", 1, 0.1f);
+        InvokeRepeating("PrintSpeed", 0, 0.1f);
     }
     void Update() 
     {
@@ -42,19 +51,30 @@ public class UI : MonoBehaviour {
         {
             OpenOrClose("pause");
         }
-        PrintFPS();
         PrintHealth();
-        PrintSpeed();
     }
     void PrintFPS()
     {
-        fpsText.text = (Mathf.Round(1 / Time.unscaledDeltaTime)).ToString() + " FPS";
+        fps = Mathf.Round(1 / Time.unscaledDeltaTime);
+        if (fps < minfps) { minfps = fps; }
+        if (fps > maxfps) { maxfps = fps; }
+        fpsList.Add(fps);
+        if (fpsList.Count > 100)
+        {
+            fpsList.RemoveAt(0);
+
+        }
+        averagefps = Mathf.Round(fpsList.Average());
+
+        fpsText.text = fps + " FPS\n"+ maxfps +" FPS MAX\n" + minfps +" FPS MIN\n " + averagefps +" FPS AVERAGE";
+        
+
     }
     void PrintSpeed()
     {
         Rigidbody rb = player.GetComponent<Rigidbody>();
-        float speed = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude;
-        speedText.SetText("Speed: " + speed);
+        int speed = Mathf.RoundToInt(new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude);
+        speedText.SetText(speed + " SPEEDS");
     }
     void PrintHealth()
     {
@@ -65,7 +85,7 @@ public class UI : MonoBehaviour {
     {
         if (menu == "upgrade") {
             openMenu = upgradeMenu;
-            Transform panel = openMenu.transform.GetChild(0);
+            Transform panel = openMenu.transform;
             for (int i = 0; i < panel.childCount; i++) // get rid of any upgrade boxes that might be there already
             {
                 GameObject.Destroy(panel.GetChild(i).gameObject);
