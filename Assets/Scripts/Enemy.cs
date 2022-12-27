@@ -28,13 +28,11 @@ public class Enemy : MonoBehaviour
     [Header("Knockback")]
     [SerializeField] float knockedTime;
     [SerializeField] float ragdollMass;
-    [SerializeField] float knockbackMultiplier;
 
     [HideInInspector] public bool knocked = false;
 
     GameObject instantiatedAnimation;
     TMP_Text healthText;
-    NavMeshAgent agent;
     Transform player;
     Rigidbody rb;
     Health health;
@@ -56,7 +54,6 @@ public class Enemy : MonoBehaviour
         player = GameObject.Find("Player").transform;
         health = GetComponent<Health>();
         rb = GetComponent<Rigidbody>();
-        agent = GetComponent<NavMeshAgent>();
         healthText = transform.GetComponentInChildren<TMP_Text>();
         viewRadius = viewRadiusBeforeDetected;
         viewAngle = viewAngleBeforeDetected;
@@ -77,23 +74,11 @@ public class Enemy : MonoBehaviour
             {
                 AttackPlayer();
             }
-            else if (playerDetected)
-            {
-                ChasePlayer();
-            }
-            else
-            {
-                agent.SetDestination(transform.position);
-            }
         }
         UpdateHealthBar();
         
     }
     
-    void ChasePlayer()
-    {
-        agent.SetDestination(player.position);
-    }
     void Vision()
     {
         Vector3 playerTarget = (player.transform.position - transform.position).normalized;
@@ -117,7 +102,6 @@ public class Enemy : MonoBehaviour
     }
     void AttackPlayer()
     {
-        agent.SetDestination(transform.position);
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
         if (!alreadyAttacked)
         {
@@ -147,9 +131,7 @@ public class Enemy : MonoBehaviour
     }
     void Died()
     {
-        agent.enabled = false;
         rb.constraints = RigidbodyConstraints.None;
-        rb.isKinematic = false;
         rb.velocity = Vector3.zero;
         rb.mass = ragdollMass; // ragbody haha
         
@@ -161,20 +143,17 @@ public class Enemy : MonoBehaviour
     }
     public void KnockBack(float knockbackAmount)
     {
-        knockCoroutine = KnockBackCoroutine(knockbackAmount*knockbackMultiplier);
+        knockCoroutine = KnockBackCoroutine(knockbackAmount);
         StopCoroutine(knockCoroutine);
         StartCoroutine(knockCoroutine);
     }
     IEnumerator KnockBackCoroutine(float knockbackAmount)
     {
         Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), GetComponent<Collider>());
-        rb.isKinematic = false;
-        agent.isStopped = true;
-        agent.ResetPath();
         knocked = true;
         CustomPhysics.KnockBack(gameObject, knockbackAmount);
         yield return new WaitForSeconds(knockedTime);
+        rb.velocity = Vector3.zero;
         knocked = false;
-        rb.isKinematic = true;
     }
 }

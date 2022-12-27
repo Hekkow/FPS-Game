@@ -6,7 +6,6 @@ using UnityEngine.AI;
 
 public class Bullet : MonoBehaviour
 {
-    public int knockback;
 
     void Start()
     {
