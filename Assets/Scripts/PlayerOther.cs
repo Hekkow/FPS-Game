@@ -8,7 +8,9 @@ public class PlayerOther : MonoBehaviour
 {
     [SerializeField] GameManager gameManager;
     InputManager input;
-    Transform handLocation;
+
+    Transform leftHandLocation;
+    Transform rightHandLocation;
 
     Player player;
 
@@ -16,7 +18,8 @@ public class PlayerOther : MonoBehaviour
     {
         input = gameManager.GetComponent<InputManager>();
         player = GetComponent<Player>();
-        handLocation = transform.Find("Camera").Find("Hand Location");
+        leftHandLocation = transform.Find("Camera").Find("Left Hand Location");
+        rightHandLocation = transform.Find("Camera").Find("Right Hand Location");
     }
     void Update()
     {
@@ -24,39 +27,144 @@ public class PlayerOther : MonoBehaviour
         {
             GameManager.Spawn();
         }
-        if (input.interact) {
+        if (input.interactRight) {
             Pickup item = GetClosest();
             if (item != null)
             {
-                if (Inventory.HoldingItem())
+                if (Inventory.HoldingItem(Inventory.Hand.Right))
                 {
-                    Drop();
+                    Drop(Inventory.Hand.Right);
                 }
-                PickUp(item);
+                PickUp(item, Inventory.Hand.Right);
+            }
+        }
+        else if (input.interactLeft)
+        {
+            Pickup item = GetClosest();
+            if (item != null)
+            {
+                if (Inventory.HoldingItem(Inventory.Hand.Left))
+                {
+                    Drop(Inventory.Hand.Left);
+                }
+                PickUp(item, Inventory.Hand.Left);
             }
         }
         else if (input.throwItem)
         {
-            if (Inventory.HoldingItem())
+            if (input.leftMouse && Inventory.HoldingItem(Inventory.Hand.Left))
             {
-                GameObject item = handLocation.GetChild(0).gameObject;
-                Drop();
+                GameObject item = leftHandLocation.GetChild(0).gameObject;
+                Drop(Inventory.Hand.Left);
                 CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
-                AddDamage(item, player.throwDamage);   
+                AddDamage(item, player.throwDamage);
             }
+            if (input.rightMouse && Inventory.HoldingItem(Inventory.Hand.Right))
+            {
+                GameObject item = rightHandLocation.GetChild(0).gameObject;
+                Drop(Inventory.Hand.Right);
+                CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
+                AddDamage(item, player.throwDamage);
+            }
+            //if (Inventory.HoldingItem())
+            //{
+            //    GameObject item = handLocation.GetChild(0).gameObject;
+            //    Drop();
+            //    CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
+            //    AddDamage(item, player.throwDamage);
+            //}
         }
-        else if (input.punch)
+        //else if (input.punch)
+        //{
+        //    StartCoroutine(Punch());
+        //}
+        if (Inventory.HoldingItem(Inventory.Hand.Right))
         {
-            StartCoroutine(Punch());
+            GameObject item = rightHandLocation.GetChild(0).gameObject;
+
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.identity;
         }
-        if (Inventory.HoldingItem())
+        if (Inventory.HoldingItem(Inventory.Hand.Left))
         {
-            GameObject item = handLocation.GetChild(0).gameObject;
+            GameObject item = leftHandLocation.GetChild(0).gameObject;
             item.transform.localPosition = Vector3.zero;
             item.transform.localRotation = Quaternion.identity;
         }
     }
 
+    
+    void Drop(Inventory.Hand hand)
+    {
+        Transform item;
+        if (hand == Inventory.Hand.Right) item = rightHandLocation.GetChild(0);
+        else if (hand == Inventory.Hand.Left) item = leftHandLocation.GetChild(0);
+        else
+        {
+            Debug.Log("ERRA");
+            return;
+        }
+        Rigidbody rb = item.GetComponent<Rigidbody>();
+        rb.isKinematic = false;
+        item.GetComponent<Collider>().enabled = true;
+        Gun gun = item.GetComponent<Gun>();
+        if (gun != null)
+        {
+            gun.enabled = false;
+        }
+        Animator animator = item.GetComponent<Animator>();
+        if (animator != null)
+        {
+            animator.enabled = false;
+        }
+        item.transform.localScale *= 2;
+        item.parent = GameObject.Find("Objects").transform;
+        item.AddComponent<Pickup>();
+        ApplyLayerToChildren(item.gameObject, "Ground");
+        Inventory.EmptyHand(hand);
+    }
+    void PickUp(Pickup item, Inventory.Hand hand)
+    {
+        if (hand == Inventory.Hand.Right) item.transform.parent = rightHandLocation;
+        else if (hand == Inventory.Hand.Left) item.transform.parent = leftHandLocation;
+        item.GetComponent<Rigidbody>().isKinematic = true;
+        item.GetComponent<Collider>().enabled = false;
+        item.transform.localPosition = Vector3.zero;
+        item.transform.localRotation = Quaternion.identity;
+        item.transform.localScale /= 2;
+        ApplyLayerToChildren(item.gameObject, "Weapon");
+        Inventory.ReplaceHand(item.gameObject, hand);
+        Gun gun = item.GetComponent<Gun>();
+        if (gun != null)
+        {
+            gun.enabled = true;
+            gun.RunAtStart();
+        }
+        Animator animator = item.GetComponent<Animator>();
+        if (animator != null)
+        {
+            animator.enabled = true;
+        }
+        Destroy(item);
+    }
+    void ApplyLayerToChildren(GameObject item, string layername)
+    {
+        item.layer = LayerMask.NameToLayer(layername);
+        for (int i = 0; i < item.transform.childCount; i++) {
+            item.transform.GetChild(i).gameObject.layer = LayerMask.NameToLayer(layername);
+        }
+    }
+    void AddDamage(GameObject item, float throwDamage)
+    {
+        Damage damage = item.GetComponent<Damage>();
+        if (damage == null)
+        {
+            damage = item.AddComponent<Damage>();
+        }
+        damage.enabled = true;
+        damage.damage = throwDamage;
+        damage.thrown = true;
+    }
     Pickup GetClosest()
     {
         RaycastHit hit;
@@ -82,64 +190,4 @@ public class PlayerOther : MonoBehaviour
         }
         return null;
     }
-    void Drop()
-    {
-        Transform item = handLocation.GetChild(0);
-        Rigidbody rb = item.GetComponent<Rigidbody>();
-        rb.isKinematic = false;
-        item.GetComponent<Collider>().enabled = true;
-        item.transform.localScale *= 2;
-        item.parent = GameObject.Find("Objects").transform;
-        item.AddComponent<Pickup>();
-        ApplyLayerToChildren(item.gameObject, "Ground");
-        Inventory.EmptyHand();
-    }
-    void PickUp(Pickup item)
-    {
-        item.transform.parent = handLocation;
-        item.GetComponent<Rigidbody>().isKinematic = true;
-        item.GetComponent<Collider>().enabled = false;
-        item.transform.localPosition = Vector3.zero;
-        item.transform.localRotation = Quaternion.identity;
-        item.transform.localScale /= 2;
-        ApplyLayerToChildren(item.gameObject, "Weapon");
-        Inventory.ReplaceHand(item.gameObject);
-        Destroy(item);
-    }
-    void ApplyLayerToChildren(GameObject item, string layername)
-    {
-        item.layer = LayerMask.NameToLayer(layername);
-        for (int i = 0; i < item.transform.childCount; i++) {
-            item.transform.GetChild(i).gameObject.layer = LayerMask.NameToLayer(layername);
-        }
-    }
-    void AddDamage(GameObject item, float throwDamage)
-    {
-        Damage damage = item.GetComponent<Damage>();
-        if (damage == null)
-        {
-            damage = item.AddComponent<Damage>();
-        }
-        damage.enabled = true;
-        damage.damage = throwDamage;
-        damage.thrown = true;
-    }
-    IEnumerator Punch()
-    {
-        Vector3 initialPosition = handLocation.localPosition;
-        Quaternion initialRotation = handLocation.localRotation;
-        handLocation.localPosition = new Vector3(0, 0, 2);
-        handLocation.localRotation = Quaternion.Euler(0, -110, -40);
-        Damage fist = handLocation.GetChild(0).AddComponent<Damage>();
-        fist.GetComponent<Collider>().enabled = true;
-
-        fist.damage = 99;
-        yield return new WaitForSeconds(0.1f);
-        fist.GetComponent<Collider>().enabled = false;
-
-        Destroy(fist);
-        handLocation.localPosition = initialPosition;
-        handLocation.localRotation = initialRotation;
-    }
-
 }

@@ -5,34 +5,44 @@ public class Gun : MonoBehaviour
 {
     [Header("Objects")]
     [SerializeField] GameObject bulletPrefab;
-    [SerializeField] Transform attackPoint;
     [SerializeField] Upgrades upgrades;
     [SerializeField] InputManager input;
-    [SerializeField] Animations animation;
+    Animator animation;
 
-    Player player;
-
+    [SerializeField] Player player;
+    Transform attackPoint;
     GameObject currentBullet;
     int bulletsShot;
     bool readyToShoot = true;
     bool allowInvoke = true;
+    Inventory.Hand hand;
 
     new Camera camera;
 
     void Awake()
     {
         camera = Camera.main;
-        player = GetComponent<Player>();
+        animation = GetComponent<Animator>();
+    }
+    void Start()
+    {
+        RunAtStart();
     }
     void Update()
     {
-        if (input.mouse && readyToShoot && Inventory.HasGun())
+        if (readyToShoot)
         {
             bulletsShot = 0;
-            Shoot();
+            if (input.leftMouse && !input.throwItem && hand == Inventory.Hand.Left)
+            {
+                Shoot();
+            }
+            if (input.rightMouse && !input.throwItem && hand == Inventory.Hand.Right)
+            {
+                Shoot();
+            }
         }
     }
-
     void Shoot()
     {
         readyToShoot = false;
@@ -89,7 +99,9 @@ public class Gun : MonoBehaviour
             Invoke("Shoot", player.attackSpeed);
         }
 
-        animation.ReloadGun();
+        animation.Play("shoot", 0, 0f);
+
+        animation.speed = player.attackSpeed;
     }
 
 
@@ -105,5 +117,22 @@ public class Gun : MonoBehaviour
     {
         readyToShoot = true;
         allowInvoke = true;
+    }
+    public void RunAtStart()
+    {
+        if (transform.parent.gameObject.name == "Right Hand Location")
+        {
+            attackPoint = transform.parent.parent.Find("Weapon Camera").Find("Right Gun Barrel");
+            hand = Inventory.Hand.Right;
+        }
+        else if (transform.parent.gameObject.name == "Left Hand Location")
+        {
+            attackPoint = transform.parent.parent.Find("Weapon Camera").Find("Left Gun Barrel");
+            hand = Inventory.Hand.Left;
+        }
+        else
+        {
+            Debug.Log("ERRA");
+        }
     }
 }
