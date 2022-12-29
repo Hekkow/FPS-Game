@@ -8,6 +8,7 @@ public class Gun : MonoBehaviour
     [SerializeField] Transform attackPoint;
     [SerializeField] Upgrades upgrades;
     [SerializeField] InputManager input;
+    [SerializeField] Animations animation;
 
     Player player;
 
@@ -87,6 +88,8 @@ public class Gun : MonoBehaviour
         {
             Invoke("Shoot", player.attackSpeed);
         }
+
+        animation.ReloadGun();
     }
 
 
