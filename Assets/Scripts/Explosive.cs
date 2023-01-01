@@ -25,7 +25,6 @@ public class Explosive : MonoBehaviour
     {
         GameObject effect = Instantiate(explosionEffect, this.transform);
         Destroy(this.gameObject.GetComponent<Renderer>());
-
         yield return new WaitForSeconds(explosionTime);
         Destroy(effect);
         Destroy(this);

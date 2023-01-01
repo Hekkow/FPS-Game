@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
 public class PlayerOther : MonoBehaviour
@@ -39,7 +40,7 @@ public class PlayerOther : MonoBehaviour
                 PickUp(item, Inventory.Hand.Right);
             }
         }
-        else if (input.interactLeft)
+        if (input.interactLeft)
         {
             Pickup item = GetClosest();
             if (item != null)
@@ -51,7 +52,7 @@ public class PlayerOther : MonoBehaviour
                 PickUp(item, Inventory.Hand.Left);
             }
         }
-        else if (input.throwItem)
+        if (input.throwItem)
         {
             if (throwCooldown == false) {
                 if (Inventory.HoldingItem(Inventory.Hand.Left) && !Inventory.HoldingItem(Inventory.Hand.Right))
@@ -74,14 +75,28 @@ public class PlayerOther : MonoBehaviour
                 }
             }
         }
-        else if (!input.throwItem)
+        else 
         {
             throwCooldown = false;
         }
-        //else if (input.punch)
-        //{
-        //    StartCoroutine(Punch());
-        //}
+        if (input.switchHands)
+        {
+            Inventory.SwitchHands();
+            if (rightHandLocation.childCount > 0)
+            {
+                Transform item = rightHandLocation.GetChild(0);
+                item.parent = leftHandLocation;
+                Helper.ToggleComponent<Gun>(item.gameObject, true);
+            }
+            if (leftHandLocation.childCount > 0)
+            {
+                Transform item = leftHandLocation.GetChild(0);
+                item.parent = rightHandLocation;
+                Helper.ToggleComponent<Gun>(item.gameObject, true);
+                
+
+            }
+        }
         if (Inventory.HoldingItem(Inventory.Hand.Right))
         {
             GameObject item = rightHandLocation.GetChild(0).gameObject;
@@ -99,54 +114,29 @@ public class PlayerOther : MonoBehaviour
     void Drop(Inventory.Hand hand)
     {
         Transform item;
-        if (hand == Inventory.Hand.Right) item = rightHandLocation.GetChild(0);
-        else if (hand == Inventory.Hand.Left) item = leftHandLocation.GetChild(0);
-        else
-        {
-            Debug.Log("ERRA");
-            return;
-        }
-        Rigidbody rb = item.GetComponent<Rigidbody>();
-        rb.isKinematic = false;
-        item.GetComponent<Collider>().enabled = true;
-        Gun gun = item.GetComponent<Gun>();
-        if (gun != null)
-        {
-            gun.enabled = false;
-        }
-        Animator animator = item.GetComponent<Animator>();
-        if (animator != null)
-        {
-            animator.enabled = false;
-        }
+        if (hand == Inventory.Hand.Left) item = leftHandLocation.GetChild(0);
+        else item = rightHandLocation.GetChild(0);
+        Helper.MakePhysical(item.gameObject, true);
+        Helper.ToggleComponent<Gun>(item.gameObject, false);
+        Helper.ToggleComponent<Animator>(item.gameObject, false);
         item.transform.localScale *= 2;
         item.parent = GameObject.Find("Objects").transform;
         item.AddComponent<Pickup>();
-        ApplyLayerToChildren(item.gameObject, "Ground");
+        Helper.ApplyLayerToChildren(item.gameObject, "Ground");
         Inventory.EmptyHand(hand);
     }
     void PickUp(Pickup item, Inventory.Hand hand)
     {
         if (hand == Inventory.Hand.Right) item.transform.parent = rightHandLocation;
         else if (hand == Inventory.Hand.Left) item.transform.parent = leftHandLocation;
-        item.GetComponent<Rigidbody>().isKinematic = true;
-        item.GetComponent<Collider>().enabled = false;
+        Helper.MakePhysical(item.gameObject, false);
         item.transform.localPosition = Vector3.zero;
         item.transform.localRotation = Quaternion.identity;
         item.transform.localScale /= 2;
-        ApplyLayerToChildren(item.gameObject, "Weapon");
+        Helper.ApplyLayerToChildren(item.gameObject, "Weapon");
         Inventory.ReplaceHand(item.gameObject, hand);
-        Gun gun = item.GetComponent<Gun>();
-        if (gun != null)
-        {
-            gun.enabled = true;
-            gun.RunAtStart();
-        }
-        Animator animator = item.GetComponent<Animator>();
-        if (animator != null)
-        {
-            animator.enabled = true;
-        }
+        Helper.ToggleComponent<Gun>(item.gameObject, true);
+        Helper.ToggleComponent<Animator>(item.gameObject, true);
         Destroy(item);
     }
     void ThrowItem(Inventory.Hand hand)
@@ -163,28 +153,8 @@ public class PlayerOther : MonoBehaviour
         }
         Drop(hand);
         CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
-        Debug.Log(player.throwStartDistance);
-        Debug.Log(player.throwForce);
-        AddDamage(item, player.throwDamage);
+        Helper.AddDamage(item, player.throwDamage, player.bulletKnockback, true);
         throwCooldown = true;
-    }
-    void ApplyLayerToChildren(GameObject item, string layername)
-    {
-        item.layer = LayerMask.NameToLayer(layername);
-        for (int i = 0; i < item.transform.childCount; i++) {
-            item.transform.GetChild(i).gameObject.layer = LayerMask.NameToLayer(layername);
-        }
-    }
-    void AddDamage(GameObject item, float throwDamage)
-    {
-        Damage damage = item.GetComponent<Damage>();
-        if (damage == null)
-        {
-            damage = item.AddComponent<Damage>();
-        }
-        damage.enabled = true;
-        damage.damage = throwDamage;
-        damage.thrown = true;
     }
     Pickup GetClosest()
     {

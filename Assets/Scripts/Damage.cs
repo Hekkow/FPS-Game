@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Damage : MonoBehaviour
 {
+    public float knockback;
     public float damage;
     public bool thrown;
-    public float knockback;
 
     // for non solid things like animations
 

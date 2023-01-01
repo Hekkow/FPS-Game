@@ -24,7 +24,7 @@ public class Gun : MonoBehaviour
         camera = Camera.main;
         shootAnimator = GetComponent<Animator>();
     }
-    void Start()
+    void OnEnable()
     {
         RunAtStart();
     }
@@ -75,9 +75,7 @@ public class Gun : MonoBehaviour
             currentBullet.GetComponent<Rigidbody>().velocity = direction.normalized * player.bulletSpeed;
 
             // creates bullet with specified stats
-            Damage damage = currentBullet.GetComponent<Damage>();
-            damage.damage = player.bulletDamage;
-            damage.knockback = player.bulletKnockback;
+            Helper.AddDamage(currentBullet, player.bulletDamage, player.bulletKnockback, false);
 
 
         }
@@ -129,10 +127,6 @@ public class Gun : MonoBehaviour
         {
             attackPoint = transform.parent.parent.Find("Weapon Camera").Find("Left Gun Barrel");
             hand = Inventory.Hand.Left;
-        }
-        else
-        {
-            Debug.Log("ERRA");
         }
     }
 }

@@ -16,6 +16,7 @@ public class InputManager : MonoBehaviour
     [HideInInspector] public bool upgradeMenu;
     [HideInInspector] public bool interactLeft;
     [HideInInspector] public bool interactRight;
+    [HideInInspector] public bool switchHands;
     [HideInInspector] public bool throwItem;
     [HideInInspector] public bool escape;
     [HideInInspector] public bool punch;
@@ -36,6 +37,7 @@ public class InputManager : MonoBehaviour
             rightMouseDown = Input.GetKeyDown(KeyCode.Mouse1);
             interactLeft = Input.GetButtonDown("Interact Left");
             interactRight = Input.GetButtonDown("Interact Right");
+            switchHands = Input.GetButtonDown("Switch Hands");
             throwItem = Input.GetButton("Throw Item");
             punch = Input.GetButtonDown("Punch");
         }

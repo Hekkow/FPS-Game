@@ -106,7 +106,7 @@ public class Enemy : MonoBehaviour
         if (!alreadyAttacked)
         {
             instantiatedAnimation = Instantiate(attackAnimation, transform.position, new Quaternion(1, 0, 0, 1));
-            instantiatedAnimation.GetComponent<Damage>().damage = attackDamage;
+            Helper.AddDamage(instantiatedAnimation, attackDamage, attackDamage, false);
             instantiatedAnimation.transform.SetParent(transform);
             StartCoroutine(AttackAnimationTime());
             alreadyAttacked = true;
