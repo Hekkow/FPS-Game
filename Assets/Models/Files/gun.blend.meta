@@ -1,92 +1,11 @@
 fileFormatVersion: 2
-guid: 6871a9642cc6a404fade07e6dc4383ff
+guid: 4518cbe1196bead47b094f6ee55a7921
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable:
   - first:
-      74: -1878513069939696574
-    second: Cube.001|ArmatureAction
-  - first:
-      74: -8515560403302317629
-    second: Cube.001|Cube.001Action
-  - first:
-      74: 4781951162920444690
-    second: Armature|ArmatureAction
-  - first:
-      74: -1559071518392153964
-    second: Armature|Cube.001Action
-  - first:
-      74: 7709686125681325085
-    second: Armature|Armature.001Action
-  - first:
-      74: 2264077025236624520
-    second: Armature.001|Armature.001Action
-  - first:
-      74: -960898424075949690
-    second: Armature.001|ArmatureAction
-  - first:
-      74: 195318216197808479
-    second: Cube|ArmatureAction
-  - first:
-      74: -7915918216387896928
-    second: Cube|ArmatureAction.001
-  - first:
-      74: 9036694105013053538
-    second: Cube|Cube.001Action
-  - first:
-      74: -1456525249475375426
-    second: Cube|Cube.001Action.001
-  - first:
-      74: -3999578356269874737
-    second: Cube|CubeAction
-  - first:
-      74: -7918129362319027497
-    second: Cube|CubeAction.001
-  - first:
-      74: 8808403126105958354
-    second: Cube.001|ArmatureAction.001
-  - first:
-      74: -4064532029014869935
-    second: Cube.001|Cube.001Action.001
-  - first:
-      74: 17017395923089283
-    second: Cube.001|CubeAction
-  - first:
-      74: 7693504525942378453
-    second: Cube.001|CubeAction.001
-  - first:
-      74: -7453387558714718212
-    second: Armature|Shoot
-  - first:
-      74: -4480620270409555663
-    second: Armature.001|Shoot
-  - first:
-      74: 7281836028789186880
-    second: Armature|GUN
-  - first:
-      74: 2351560224568992142
-    second: Armature.001|GUN
-  - first:
-      74: 2318215413367977625
-    second: GUN
-  - first:
-      74: -8722989452022519845
-    second: Armature|GUNEN
-  - first:
-      74: -2145114814141916058
-    second: Armature.001|GUNEN
-  - first:
-      74: -4633191669504750553
-    second: Armature.001|Reload
-  - first:
-      74: -5245216036959623895
-    second: Armature.001|Reload.001
-  - first:
-      74: 7332139420686511986
-    second: Armature|Reload
-  - first:
-      74: -284469165631257916
-    second: Armature|Reload.001
+      74: -623603649343465320
+    second: Scene
   externalObjects: {}
   materials:
     materialImportMode: 2

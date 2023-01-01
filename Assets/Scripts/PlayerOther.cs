@@ -13,6 +13,7 @@ public class PlayerOther : MonoBehaviour
     Transform rightHandLocation;
 
     Player player;
+    bool throwCooldown = false;
 
     void Awake()
     {
@@ -52,27 +53,30 @@ public class PlayerOther : MonoBehaviour
         }
         else if (input.throwItem)
         {
-            if (input.leftMouse && Inventory.HoldingItem(Inventory.Hand.Left))
-            {
-                GameObject item = leftHandLocation.GetChild(0).gameObject;
-                Drop(Inventory.Hand.Left);
-                CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
-                AddDamage(item, player.throwDamage);
+            if (throwCooldown == false) {
+                if (Inventory.HoldingItem(Inventory.Hand.Left) && !Inventory.HoldingItem(Inventory.Hand.Right))
+                {
+                    ThrowItem(Inventory.Hand.Left);
+                }
+                else if (Inventory.HoldingItem(Inventory.Hand.Right) && !Inventory.HoldingItem(Inventory.Hand.Left))
+                {
+                    ThrowItem(Inventory.Hand.Right);
+                }
+                else {
+                    if (input.leftMouse && Inventory.HoldingItem(Inventory.Hand.Left))
+                    {
+                        ThrowItem(Inventory.Hand.Left);
+                    }
+                    if (input.rightMouse && Inventory.HoldingItem(Inventory.Hand.Right))
+                    {
+                        ThrowItem(Inventory.Hand.Right);
+                    }
+                }
             }
-            if (input.rightMouse && Inventory.HoldingItem(Inventory.Hand.Right))
-            {
-                GameObject item = rightHandLocation.GetChild(0).gameObject;
-                Drop(Inventory.Hand.Right);
-                CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
-                AddDamage(item, player.throwDamage);
-            }
-            //if (Inventory.HoldingItem())
-            //{
-            //    GameObject item = handLocation.GetChild(0).gameObject;
-            //    Drop();
-            //    CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
-            //    AddDamage(item, player.throwDamage);
-            //}
+        }
+        else if (!input.throwItem)
+        {
+            throwCooldown = false;
         }
         //else if (input.punch)
         //{
@@ -92,8 +96,6 @@ public class PlayerOther : MonoBehaviour
             item.transform.localRotation = Quaternion.identity;
         }
     }
-
-    
     void Drop(Inventory.Hand hand)
     {
         Transform item;
@@ -146,6 +148,25 @@ public class PlayerOther : MonoBehaviour
             animator.enabled = true;
         }
         Destroy(item);
+    }
+    void ThrowItem(Inventory.Hand hand)
+    {
+        GameObject item;
+        if (hand == Inventory.Hand.Left)
+        {
+            item = leftHandLocation.GetChild(0).gameObject;
+        }
+        else
+        {
+            item = rightHandLocation.GetChild(0).gameObject;
+
+        }
+        Drop(hand);
+        CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
+        Debug.Log(player.throwStartDistance);
+        Debug.Log(player.throwForce);
+        AddDamage(item, player.throwDamage);
+        throwCooldown = true;
     }
     void ApplyLayerToChildren(GameObject item, string layername)
     {

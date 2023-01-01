@@ -7,7 +7,7 @@ public class Gun : MonoBehaviour
     [SerializeField] GameObject bulletPrefab;
     [SerializeField] Upgrades upgrades;
     [SerializeField] InputManager input;
-    Animator animation;
+    Animator shootAnimator;
 
     [SerializeField] Player player;
     Transform attackPoint;
@@ -22,7 +22,7 @@ public class Gun : MonoBehaviour
     void Awake()
     {
         camera = Camera.main;
-        animation = GetComponent<Animator>();
+        shootAnimator = GetComponent<Animator>();
     }
     void Start()
     {
@@ -33,11 +33,11 @@ public class Gun : MonoBehaviour
         if (readyToShoot)
         {
             bulletsShot = 0;
-            if (input.leftMouse && !input.throwItem && hand == Inventory.Hand.Left)
+            if (input.leftMouse && !input.throwItem && (hand == Inventory.Hand.Left || (Inventory.HasGun(Inventory.Hand.Right) && !Inventory.HasGun(Inventory.Hand.Left))))
             {
                 Shoot();
             }
-            if (input.rightMouse && !input.throwItem && hand == Inventory.Hand.Right)
+            if (input.rightMouse && !input.throwItem && (hand == Inventory.Hand.Right || (Inventory.HasGun(Inventory.Hand.Left) && !Inventory.HasGun(Inventory.Hand.Right))))
             {
                 Shoot();
             }
@@ -99,9 +99,9 @@ public class Gun : MonoBehaviour
             Invoke("Shoot", player.attackSpeed);
         }
 
-        animation.Play("shoot", 0, 0f);
+        shootAnimator.Play("shoot", 0, 0f);
 
-        animation.speed = player.attackSpeed;
+        shootAnimator.speed = player.attackSpeed;
     }
 
 
