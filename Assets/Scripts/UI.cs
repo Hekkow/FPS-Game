@@ -110,7 +110,8 @@ public class UI : MonoBehaviour {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         Time.timeScale = 0;
-        
+        input.look = new Vector2(0, 0);
+
     }
     void OpenOrClose(string name)
     {

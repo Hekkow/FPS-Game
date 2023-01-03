@@ -16,11 +16,11 @@ public class GameManager : MonoBehaviour
         SaveData data = SaveSystem.ReadSave();
         if (data != null)
         {
-            playerHealth.maxHealth = data.maxHealth;
-            playerHealth.currentHealth = data.currentHealth;
-            player.transform.position = data.position;
-            player.transform.rotation = data.rotation;
-            player.transform.localScale = data.scale;
+            //playerHealth.maxHealth = data.maxHealth;
+            //playerHealth.currentHealth = data.currentHealth;
+            //player.transform.position = data.position;
+            //player.transform.rotation = data.rotation;
+            //player.transform.localScale = data.scale;
         }
     }
     

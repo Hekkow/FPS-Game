@@ -1,17 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class Damage : MonoBehaviour
 {
     public float knockback;
     public float damage;
     public bool thrown;
-
     // for non solid things like animations
 
     void OnTriggerEnter(Collider collision)
     {
+        
         Health collisionObjectHealth = collision.gameObject.GetComponent<Health>();
         if (collisionObjectHealth == null) // if health doesn't exist in current object, check parent object
         {
@@ -57,6 +59,7 @@ public class Damage : MonoBehaviour
             if (enemy != null && collisionObjectHealth.alive)
             {
                 enemy.KnockBack(knockback);
+                DamageNumbers(collision);
             }
         }
         Explosive explosive = collision.gameObject.GetComponent<Explosive>();
@@ -64,5 +67,12 @@ public class Damage : MonoBehaviour
         {
             explosive.Explode();
         }
+    }
+    void DamageNumbers(Collision collision)
+    {
+        TMP_Text damageNumbersText = Instantiate(Resources.Load<TMP_Text>("Prefabs/Damage Numbers"), Vector3.zero, Quaternion.identity, GameObject.Find("UI").transform);
+        damageNumbersText.text = damage.ToString();
+        DamageNumber dn = damageNumbersText.gameObject.AddComponent<DamageNumber>();
+        dn.collision = collision;
     }
 }

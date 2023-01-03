@@ -1921,7 +1921,7 @@ MonoBehaviour:
   pickupDistance: 4
   dotProductLimit: 0.8
   speed: 300
-  maxSpeed: 15
+  maxSpeed: 13
   groundDrag: 10
   airDrag: 0
   gravityUp: 30
@@ -5742,6 +5742,7 @@ MonoBehaviour:
   upgradeMenu: 0
   interactLeft: 0
   interactRight: 0
+  switchHands: 0
   throwItem: 0
   escape: 0
   punch: 0
@@ -12659,6 +12660,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 54496071057803870, guid: 2234ea81e18494141a2a25c3f98da191, type: 3}
+      propertyPath: m_fontSize
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 54496071057803870, guid: 2234ea81e18494141a2a25c3f98da191, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 54496071057803870, guid: 2234ea81e18494141a2a25c3f98da191, type: 3}
       propertyPath: m_HorizontalAlignment
       value: 2
       objectReference: {fileID: 0}
@@ -12680,11 +12689,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 54496071783840353, guid: 2234ea81e18494141a2a25c3f98da191, type: 3}
       propertyPath: maxHealth
-      value: 100
+      value: 5000
       objectReference: {fileID: 0}
     - target: {fileID: 54496071783840353, guid: 2234ea81e18494141a2a25c3f98da191, type: 3}
       propertyPath: currentHealth
-      value: 100
+      value: 5000
       objectReference: {fileID: 0}
     - target: {fileID: 54496071783840354, guid: 2234ea81e18494141a2a25c3f98da191, type: 3}
       propertyPath: m_Enabled

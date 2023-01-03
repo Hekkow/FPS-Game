@@ -8,10 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8749466894550816638}
+  - component: {fileID: 4467960453033364507}
   - component: {fileID: 8749466894550816633}
   - component: {fileID: 4711874736819509669}
-  - component: {fileID: -5486776046985692825}
   - component: {fileID: 1856499071962302767}
   m_Layer: 0
   m_Name: Bullet
@@ -20,15 +19,15 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8749466894550816638
-Transform:
+--- !u!224 &4467960453033364507
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8749466894550816632}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.09000015, y: 0.40199995, z: 0.30999994}
+  m_LocalPosition: {x: 0, y: 0, z: 0.30999994}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -36,6 +35,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0.09000015, y: 0.40199995}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!54 &8749466894550816633
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -64,22 +68,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbbbad56bdb869c4a935943e431d96a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
---- !u!114 &-5486776046985692825
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8749466894550816632}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damage: 0
-  thrown: 0
-  knockback: 0
 --- !u!23 &1856499071962302767
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -154,7 +142,7 @@ Transform:
   m_LocalScale: {x: 0.04, y: 0.04, z: 0.04}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 8749466894550816638}
+  m_Father: {fileID: 4467960453033364507}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8749466894834562734
@@ -232,4 +220,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbbbad56bdb869c4a935943e431d96a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0

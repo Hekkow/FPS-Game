@@ -1,0 +1,33 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+
+public class DamageNumber : MonoBehaviour
+{
+    public TMP_Text damageNumbersText;
+    public Collision collision;
+    Vector3 point;
+    Vector3 randomizedLocation;
+    void Start()
+    {
+        randomizedLocation = new Vector3(Random.Range(-20, 20), Random.Range(10, 20), 0);
+        point = collision.contacts[collision.contacts.Length - 1].point;
+        damageNumbersText = GetComponent<TMP_Text>();
+        StartCoroutine(DestroyThis());
+    }
+    void Update()
+    {
+        Vector3 screenPoint = Camera.main.WorldToScreenPoint(point);
+        if (screenPoint.z >= 0)
+        {
+            damageNumbersText.transform.position = screenPoint + randomizedLocation;
+
+        }
+    }
+    IEnumerator DestroyThis()
+    {
+        yield return new WaitForSeconds(0.3f);
+        Destroy(damageNumbersText.gameObject);
+    }
+}
