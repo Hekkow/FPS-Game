@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.Timeline;
 
 public class Damage : MonoBehaviour
 {
@@ -60,6 +61,7 @@ public class Damage : MonoBehaviour
             {
                 enemy.KnockBack(knockback);
                 DamageNumbers(collision);
+                HitMarker();
             }
         }
         Explosive explosive = collision.gameObject.GetComponent<Explosive>();
@@ -74,5 +76,9 @@ public class Damage : MonoBehaviour
         damageNumbersText.text = damage.ToString();
         DamageNumber dn = damageNumbersText.gameObject.AddComponent<DamageNumber>();
         dn.collision = collision;
+    }
+    void HitMarker()
+    {
+        GameObject.Find("Reticle").GetComponent<HitMarker>().Mark();
     }
 }
