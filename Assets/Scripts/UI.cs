@@ -54,7 +54,7 @@ public class UI : MonoBehaviour {
             }
             for (int i = 0; i < upgrades.maxUpgrades; i++)
             {
-                GameObject upgrade = Instantiate(upgradeBox, panel);
+                GameObject upgrade = Instantiate(Resources.Load<GameObject>("Prefabs/UpgradeBox"), panel);
                 upgrade.transform.Find("Name").GetComponent<TMP_Text>().text = upgrades.allUpgrades[i].name;
                 upgrade.transform.Find("Description").GetComponent<TMP_Text>().text = upgrades.allUpgrades[i].description;
                 Button button = upgrade.GetComponent<Button>();

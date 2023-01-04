@@ -45,7 +45,7 @@ public class Damage : MonoBehaviour
         }
         if (collisionObjectHealth != null)
         {
-            collisionObjectHealth.Damage(damage);
+            
             if (thrown)
             {
                 CustomPhysics.BounceUpAndBack(gameObject);
@@ -63,6 +63,7 @@ public class Damage : MonoBehaviour
                 DamageNumbers(collision);
                 HitMarker();
             }
+            collisionObjectHealth.Damage(damage);
         }
         Explosive explosive = collision.gameObject.GetComponent<Explosive>();
         if (explosive != null)
@@ -72,7 +73,7 @@ public class Damage : MonoBehaviour
     }
     void DamageNumbers(Collision collision)
     {
-        TMP_Text damageNumbersText = Instantiate(Resources.Load<TMP_Text>("Prefabs/Damage Numbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform);
+        TMP_Text damageNumbersText = Instantiate(Resources.Load<TMP_Text>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform);
         damageNumbersText.text = damage.ToString();
         DamageNumber dn = damageNumbersText.gameObject.AddComponent<DamageNumber>();
         dn.collision = collision;

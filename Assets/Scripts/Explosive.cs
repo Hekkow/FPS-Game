@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Explosive : MonoBehaviour
@@ -7,7 +8,6 @@ public class Explosive : MonoBehaviour
     public float radius;
     public float force;
     public float explosionTime;
-    public GameObject explosionEffect;
     public void Explode()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
@@ -23,7 +23,7 @@ public class Explosive : MonoBehaviour
     }
     IEnumerator RemoveEffect()
     {
-        GameObject effect = Instantiate(explosionEffect, this.transform);
+        GameObject effect = Instantiate(Resources.Load<GameObject>("Prefabs/Explosion"), this.transform);
         Destroy(this.gameObject.GetComponent<Renderer>());
         yield return new WaitForSeconds(explosionTime);
         Destroy(effect);

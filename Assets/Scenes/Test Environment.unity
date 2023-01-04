@@ -1993,7 +1993,7 @@ MonoBehaviour:
   sensitivity: 150
   throwForce: 30
   throwDamage: 20
-  throwStartDistance: 1
+  throwStartDistance: 1.5
   pickupDistance: 4
   dotProductLimit: 0.8
   speed: 300
@@ -4463,7 +4463,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d3e0137901104946ba0e12d839ffe0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 8749466894550816632, guid: 9466b0fce70f0be4f8e5ab44f7942b78, type: 3}
   upgrades: {fileID: 283433906}
   input: {fileID: 784729602}
   player: {fileID: 283433911}
@@ -10019,7 +10018,6 @@ MonoBehaviour:
   radius: 20
   force: 3000
   explosionTime: 1
-  explosionEffect: {fileID: 2781120539579056605, guid: b211f574e68c12846a28d8e4a109b012, type: 3}
 --- !u!1 &1558296387
 GameObject:
   m_ObjectHideFlags: 0
@@ -10289,7 +10287,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d3e0137901104946ba0e12d839ffe0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 8749466894550816632, guid: 9466b0fce70f0be4f8e5ab44f7942b78, type: 3}
   upgrades: {fileID: 283433906}
   input: {fileID: 784729602}
   player: {fileID: 283433911}
@@ -11579,7 +11576,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d3e0137901104946ba0e12d839ffe0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 8749466894550816632, guid: 9466b0fce70f0be4f8e5ab44f7942b78, type: 3}
   upgrades: {fileID: 283433906}
   input: {fileID: 784729602}
   player: {fileID: 283433911}

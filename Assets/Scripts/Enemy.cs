@@ -10,7 +10,6 @@ public class Enemy : MonoBehaviour
     [Header("Objects")]
     [SerializeField] LayerMask playerMask;
     [SerializeField] LayerMask obstacles;
-    [SerializeField] GameObject attackAnimation;
 
     [Header("Attack")]
     [SerializeField] float timeBetweenAttacks;
@@ -105,8 +104,8 @@ public class Enemy : MonoBehaviour
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
         if (!alreadyAttacked)
         {
-            instantiatedAnimation = Instantiate(attackAnimation, transform.position, new Quaternion(1, 0, 0, 1));
-            Helper.AddDamage(instantiatedAnimation, attackDamage, attackDamage, false);
+            instantiatedAnimation = Instantiate(Resources.Load<GameObject>("Prefabs/EnemyAttack"), transform.position, new Quaternion(1, 0, 0, 1));
+            Helper.AddDamage(instantiatedAnimation.gameObject, attackDamage, attackDamage, false);
             instantiatedAnimation.transform.SetParent(transform);
             StartCoroutine(AttackAnimationTime());
             alreadyAttacked = true;

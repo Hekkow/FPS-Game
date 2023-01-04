@@ -1,17 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 public class Gun : MonoBehaviour
 {
     [Header("Objects")]
-    [SerializeField] GameObject bulletPrefab;
     [SerializeField] Upgrades upgrades;
     [SerializeField] InputManager input;
     Animator shootAnimator;
 
     [SerializeField] Player player;
     Transform attackPoint;
-    GameObject currentBullet;
+    
     int bulletsShot;
     bool readyToShoot = true;
     bool allowInvoke = true;
@@ -69,7 +69,7 @@ public class Gun : MonoBehaviour
 
             // creates bullet and sends it zoomin
 
-            currentBullet = Instantiate(bulletPrefab, attackPoint.position, Quaternion.identity);
+            GameObject currentBullet = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet"), attackPoint.position, Quaternion.identity);
             currentBullet.transform.forward = direction.normalized;
             currentBullet.transform.localScale *= player.bulletSize;
             currentBullet.GetComponent<Rigidbody>().velocity = direction.normalized * player.bulletSpeed;
