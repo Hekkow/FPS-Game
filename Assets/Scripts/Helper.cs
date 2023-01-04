@@ -66,4 +66,20 @@ public static class Helper
             thing.GetComponent<Collider>().enabled = false;
         }
     }
+    public static void MakeChildrenVisible(GameObject parent, bool on)
+    {
+        Renderer parentRenderer = parent.GetComponent<Renderer>();
+        if (parentRenderer != null)
+        {
+            parentRenderer.enabled = on;
+        }
+        for (int i = 0; i < parent.transform.childCount; i++)
+        {
+            Renderer childRenderer = parent.transform.GetChild(i).GetComponent<Renderer>();
+            if (childRenderer != null)
+            {
+                childRenderer.enabled = on;
+            }
+        }
+    }
 }

@@ -72,7 +72,7 @@ public class Damage : MonoBehaviour
     }
     void DamageNumbers(Collision collision)
     {
-        TMP_Text damageNumbersText = Instantiate(Resources.Load<TMP_Text>("Prefabs/Damage Numbers"), Vector3.zero, Quaternion.identity, GameObject.Find("UI").transform);
+        TMP_Text damageNumbersText = Instantiate(Resources.Load<TMP_Text>("Prefabs/Damage Numbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform);
         damageNumbersText.text = damage.ToString();
         DamageNumber dn = damageNumbersText.gameObject.AddComponent<DamageNumber>();
         dn.collision = collision;
