@@ -13,11 +13,14 @@ public class Bullet : MonoBehaviour
     }
     void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.GetComponent<Bullet>() == null)
+        {
             Destroy(gameObject);
+        }
     }
     IEnumerator BulletDecay()
     {
-        yield return new WaitForSeconds(60);
+        yield return new WaitForSeconds(20);
         Destroy(gameObject);
     }
 }

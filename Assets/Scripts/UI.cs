@@ -68,7 +68,7 @@ public class UI : MonoBehaviour {
             openMenu = pauseMenu;
         }
         inMenu = true;
-        Helper.MakeChildrenVisible(HUD, false);
+        HUD.GetComponent<Canvas>().enabled = false;
         openMenu.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -93,7 +93,7 @@ public class UI : MonoBehaviour {
     }
     public void CloseMenu()
     {
-        Helper.MakeChildrenVisible(HUD, true);
+        HUD.GetComponent<Canvas>().enabled = true;
         inMenu = false;
         openMenu.SetActive(false);
         Time.timeScale = 1;

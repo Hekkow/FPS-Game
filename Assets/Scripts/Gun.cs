@@ -75,7 +75,7 @@ public class Gun : MonoBehaviour
             currentBullet.GetComponent<Rigidbody>().velocity = direction.normalized * player.bulletSpeed;
 
             // creates bullet with specified stats
-            Helper.AddDamage(currentBullet, player.bulletDamage, player.bulletKnockback, false);
+            Helper.AddDamage(currentBullet, player.bulletDamage, player.bulletKnockback, false, false);
 
 
         }

@@ -149,11 +149,10 @@ public class PlayerOther : MonoBehaviour
         else
         {
             item = rightHandLocation.GetChild(0).gameObject;
-
         }
         Drop(hand);
         CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
-        Helper.AddDamage(item, player.throwDamage, player.bulletKnockback, true);
+        Helper.AddDamage(item, player.throwDamage, player.bulletKnockback, true, true);
         throwCooldown = true;
     }
     Pickup GetClosest()

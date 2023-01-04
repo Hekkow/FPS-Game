@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public static class Helper
 {
@@ -33,9 +32,9 @@ public static class Helper
             }
         }
     }
-    public static void AddDamage(GameObject thing, float damage, float knockback, bool thrown)
+    public static void AddDamage(GameObject thing, float damage, float knockback, bool thrown, bool oneTime)
     {
-        Damage dmg = thing.AddComponent<Damage>();
+        Damage dmg = thing.GetComponent<Damage>();
         if (dmg == null)
         {
             dmg = thing.AddComponent<Damage>();
@@ -43,7 +42,8 @@ public static class Helper
         dmg.enabled = true;
         dmg.damage = damage;
         dmg.knockback = knockback;
-        dmg.thrown = true;
+        dmg.thrown = thrown;
+        dmg.oneTime = oneTime;
     }
     public static void ApplyLayerToChildren(GameObject thing, string layername)
     {
@@ -64,22 +64,6 @@ public static class Helper
         {
             thing.GetComponent<Rigidbody>().isKinematic = true;
             thing.GetComponent<Collider>().enabled = false;
-        }
-    }
-    public static void MakeChildrenVisible(GameObject parent, bool on)
-    {
-        Renderer parentRenderer = parent.GetComponent<Renderer>();
-        if (parentRenderer != null)
-        {
-            parentRenderer.enabled = on;
-        }
-        for (int i = 0; i < parent.transform.childCount; i++)
-        {
-            Renderer childRenderer = parent.transform.GetChild(i).GetComponent<Renderer>();
-            if (childRenderer != null)
-            {
-                childRenderer.enabled = on;
-            }
         }
     }
 }

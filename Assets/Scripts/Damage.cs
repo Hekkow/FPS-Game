@@ -10,11 +10,11 @@ public class Damage : MonoBehaviour
     public float knockback;
     public float damage;
     public bool thrown;
+    public bool oneTime;
     // for non solid things like animations
 
     void OnTriggerEnter(Collider collision)
     {
-        
         Health collisionObjectHealth = collision.gameObject.GetComponent<Health>();
         if (collisionObjectHealth == null) // if health doesn't exist in current object, check parent object
         {
@@ -49,7 +49,6 @@ public class Damage : MonoBehaviour
             if (thrown)
             {
                 CustomPhysics.BounceUpAndBack(gameObject);
-                Destroy(this);
             }
             Destructible destructible = collision.gameObject.GetComponent<Destructible>();
             if (destructible != null && collisionObjectHealth.currentHealth <= 0)
@@ -69,6 +68,10 @@ public class Damage : MonoBehaviour
         if (explosive != null)
         {
             explosive.Explode();
+        }
+        if (oneTime)
+        {
+            Destroy(this);
         }
     }
     void DamageNumbers(Collision collision)
