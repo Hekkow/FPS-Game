@@ -1,13 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using System;
-using Unity.VisualScripting.FullSerializer;
-using UnityEditor;
 using UnityEngine.UI;
-using UnityEngine.Windows;
-using System.Linq;
 
 public class UI : MonoBehaviour {
     [SerializeField] GameObject player;
@@ -19,11 +13,13 @@ public class UI : MonoBehaviour {
     Upgrades upgrades;
     GameObject openMenu;
     GameObject HUD;
-    
+    PlayerCamera camera;
+
     [HideInInspector] public static bool inMenu = false;
 
     void Start()
     {
+        camera = player.GetComponentInChildren<PlayerCamera>();
         input = gameManager.AddComponent<InputManager>();
         upgrades = player.GetComponent<Upgrades>();
         HUD = GameObject.Find("HUD");
@@ -42,24 +38,31 @@ public class UI : MonoBehaviour {
         }
         
     }
-    
-    public void OpenMenu(string menu)
+    public void OpenMenu(string menu, string category="")
     {
+
+        inMenu = true;
+        input.look = new Vector2(0, 0);
+        camera.cameraEnabled = false;
+
         if (menu == "upgrade") {
             openMenu = upgradeMenu;
             Transform panel = openMenu.transform;
+            List<Upgrade> upgradeCategory;
+            if (category == "defense") upgradeCategory = upgrades.defenseUpgrades;
+            else upgradeCategory = upgrades.allUpgrades;
             for (int i = 0; i < panel.childCount; i++) // get rid of any upgrade boxes that might be there already
             {
                 GameObject.Destroy(panel.GetChild(i).gameObject);
             }
-            for (int i = 0; i < upgrades.maxUpgrades; i++)
+            for (int i = 0; i < 3; i++)
             {
                 GameObject upgrade = Instantiate(Resources.Load<GameObject>("Prefabs/UpgradeBox"), panel);
-                upgrade.transform.Find("Name").GetComponent<TMP_Text>().text = upgrades.allUpgrades[i].name;
-                upgrade.transform.Find("Description").GetComponent<TMP_Text>().text = upgrades.allUpgrades[i].description;
+                upgrade.transform.Find("Name").GetComponent<TMP_Text>().text = upgradeCategory[i].name;
+                upgrade.transform.Find("Description").GetComponent<TMP_Text>().text = upgradeCategory[i].description;
                 Button button = upgrade.GetComponent<Button>();
                 int ivalue = i; // delegate takes by reference so we create new variable to keep value consistent
-                button.onClick.AddListener(delegate{upgrades.Invoke(upgrades.allUpgrades[ivalue].name.Replace(" ", ""), 0);});
+                button.onClick.AddListener(delegate{upgrades.Invoke(upgradeCategory[ivalue].name.Replace(" ", ""), 0);});
                 button.onClick.AddListener(CloseMenu);
             }
         }
@@ -80,19 +83,17 @@ public class UI : MonoBehaviour {
     {
         if (!inMenu)
         {
-            inMenu = true;
-            input.look = new Vector2(0, 0);
             OpenMenu(name);
         }
         else
         {
-
-            inMenu = false;
             CloseMenu();
         }
     }
     public void CloseMenu()
     {
+        camera.cameraEnabled = true;
+        inMenu = false;
         HUD.GetComponent<Canvas>().enabled = true;
         inMenu = false;
         openMenu.SetActive(false);

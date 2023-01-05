@@ -32,7 +32,7 @@ public class Enemy : MonoBehaviour
 
     GameObject instantiatedAnimation;
     TMP_Text healthText;
-    Transform player;
+    Transform target;
     Rigidbody rb;
     Health health;
     new Camera camera;
@@ -50,7 +50,7 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
-        player = GameObject.Find("Player").transform;
+        target = GameObject.Find("Player").transform;
         health = GetComponent<Health>();
         rb = GetComponent<Rigidbody>();
         healthText = transform.GetComponentInChildren<TMP_Text>();
@@ -80,10 +80,11 @@ public class Enemy : MonoBehaviour
     
     void Vision()
     {
-        Vector3 playerTarget = (player.transform.position - transform.position).normalized;
+        bool playerDetected;
+        Vector3 playerTarget = (target.transform.position - transform.position).normalized;
         if (Vector3.Angle(transform.forward, playerTarget) < viewAngle / 2)
         {
-            float distanceToTarget = Vector3.Distance(transform.position, player.transform.position);
+            float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
             if (distanceToTarget < viewRadius)
             {
                 if (Physics.Raycast(transform.position, playerTarget, distanceToTarget, obstacles) == false)
@@ -101,7 +102,7 @@ public class Enemy : MonoBehaviour
     }
     void AttackPlayer()
     {
-        transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
+        transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
         if (!alreadyAttacked)
         {
             instantiatedAnimation = Instantiate(Resources.Load<GameObject>("Prefabs/EnemyAttack"), transform.position, new Quaternion(1, 0, 0, 1));

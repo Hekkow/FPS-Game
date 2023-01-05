@@ -6,6 +6,7 @@ public class Upgrade
 {
     public string name;
     public string description;
+    public string category;
 }
 
 
@@ -14,6 +15,7 @@ public class Upgrades : MonoBehaviour
     Player player;
     public List<Upgrade> allUpgrades;
     public List<Upgrade> playerUpgrades;
+    public List<Upgrade> defenseUpgrades;
     public int maxUpgrades;
     Health playerHealth;
     Upgrade doubleJumpUpgrade;
@@ -25,21 +27,32 @@ public class Upgrades : MonoBehaviour
         playerHealth = GetComponent<Health>();
         allUpgrades = new List<Upgrade>();
         playerUpgrades = new List<Upgrade>();
+        defenseUpgrades = new List<Upgrade>();
         allUpgrades.Add(doubleHealthUpgrade = new Upgrade
         {
             name = "Double Health",
-            description = "doubles health"
+            description = "doubles health",
+            category = "Defense"
         });
         allUpgrades.Add(attackSpeedUpgrade = new Upgrade
         {
             name = "Attack Speed",
-            description = "doubles attack speed"
+            description = "doubles attack speed",
+            category = "Defense"
         });
         allUpgrades.Add(doubleJumpUpgrade = new Upgrade
         {
             name = "Double Jump",
-            description = "doubles jump"
+            description = "doubles jump",
+            category = "Defense"
         });
+        for (int i = 0; i < allUpgrades.Count; i++)
+        {
+            if (allUpgrades[i].category == "Defense")
+            {
+                defenseUpgrades.Add(allUpgrades[i]);
+            }
+        }
     }
 
     public void DoubleJump()

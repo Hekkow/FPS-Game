@@ -9,7 +9,6 @@ public class PlayerOther : MonoBehaviour
 {
     [SerializeField] GameManager gameManager;
     InputManager input;
-
     Transform leftHandLocation;
     Transform rightHandLocation;
 
@@ -31,13 +30,23 @@ public class PlayerOther : MonoBehaviour
         }
         if (input.interactRight) {
             Pickup item = GetClosest();
+            Loot loot = item.GetComponent<Loot>();
             if (item != null)
             {
-                if (Inventory.HoldingItem(Inventory.Hand.Right))
+                if (loot == null)
                 {
-                    Drop(Inventory.Hand.Right);
+                    if (Inventory.HoldingItem(Inventory.Hand.Right))
+                    {
+                        Drop(Inventory.Hand.Right);
+                    }
+                    PickUp(item, Inventory.Hand.Right);
                 }
-                PickUp(item, Inventory.Hand.Right);
+                else
+                {
+                    loot.Pickup();
+                    input.interactRight = false;
+                }
+
             }
         }
         if (input.interactLeft)
@@ -51,6 +60,7 @@ public class PlayerOther : MonoBehaviour
                 }
                 PickUp(item, Inventory.Hand.Left);
             }
+            
         }
         if (input.throwItem)
         {

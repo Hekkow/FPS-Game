@@ -13,11 +13,13 @@ public class PlayerCamera : MonoBehaviour
     float yRotation;
 
     Vector2 mouse;
+    public bool cameraEnabled;
     float mouseX;
     float mouseY;
 
     void Awake()
     {
+        cameraEnabled = true;
         // locks mouse to game
 
         Cursor.lockState = CursorLockMode.Locked;
@@ -26,19 +28,23 @@ public class PlayerCamera : MonoBehaviour
 
     void Update()
     {
-        mouse = input.look;
-        mouseX = mouse.x * player.sensitivity * Time.fixedDeltaTime;
-        mouseY = mouse.y * player.sensitivity * Time.fixedDeltaTime;
+        if (cameraEnabled)
+        {
+            mouse = input.look;
 
-        // no idea how this works, i think it's cuz the xRotation is inversed by default
-        yRotation += mouseX;
-        xRotation -= mouseY;
+            mouseX = mouse.x * player.sensitivity * Time.fixedDeltaTime;
+            mouseY = mouse.y * player.sensitivity * Time.fixedDeltaTime;
 
-        // doesn't allow player to look up and backwards
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+            // no idea how this works, i think it's cuz the xRotation is inversed by default
+            yRotation += mouseX;
+            xRotation -= mouseY;
 
-        // camera alignment
-        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+            // doesn't allow player to look up and backwards
+            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+            // camera alignment
+            transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+        }
     }
     void FixedUpdate()
     {
