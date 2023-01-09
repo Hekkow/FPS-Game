@@ -30,9 +30,10 @@ public class PlayerOther : MonoBehaviour
         }
         if (input.interactRight) {
             Pickup item = GetClosest();
-            Loot loot = item.GetComponent<Loot>();
+            
             if (item != null)
             {
+                Loot loot = item.GetComponent<Loot>();
                 if (loot == null)
                 {
                     if (Inventory.HoldingItem(Inventory.Hand.Right))

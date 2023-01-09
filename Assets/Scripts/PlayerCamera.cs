@@ -8,18 +8,17 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] Transform playerBody;
 
     [SerializeField] InputManager input;
+    [SerializeField] UI UI;
 
     float xRotation;
     float yRotation;
 
     Vector2 mouse;
-    public bool cameraEnabled;
     float mouseX;
     float mouseY;
 
     void Awake()
     {
-        cameraEnabled = true;
         // locks mouse to game
 
         Cursor.lockState = CursorLockMode.Locked;
@@ -28,7 +27,7 @@ public class PlayerCamera : MonoBehaviour
 
     void Update()
     {
-        if (cameraEnabled)
+        if (!UI.inMenu)
         {
             mouse = input.look;
 

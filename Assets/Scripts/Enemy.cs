@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,6 +11,7 @@ public class Enemy : MonoBehaviour
     [Header("Objects")]
     [SerializeField] LayerMask playerMask;
     [SerializeField] LayerMask obstacles;
+    [SerializeField] Player player;
 
     [Header("Attack")]
     [SerializeField] float timeBetweenAttacks;
@@ -35,6 +37,7 @@ public class Enemy : MonoBehaviour
     Transform target;
     Rigidbody rb;
     Health health;
+    NavMeshAgent agent;
     new Camera camera;
 
     float viewRadius;
@@ -45,6 +48,8 @@ public class Enemy : MonoBehaviour
     bool detectedOnce = false;
 
     bool alreadyAttacked = false;
+
+    bool jumping = false;
 
     IEnumerator knockCoroutine;
 
@@ -57,27 +62,115 @@ public class Enemy : MonoBehaviour
         viewRadius = viewRadiusBeforeDetected;
         viewAngle = viewAngleBeforeDetected;
         camera = Camera.main;
+        agent = GetComponent<NavMeshAgent>();
+        agent.autoTraverseOffMeshLink = false;
+        //agent.updateRotation = false;
+
+        
     }
 
     void Update()
     {
-        if (!health.alive)
+        if (!agent.isOnOffMeshLink && !jumping)
         {
-            Died();
-            return;
+            agent.SetDestination(player.transform.position);
+            //transform.LookAt(player.transform.position);
+
         }
-        Vision();
-        if (!knocked)
+        else
         {
-            if (Physics.CheckSphere(transform.position, attackRange, playerMask)) // if player's in attack range
+            if (!jumping)
             {
-                AttackPlayer();
+                Jump();
             }
+            
+            //agent.CompleteOffMeshLink();
         }
+        //if (!health.alive)
+        //{
+        //    Died();
+        //    return;
+        //}
+        //Vision();
+        //if (!knocked)
+        //{
+        //    if (Physics.CheckSphere(transform.position, attackRange, playerMask)) // if player's in attack range
+        //    {
+        //        AttackPlayer();
+        //    }
+        //}
         UpdateHealthBar();
         
     }
-    
+    void Jump()
+    {
+        //Vector3 startPos = agent.transform.position;
+        Vector3 endPos = agent.currentOffMeshLinkData.endPos;
+        StartCoroutine(WaitUntilLanded());
+        //agent.transform.position = endPos;
+        //transform.position = endPos;
+        
+        
+    }
+    IEnumerator WaitUntilLanded()
+    {
+        Vector3 endPos = agent.currentOffMeshLinkData.endPos;
+        Vector3 startPos = agent.currentOffMeshLinkData.startPos;
+        bool down = startPos.y - endPos.y > 2;
+        //float velY = Mathf.Sqrt(2 * -Physics.gravity.y * (endPos.y+0.5f - startPos.y));
+        //float velY = (endPos.y-(startPos.y*1)+(1/2*Physics.gravity.y*Mathf.Pow(1, 2)))/1*2;
+        float velY;
+        float velX;
+        float velZ;
+        if (down)
+        {
+            velY = 0;
+            velX = (endPos.x - transform.position.x);
+            velZ = (endPos.z - transform.position.z);
+            Debug.Log(velX);
+        }
+        else
+        {
+            velY = Mathf.Sqrt(2 * -Physics.gravity.y * (endPos.y+1f - startPos.y));
+            velX = (endPos.x - transform.position.x);
+            velZ = (endPos.z - transform.position.z);
+            Debug.Log(velX);
+
+        }
+        //velY = 2 * (endPos.y + 1f - startPos.y) / 1;
+        //Debug.Log(velY);
+        //float velY = Mathf.Sqrt(-2 * Mathf.Abs(endPos.y - startPos.y + 0.5f) * -9.81f);
+        //float velX = 0;
+        //float velZ = 0;
+
+        jumping = true;
+        rb.isKinematic = false;
+        agent.enabled = false;
+        if (down)
+        {
+            while (Physics.Raycast(transform.position, -Vector3.up, 1 + 0.1f))
+            {
+                rb.velocity = new Vector3(velX, velY, velZ);
+
+                yield return new WaitForEndOfFrame();
+            }
+        }
+        else
+        {
+            rb.velocity = new Vector3(velX, velY, velZ);
+        }
+        //Debug.Log(Mathf.Sqrt(-2 * (endPos.y - startPos.y + 0.5f) * -9.81f));
+        //Debug.Log(2 * (endPos.y + 500 - startPos.y) * Physics.gravity.y);
+        //rb.AddForce(((endPos-transform.position).normalized * 80) + (Vector3.up * 120), ForceMode.Impulse);
+        yield return new WaitForSeconds(0.1f);
+
+        yield return new WaitUntil(() => Physics.Raycast(transform.position, -Vector3.up, 1 + 0.1f));
+        jumping = false;
+        rb.isKinematic = true;
+        agent.enabled = true;
+        agent.isStopped = false;
+        agent.CompleteOffMeshLink();
+    }
     void Vision()
     {
         bool playerDetected;

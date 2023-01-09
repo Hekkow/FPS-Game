@@ -43,7 +43,6 @@ public class UI : MonoBehaviour {
 
         inMenu = true;
         input.look = new Vector2(0, 0);
-        camera.cameraEnabled = false;
 
         if (menu == "upgrade") {
             openMenu = upgradeMenu;
@@ -57,12 +56,12 @@ public class UI : MonoBehaviour {
             }
             for (int i = 0; i < 3; i++)
             {
-                GameObject upgrade = Instantiate(Resources.Load<GameObject>("Prefabs/UpgradeBox"), panel);
-                upgrade.transform.Find("Name").GetComponent<TMP_Text>().text = upgradeCategory[i].name;
-                upgrade.transform.Find("Description").GetComponent<TMP_Text>().text = upgradeCategory[i].description;
-                Button button = upgrade.GetComponent<Button>();
-                int ivalue = i; // delegate takes by reference so we create new variable to keep value consistent
-                button.onClick.AddListener(delegate{upgrades.Invoke(upgradeCategory[ivalue].name.Replace(" ", ""), 0);});
+                Upgrade upgrade = upgradeCategory[Random.Range(0, upgradeCategory.Count)];
+                GameObject upgradeBox = Instantiate(Resources.Load<GameObject>("Prefabs/UpgradeBox"), panel);
+                upgradeBox.transform.Find("Name").GetComponent<TMP_Text>().text = upgrade.name;
+                upgradeBox.transform.Find("Description").GetComponent<TMP_Text>().text = upgrade.description;
+                Button button = upgradeBox.GetComponent<Button>();
+                button.onClick.AddListener(delegate{upgrades.Invoke(upgrade.name.Replace(" ", ""), 0);});
                 button.onClick.AddListener(CloseMenu);
             }
         }
@@ -70,7 +69,6 @@ public class UI : MonoBehaviour {
         {
             openMenu = pauseMenu;
         }
-        inMenu = true;
         HUD.GetComponent<Canvas>().enabled = false;
         openMenu.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
@@ -92,10 +90,8 @@ public class UI : MonoBehaviour {
     }
     public void CloseMenu()
     {
-        camera.cameraEnabled = true;
         inMenu = false;
         HUD.GetComponent<Canvas>().enabled = true;
-        inMenu = false;
         openMenu.SetActive(false);
         Time.timeScale = 1;
         Cursor.visible = false;
