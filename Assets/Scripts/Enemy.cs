@@ -50,6 +50,7 @@ public class Enemy : MonoBehaviour
     bool alreadyAttacked = false;
 
     bool jumping = false;
+    bool once = false;
 
     IEnumerator knockCoroutine;
 
@@ -100,7 +101,6 @@ public class Enemy : MonoBehaviour
         //    }
         //}
         UpdateHealthBar();
-        
     }
     void Jump()
     {
@@ -114,56 +114,35 @@ public class Enemy : MonoBehaviour
     }
     IEnumerator WaitUntilLanded()
     {
-        Vector3 endPos = agent.currentOffMeshLinkData.endPos;
         Vector3 startPos = agent.currentOffMeshLinkData.startPos;
-        bool down = startPos.y - endPos.y > 2;
-        //float velY = Mathf.Sqrt(2 * -Physics.gravity.y * (endPos.y+0.5f - startPos.y));
-        //float velY = (endPos.y-(startPos.y*1)+(1/2*Physics.gravity.y*Mathf.Pow(1, 2)))/1*2;
-        float velY;
-        float velX;
-        float velZ;
-        if (down)
+        Vector3 endPos = agent.currentOffMeshLinkData.endPos;
+        bool down = startPos.y > endPos.y;
+        transform.position = new Vector3(startPos.x, transform.position.y, startPos.z);
+        float distance = Mathf.Sqrt(Mathf.Pow(startPos.x - endPos.x, 2) + Mathf.Pow(startPos.z - endPos.z, 2));
+        float extraHeight = 0.083333f + distance/10;
+        float height = endPos.y - startPos.y + extraHeight;
+        float angle = Mathf.Rad2Deg * Mathf.Atan(height / distance);
+        float timeUp;
+        float timeDown;
+        if (angle < 0)
         {
-            velY = 0;
-            velX = (endPos.x - transform.position.x);
-            velZ = (endPos.z - transform.position.z);
-            Debug.Log(velX);
+            timeUp = Mathf.Sqrt((2 * -height) / -Physics.gravity.y);
+            timeDown = Mathf.Sqrt((2 * extraHeight) / -Physics.gravity.y);
         }
         else
         {
-            velY = Mathf.Sqrt(2 * -Physics.gravity.y * (endPos.y+1f - startPos.y));
-            velX = (endPos.x - transform.position.x);
-            velZ = (endPos.z - transform.position.z);
-            Debug.Log(velX);
-
+            timeUp = Mathf.Sqrt((2 * height) / -Physics.gravity.y);
+            timeDown = Mathf.Sqrt((2 * extraHeight) / -Physics.gravity.y);
         }
-        //velY = 2 * (endPos.y + 1f - startPos.y) / 1;
-        //Debug.Log(velY);
-        //float velY = Mathf.Sqrt(-2 * Mathf.Abs(endPos.y - startPos.y + 0.5f) * -9.81f);
-        //float velX = 0;
-        //float velZ = 0;
-
+        float time = timeUp + timeDown;
         jumping = true;
         rb.isKinematic = false;
         agent.enabled = false;
-        if (down)
-        {
-            while (Physics.Raycast(transform.position, -Vector3.up, 1 + 0.1f))
-            {
-                rb.velocity = new Vector3(velX, velY, velZ);
-
-                yield return new WaitForEndOfFrame();
-            }
-        }
-        else
-        {
-            rb.velocity = new Vector3(velX, velY, velZ);
-        }
-        //Debug.Log(Mathf.Sqrt(-2 * (endPos.y - startPos.y + 0.5f) * -9.81f));
-        //Debug.Log(2 * (endPos.y + 500 - startPos.y) * Physics.gravity.y);
-        //rb.AddForce(((endPos-transform.position).normalized * 80) + (Vector3.up * 120), ForceMode.Impulse);
+        float horizontalVelocity = distance;
+        float velocityY = (height / time) + (-Physics.gravity.y * time/2);
+        Vector3 velocity = (endPos-startPos).normalized;
+        rb.velocity = new Vector3((velocity.x * distance) / timeUp, velocityY, (velocity.z * distance) / timeUp);
         yield return new WaitForSeconds(0.1f);
-
         yield return new WaitUntil(() => Physics.Raycast(transform.position, -Vector3.up, 1 + 0.1f));
         jumping = false;
         rb.isKinematic = true;

@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] GameObject player;
+    [SerializeField] float timeScale;
 
     public static Vector3 spawnLocation = new Vector3(0, 100, 0);
 
@@ -12,6 +13,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = timeScale;
         playerHealth = player.GetComponent<Health>();
         SaveData data = SaveSystem.ReadSave();
         if (data != null)
