@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     public float throwForce;
     public float throwDamage;
     public float throwStartDistance;
+    public float throwKnockback;
     public float pickupDistance;
     public float dotProductLimit;
 
@@ -43,14 +44,13 @@ public class Player : MonoBehaviour
 
     [Header("Bullet Stats")]
 
-    public float bulletSpeed;
-    public float bulletSize;
-    public float attackSpeed;
-    public float bulletSpread;
-    public float bulletKnockback;
-    public int bulletsPerTap; // burst
-    public int bulletsPerShot; // shotgun
-    public int bulletDamage;
-    public bool allowHold;
+    public float bulletSpeedMultiplier;
+    public float bulletSizeMultiplier;
+    public float attackSpeedMultiplier;
+    public float bulletSpreadMultiplier;
+    public float bulletKnockbackMultiplier;
+    public int bulletsPerTapMultiplier; // burst
+    public int bulletsPerShotMultiplier; // shotgun
+    public int bulletDamageMultiplier;
 
 }

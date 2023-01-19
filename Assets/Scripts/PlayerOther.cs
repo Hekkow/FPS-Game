@@ -97,13 +97,13 @@ public class PlayerOther : MonoBehaviour
             {
                 Transform item = rightHandLocation.GetChild(0);
                 item.parent = leftHandLocation;
-                Helper.ToggleComponent<Gun>(item.gameObject, true);
+                Helper.ToggleComponent<Shoot>(item.gameObject, true);
             }
             if (leftHandLocation.childCount > 0)
             {
                 Transform item = leftHandLocation.GetChild(0);
                 item.parent = rightHandLocation;
-                Helper.ToggleComponent<Gun>(item.gameObject, true);
+                Helper.ToggleComponent<Shoot>(item.gameObject, true);
                 
 
             }
@@ -128,7 +128,7 @@ public class PlayerOther : MonoBehaviour
         if (hand == Inventory.Hand.Left) item = leftHandLocation.GetChild(0);
         else item = rightHandLocation.GetChild(0);
         Helper.MakePhysical(item.gameObject, true);
-        Helper.ToggleComponent<Gun>(item.gameObject, false);
+        Helper.ToggleComponent<Shoot>(item.gameObject, false);
         Helper.ToggleComponent<Animator>(item.gameObject, false);
         item.transform.localScale *= 2;
         item.parent = GameObject.Find("Objects").transform;
@@ -146,7 +146,7 @@ public class PlayerOther : MonoBehaviour
         item.transform.localScale /= 2;
         Helper.ApplyLayerToChildren(item.gameObject, "Weapon");
         Inventory.ReplaceHand(item.gameObject, hand);
-        Helper.ToggleComponent<Gun>(item.gameObject, true);
+        Helper.ToggleComponent<Shoot>(item.gameObject, true);
         Helper.ToggleComponent<Animator>(item.gameObject, true);
         Destroy(item);
     }
@@ -163,7 +163,7 @@ public class PlayerOther : MonoBehaviour
         }
         Drop(hand);
         CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
-        Helper.AddDamage(item, player.throwDamage, player.bulletKnockback, true, true);
+        Helper.AddDamage(item, player.throwDamage, player.throwKnockback, true, true);
         throwCooldown = true;
     }
     Pickup GetClosest()

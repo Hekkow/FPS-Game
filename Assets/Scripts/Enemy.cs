@@ -1,8 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -57,7 +54,14 @@ public class Enemy : MonoBehaviour
 
     bool alreadyAttacked = false;
 
-    bool jumping = false;
+    public bool jumping = false;
+
+    public float startedTime = 0;
+    public float currentTime;
+    public Vector3 velo;
+    public bool here;
+    public bool falling;
+    public float fallingVelocity;
 
     IEnumerator knockCoroutine;
 
@@ -72,12 +76,15 @@ public class Enemy : MonoBehaviour
         camera = Camera.main;
         agent = GetComponent<NavMeshAgent>();
         agent.autoTraverseOffMeshLink = false;
+        //agent.avoidancePriority = Random.Range(1, 99);
         //agent.updateRotation = false;
 
         
     }
     void Update()
     {
+        
+        //currentTime = Time.time;
         if (!agent.isOnOffMeshLink && !jumping)
         {
             agent.SetDestination(player.transform.position);
@@ -90,10 +97,14 @@ public class Enemy : MonoBehaviour
                 StartCoroutine(Jump());
             }
         }
-        //if (!health.alive)
+        if (!health.alive)
+        {
+            Died();
+            return;
+        }
+        //if (Time.time > 1 && agent.velocity.magnitude < float.Epsilon && agent.hasPath)
         //{
-        //    Died();
-        //    return;
+        //    Debug.Log(gameObject.name + " is STUCK");
         //}
         //Vision();
         //if (!knocked)
@@ -104,9 +115,48 @@ public class Enemy : MonoBehaviour
         //    }
         //}
         UpdateHealthBar();
+        velo = rb.velocity;
+        //if (jumping && rb.velocity.magnitude < 0.5f && currentTime - startedTime > 3)
+        //{
+        //    agent.velocity -= new Vector3(0, 5, 0);
+        //    rb.velocity -= new Vector3(0, 1000, 0);
+        //    here = true;
+
+        //}
+        //else
+        //{
+        //    here = false;
+        //}
+    }
+
+
+
+
+
+
+
+
+
+    IEnumerator Fall(float time)
+    {
+        fallingVelocity = 0;
+        while (!Physics.Raycast(transform.position, -Vector3.up, enemyHeight + groundHeight))
+        {
+            if (Time.time - time > 3)
+            {
+                fallingVelocity -= gravity / 10;
+                rb.velocity = new Vector3(0, fallingVelocity, 0);
+                agent.velocity = new Vector3(0, fallingVelocity, 0);
+
+
+            }
+            yield return new WaitForSeconds(0.1f);
+        }
+        fallingVelocity = 0;
     }
     IEnumerator Jump()
     {
+        float startTime = Time.time;
         Vector3 startPos = agent.currentOffMeshLinkData.startPos;
         Vector3 endPos = agent.currentOffMeshLinkData.endPos;
         // controlled by rigidbody now
@@ -115,11 +165,20 @@ public class Enemy : MonoBehaviour
         agent.enabled = false;
 
         // move towards starting location
+
         Vector3 velocityToStart = (startPos - transform.position).normalized * agent.speed;
         float distanceToStart = Mathf.Sqrt(Mathf.Pow(startPos.x - transform.position.x, 2) + Mathf.Pow(startPos.z - transform.position.z, 2));
         float timeToStart = distanceToStart / agent.speed;
         rb.velocity = new Vector3(velocityToStart.x, 0, velocityToStart.z);
         yield return new WaitForSeconds(timeToStart);
+
+        //while (Vector3.Distance(transform.position, startPos) > 1)
+        //{
+        //    Vector3 velocityToStart = (startPos - transform.position).normalized * agent.speed;
+        //    rb.velocity = new Vector3(velocityToStart.x, 0, velocityToStart.z);
+        //    yield return new WaitForEndOfFrame();
+        //}
+
         rb.velocity = Vector3.zero;
 
 
@@ -159,13 +218,47 @@ public class Enemy : MonoBehaviour
         }
         // wait until landed
         yield return new WaitForSeconds(timeBeforeGroundCheck);
+        //while (!Physics.Raycast(transform.position, -Vector3.up, enemyHeight + groundHeight))
+        //{
+        //    if (Time.time - startTime > 3 && rb.velocity.magnitude < 0.1f && agent.velocity.magnitude < 0.1f)
+        //    {
+        //        Debug.Log(gameObject.name + " " + rb.velocity + " " + agent.velocity);
+        //        rb.velocity -= new Vector3(0, 100f, 0);
+        //    }
+        //    yield return new WaitForEndOfFrame();
+        //}
+        StartCoroutine(Fall(Time.time));
         yield return new WaitUntil(() => Physics.Raycast(transform.position, -Vector3.up, enemyHeight + groundHeight));
+        //if (Time.time - startTime > 3)
+        //{
+        //    //rb.isKinematic = true;
+        //    //rb.isKinematic = false;
+        //    //agent.enabled = true;
+        //    //agent.enabled = false;
+        //    rb.velocity -= new Vector3(0, -100f, 0);
+        //    yield return new WaitUntil(() => Physics.Raycast(transform.position, -Vector3.up, enemyHeight + groundHeight));
+        //}
         // reset
+        
         jumping = false;
         rb.isKinematic = true;
         agent.enabled = true;
         agent.CompleteOffMeshLink();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     void Vision()
     {
         bool playerDetected;
@@ -219,6 +312,8 @@ public class Enemy : MonoBehaviour
     }
     void Died()
     {
+        Destroy(agent);
+        rb.isKinematic = false;
         rb.constraints = RigidbodyConstraints.None;
         rb.velocity = Vector3.zero;
         rb.mass = ragdollMass; // ragbody haha
@@ -226,6 +321,8 @@ public class Enemy : MonoBehaviour
         healthText.enabled = false;
         transform.Rotate(0, 0, 90); // flop haha
         gameObject.AddComponent<Pickup>();
+        
+        gameObject.AddComponent<NavMeshObstacle>();
         Destroy(instantiatedAnimation);
         Destroy(this);
     }

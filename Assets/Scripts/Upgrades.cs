@@ -64,7 +64,7 @@ public class Upgrades : MonoBehaviour
     public void AttackSpeed()
     {
         playerUpgrades.Add(attackSpeedUpgrade);
-        player.attackSpeed *= 2;
+        player.attackSpeedMultiplier *= 2;
     }
     public void DoubleHealth()
     {

@@ -43,8 +43,8 @@ public static class Inventory
     }
     public static bool HasGun(Hand hand)
     {
-        if (hand == Hand.Left && HoldingItem(Hand.Left) && leftHand.GetComponent<Gun>() != null) return true;
-        if (hand == Hand.Right && HoldingItem(Hand.Right) && rightHand.GetComponent<Gun>() != null) return true;
+        if (hand == Hand.Left && HoldingItem(Hand.Left) && leftHand.GetComponent<Shoot>() != null) return true;
+        if (hand == Hand.Right && HoldingItem(Hand.Right) && rightHand.GetComponent<Shoot>() != null) return true;
         return false;
     }
     public static void SwitchHands()

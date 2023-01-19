@@ -834,7 +834,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1950337196}
   m_RootOrder: 1
@@ -2092,6 +2092,7 @@ MonoBehaviour:
   throwForce: 30
   throwDamage: 20
   throwStartDistance: 1.5
+  throwKnockback: 0
   pickupDistance: 4
   dotProductLimit: 0.8
   speed: 300
@@ -2108,15 +2109,14 @@ MonoBehaviour:
   groundDistance: 0.3
   playerHeight: 2
   maxSlopeAngle: 45
-  bulletSpeed: 100
-  bulletSize: 5
-  attackSpeed: 1
-  bulletSpread: 0
-  bulletKnockback: 500
-  bulletsPerTap: 1
-  bulletsPerShot: 1
-  bulletDamage: 34
-  allowHold: 1
+  bulletSpeedMultiplier: 1
+  bulletSizeMultiplier: 1
+  attackSpeedMultiplier: 1
+  bulletSpreadMultiplier: 1
+  bulletKnockbackMultiplier: 1
+  bulletsPerTapMultiplier: 1
+  bulletsPerShotMultiplier: 1
+  bulletDamageMultiplier: 1
 --- !u!136 &283433912
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4764,6 +4764,7 @@ MonoBehaviour:
   upgrades: {fileID: 283433906}
   input: {fileID: 784729602}
   player: {fileID: 283433911}
+  gun: {fileID: 11400000, guid: 6753d965e69c15a4386e9384054b09dd, type: 2}
 --- !u!1 &670678620
 GameObject:
   m_ObjectHideFlags: 0
@@ -11760,6 +11761,7 @@ MonoBehaviour:
   upgrades: {fileID: 283433906}
   input: {fileID: 784729602}
   player: {fileID: 283433911}
+  gun: {fileID: 11400000, guid: 6753d965e69c15a4386e9384054b09dd, type: 2}
 --- !u!1 &1672072112
 GameObject:
   m_ObjectHideFlags: 0
@@ -13503,6 +13505,7 @@ MonoBehaviour:
   upgrades: {fileID: 283433906}
   input: {fileID: 784729602}
   player: {fileID: 283433911}
+  gun: {fileID: 11400000, guid: c78498742a66fe1459d9992fcaabb9a7, type: 2}
 --- !u!54 &1950337192
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -13573,7 +13576,7 @@ Transform:
   m_GameObject: {fileID: 1950337190}
   m_LocalRotation: {x: -0.06822023, y: -0.5477047, z: 0.10306954, w: 0.8274916}
   m_LocalPosition: {x: 2.22, y: 3.66, z: 1.41}
-  m_LocalScale: {x: 0.040000003, y: 0.04, z: 0.040000014}
+  m_LocalScale: {x: 0.04, y: 0.04, z: 0.04}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1708730845}
