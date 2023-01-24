@@ -5,7 +5,7 @@ using UnityEngine;
 public class Shoot : MonoBehaviour
 {
     [Header("Objects")]
-    [SerializeField] Upgrades upgrades;
+    [SerializeField] UpgradeManager upgrades;
     [SerializeField] InputManager input;
     Animator shootAnimator;
 
@@ -23,6 +23,7 @@ public class Shoot : MonoBehaviour
     //public bool allowHold;
 
     public Gun gun;
+    public Upgrade test;
 
     Transform attackPoint;
     

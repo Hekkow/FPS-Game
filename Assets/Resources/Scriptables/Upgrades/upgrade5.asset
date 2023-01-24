@@ -9,17 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 461cca08b6f8d6d43a2f2bf479c7e145, type: 3}
-  m_Name: Shotgun
+  m_Script: {fileID: 11500000, guid: f1dd6f8bd7e642c4dba209ad88187f04, type: 3}
+  m_Name: upgrade5
   m_EditorClassIdentifier: 
-  name: shot
-  description: sgun
-  bulletSpeed: 100
-  bulletSize: 2
-  attackSpeed: 1
-  bulletSpread: 2
-  bulletKnockback: 30
-  bulletsPerTap: 1
-  bulletsPerShot: 10
-  bulletDamage: 10
-  allowHold: 1
+  name: upgrade5
+  description: upgrade5
+  category: 1
+  sprite: upgrade5
+  functionName: upgrade5

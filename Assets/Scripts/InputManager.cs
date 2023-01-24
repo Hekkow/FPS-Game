@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
@@ -27,10 +28,8 @@ public class InputManager : MonoBehaviour
         escape = Input.GetButtonDown("Pause");
         if (!UI.inMenu)
         {
-            movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-            look = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
-            jump = Input.GetButton("Jump");
-            jumpDown = Input.GetButtonDown("Jump");
+            //movement = m_con
+            //movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
             leftMouse = Input.GetKey(KeyCode.Mouse0);
             leftMouseDown = Input.GetKeyDown(KeyCode.Mouse0);
             rightMouse = Input.GetKey(KeyCode.Mouse1);
@@ -43,5 +42,18 @@ public class InputManager : MonoBehaviour
         }
 
     }
-
+    void OnLook(InputValue value)
+    {
+        if (!UI.inMenu)
+        {
+            look = value.Get<Vector2>();
+        }
+    }
+    void OnJump(InputValue value)
+    {
+        if (!UI.inMenu)
+        {
+            jump = value.Get<bool>();
+        }
+    }
 }

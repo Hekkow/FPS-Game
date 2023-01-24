@@ -18,7 +18,7 @@ MonoBehaviour:
   bulletSize: 7
   attackSpeed: 1.5
   bulletSpread: 0
-  bulletKnockback: 20
+  bulletKnockback: 5000
   bulletsPerTap: 1
   bulletsPerShot: 1
   bulletDamage: 34

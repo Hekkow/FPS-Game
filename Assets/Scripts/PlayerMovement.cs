@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -11,7 +13,11 @@ public class PlayerMovement : MonoBehaviour
     Vector3 direction;
     bool grounded;
     float gravity;
-    int jumps = 0;
+    int jumps = 1;
+    PlayerInputAction playerInput;
+    InputAction movementInput;
+    bool jumpHeld = false;
+    bool canJump = true;
 
     void Awake()
     {
@@ -21,6 +27,25 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         groundMask = LayerMask.GetMask("Ground");
+        playerInput = new PlayerInputAction();
+        Debug.Log(player.gravityUp);
+        Debug.Log(player.gravityDown);
+
+    }
+    void OnEnable()
+    {
+        movementInput = playerInput.Player.Move;
+        movementInput.Enable();
+
+        playerInput.Player.Jump.performed += JumpPressed;
+        playerInput.Player.Jump.canceled += NotJumpPressed;
+        playerInput.Player.Jump.Enable();
+
+    }
+    void OnDisable()
+    {
+        movementInput.Disable();
+        playerInput.Player.Jump.Disable();
     }
 
 
@@ -32,52 +57,46 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         grounded = Physics.CheckSphere(groundCheck.position, player.groundDistance, groundMask);
-
-        // if either grounded or still has more jumps left
-        if (grounded && !input.jump)
+        if (jumpHeld)
         {
-            gravity = 0;
-            jumps = 0;
+            if (canJump && (grounded || OnSlope() || jumps < player.maxJumps))
+            {
+                Jump();
+            }
         }
-
-        // resets if grounded
-        if (input.jumpDown && (grounded || OnSlope() || jumps < player.maxJumps))
-        {
-            Jump();
-        }
-
-        // for jumping, if going up then gravity is lower, if going down then gravity is higher
-
-        if (rb.velocity.y < 0 || !input.jump)
-        {
-            gravity = player.gravityDown;
-        }
-        else
-        {
-            gravity = player.gravityUp;
-        }
-
-        AdjustDrag();
+        
         SpeedControl();
         ApplyGravity();
     }
-
     void Jump()
     {
-        rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+        //Debug.Log(transform.up * player.jumpForce);
+        rb.velocity = new Vector3(0, 0, 0);
+        //rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
         rb.AddForce(transform.up * player.jumpForce, ForceMode.Impulse);
         jumps++;
+        StartCoroutine(ResetJump());
     }
-    void AdjustDrag()
+    void JumpPressed(InputAction.CallbackContext obj)
     {
-        if (grounded)
-        {
-            rb.drag = player.groundDrag;
-        }
-        else
-        {
-            rb.drag = player.airDrag;
-        }
+        jumpHeld = true;
+        
+       
+    }
+    void NotJumpPressed(InputAction.CallbackContext obj)
+    {
+        jumpHeld = false;
+
+    }
+    IEnumerator ResetJump()
+    {
+        canJump = false;
+        rb.drag = player.airDrag;
+        yield return new WaitForSeconds(0.3f);
+        yield return new WaitUntil(() => grounded);
+        rb.drag = player.groundDrag;
+        canJump = true;
+        jumps = 0;
     }
 
     void SpeedControl()
@@ -97,7 +116,7 @@ public class PlayerMovement : MonoBehaviour
         bool sloped = OnSlope();
         if (sloped)
         {
-            if (moveInput.y == 0 && moveInput.x == 0 && !input.jump)
+            if (moveInput.y == 0 && moveInput.x == 0 && jumpHeld)
             {
                 rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
                 rb.velocity = new Vector3(0, 0, 0);
@@ -128,7 +147,24 @@ public class PlayerMovement : MonoBehaviour
 
     void ApplyGravity()
     {
+        
+        if (rb.velocity.y > player.gravitySwitchY)
+        {
+            gravity = player.gravityUp;
+            //Debug.Log(player.gravityUp);
+            //Debug.Log(gravity);
+        }
+        else
+        {
+            gravity = player.gravityDown;
+        }
+        if (jumpHeld)
+        {
+            gravity /= player.gravityJumpHeld;
+        }
+        Debug.Log(gravity);
         rb.velocity += new Vector3(0, -1 * (gravity * Time.deltaTime), 0);
+        Debug.Log(new Vector3(0, -1 * (gravity * Time.deltaTime), 0));
     }
 
     bool OnSlope()

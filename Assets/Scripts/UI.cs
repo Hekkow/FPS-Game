@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Diagnostics.Tracing;
 
 public class UI : MonoBehaviour {
     [SerializeField] GameObject player;
@@ -10,10 +11,10 @@ public class UI : MonoBehaviour {
     [SerializeField] GameObject upgradeBox;
     [SerializeField] GameObject pauseMenu;
     InputManager input;
-    Upgrades upgrades;
+    UpgradeManager upgrades;
     GameObject openMenu;
     GameObject HUD;
-    PlayerCamera camera;
+    new PlayerCamera camera;
 
     [HideInInspector] public static bool inMenu = false;
 
@@ -21,7 +22,7 @@ public class UI : MonoBehaviour {
     {
         camera = player.GetComponentInChildren<PlayerCamera>();
         input = gameManager.AddComponent<InputManager>();
-        upgrades = player.GetComponent<Upgrades>();
+        upgrades = player.GetComponent<UpgradeManager>();
         HUD = GameObject.Find("HUD");
     }
     
@@ -47,21 +48,18 @@ public class UI : MonoBehaviour {
         if (menu == "upgrade") {
             openMenu = upgradeMenu;
             Transform panel = openMenu.transform;
-            List<Upgrade> upgradeCategory;
-            if (category == "defense") upgradeCategory = upgrades.defenseUpgrades;
-            else upgradeCategory = upgrades.allUpgrades;
+            List<Upgrade> randomUpgrades = upgrades.GetRandomFromCategory(3);
             for (int i = 0; i < panel.childCount; i++) // get rid of any upgrade boxes that might be there already
             {
                 GameObject.Destroy(panel.GetChild(i).gameObject);
             }
             for (int i = 0; i < 3; i++)
             {
-                Upgrade upgrade = upgradeCategory[Random.Range(0, upgradeCategory.Count)];
                 GameObject upgradeBox = Instantiate(Resources.Load<GameObject>("Prefabs/UpgradeBox"), panel);
-                upgradeBox.transform.Find("Name").GetComponent<TMP_Text>().text = upgrade.name;
-                upgradeBox.transform.Find("Description").GetComponent<TMP_Text>().text = upgrade.description;
+                upgradeBox.transform.Find("Name").GetComponent<TMP_Text>().text = randomUpgrades[i].name;
+                upgradeBox.transform.Find("Description").GetComponent<TMP_Text>().text = randomUpgrades[i].description;
                 Button button = upgradeBox.GetComponent<Button>();
-                button.onClick.AddListener(delegate{upgrades.Invoke(upgrade.name.Replace(" ", ""), 0);});
+                button.onClick.AddListener(delegate { upgrades.Invoke(randomUpgrades[i].functionName, 0); });
                 button.onClick.AddListener(CloseMenu);
             }
         }

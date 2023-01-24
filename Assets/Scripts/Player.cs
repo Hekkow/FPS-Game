@@ -26,6 +26,7 @@ public class Player : MonoBehaviour
 
     public float gravityUp;
     public float gravityDown;
+    public float gravityJumpHeld;
     public float jumpForce;
     public float gravitySwitchY;
     public int maxJumps;

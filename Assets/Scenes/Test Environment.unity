@@ -799,7 +799,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 87328713}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.566, y: -0.311, z: 0}
+  m_LocalPosition: {x: 0.566, y: -0.311, z: 1}
   m_LocalScale: {x: 0.029999996, y: 0.030000007, z: 0.030000003}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1675,7 +1675,7 @@ GameObject:
   m_Component:
   - component: {fileID: 260626687}
   - component: {fileID: 260626688}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: HeadCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1998,7 +1998,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 283433901}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20.1, y: 45.8, z: 20.8}
+  m_LocalPosition: {x: 9.7, y: 3.6, z: 4.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2062,7 +2062,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e82c4cc23c0a0843bf8c34a06d98ea5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxUpgrades: 3
+  allUpgrades: []
 --- !u!114 &283433908
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2088,11 +2088,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26667d645d195ff458fae655606a7b20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensitivity: 150
+  sensitivity: 7
   throwForce: 30
   throwDamage: 20
   throwStartDistance: 1.5
-  throwKnockback: 0
+  throwKnockback: 10
   pickupDistance: 4
   dotProductLimit: 0.8
   speed: 300
@@ -2101,7 +2101,8 @@ MonoBehaviour:
   airDrag: 0
   gravityUp: 30
   gravityDown: 60
-  jumpForce: 35
+  gravityJumpHeld: 2
+  jumpForce: 20
   gravitySwitchY: 1
   maxJumps: 1
   maxUpgrades: 3
@@ -4765,6 +4766,7 @@ MonoBehaviour:
   input: {fileID: 784729602}
   player: {fileID: 283433911}
   gun: {fileID: 11400000, guid: 6753d965e69c15a4386e9384054b09dd, type: 2}
+  test: {fileID: 0}
 --- !u!1 &670678620
 GameObject:
   m_ObjectHideFlags: 0
@@ -6191,6 +6193,7 @@ GameObject:
   - component: {fileID: 784729602}
   - component: {fileID: 784729605}
   - component: {fileID: 784729604}
+  - component: {fileID: 784729606}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -6289,6 +6292,36 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
+--- !u!114 &784729606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784729599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 0f5e472f5bd792b45a8fd1a768eded4d, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &799281940
 GameObject:
   m_ObjectHideFlags: 0
@@ -11762,6 +11795,7 @@ MonoBehaviour:
   input: {fileID: 784729602}
   player: {fileID: 283433911}
   gun: {fileID: 11400000, guid: 6753d965e69c15a4386e9384054b09dd, type: 2}
+  test: {fileID: 0}
 --- !u!1 &1672072112
 GameObject:
   m_ObjectHideFlags: 0
@@ -12178,7 +12212,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1716420589}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.566, y: -0.311, z: 0}
+  m_LocalPosition: {x: -0.566, y: -0.311, z: 1}
   m_LocalScale: {x: 0.029999996, y: 0.030000007, z: 0.030000003}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13506,6 +13540,7 @@ MonoBehaviour:
   input: {fileID: 784729602}
   player: {fileID: 283433911}
   gun: {fileID: 11400000, guid: c78498742a66fe1459d9992fcaabb9a7, type: 2}
+  test: {fileID: 0}
 --- !u!54 &1950337192
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -15289,6 +15324,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 54496071783840358, guid: 2234ea81e18494141a2a25c3f98da191, type: 3}
       propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 54496071783840358, guid: 2234ea81e18494141a2a25c3f98da191, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
