@@ -2101,10 +2101,10 @@ MonoBehaviour:
   airDrag: 0
   gravityUp: 30
   gravityDown: 60
-  gravityJumpHeld: 2
+  gravityJumpHeld: 1.5
   jumpForce: 20
   gravitySwitchY: 1
-  maxJumps: 1
+  maxJumps: 4
   maxUpgrades: 3
   dashForce: 0
   groundDistance: 0.3

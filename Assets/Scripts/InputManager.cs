@@ -29,7 +29,7 @@ public class InputManager : MonoBehaviour
         if (!UI.inMenu)
         {
             //movement = m_con
-            //movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+            movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
             leftMouse = Input.GetKey(KeyCode.Mouse0);
             leftMouseDown = Input.GetKeyDown(KeyCode.Mouse0);
             rightMouse = Input.GetKey(KeyCode.Mouse1);
@@ -41,19 +41,5 @@ public class InputManager : MonoBehaviour
             punch = Input.GetButtonDown("Punch");
         }
 
-    }
-    void OnLook(InputValue value)
-    {
-        if (!UI.inMenu)
-        {
-            look = value.Get<Vector2>();
-        }
-    }
-    void OnJump(InputValue value)
-    {
-        if (!UI.inMenu)
-        {
-            jump = value.Get<bool>();
-        }
     }
 }

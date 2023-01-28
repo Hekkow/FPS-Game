@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     bool grounded;
     float gravity;
     int jumps = 1;
+    
     PlayerInputAction playerInput;
     InputAction movementInput;
     bool jumpHeld = false;
@@ -28,8 +29,7 @@ public class PlayerMovement : MonoBehaviour
         rb.freezeRotation = true;
         groundMask = LayerMask.GetMask("Ground");
         playerInput = new PlayerInputAction();
-        Debug.Log(player.gravityUp);
-        Debug.Log(player.gravityDown);
+        rb.drag = player.groundDrag;
 
     }
     void OnEnable()
@@ -42,62 +42,62 @@ public class PlayerMovement : MonoBehaviour
         playerInput.Player.Jump.Enable();
 
     }
-    void OnDisable()
-    {
-        movementInput.Disable();
-        playerInput.Player.Jump.Disable();
-    }
 
 
     void FixedUpdate()
     {
         Move();
+        if (jumpHeld)
+        {
+            if (canJump)
+            {
+                Jump();
+                canJump = false;
+            }
+        }
     }
 
     void Update()
     {
         grounded = Physics.CheckSphere(groundCheck.position, player.groundDistance, groundMask);
-        if (jumpHeld)
-        {
-            if (canJump && (grounded || OnSlope() || jumps < player.maxJumps))
-            {
-                Jump();
-            }
-        }
         
         SpeedControl();
         ApplyGravity();
     }
     void Jump()
     {
-        //Debug.Log(transform.up * player.jumpForce);
-        rb.velocity = new Vector3(0, 0, 0);
-        //rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-        rb.AddForce(transform.up * player.jumpForce, ForceMode.Impulse);
-        jumps++;
+        StopCoroutine(ResetJump());
         StartCoroutine(ResetJump());
     }
     void JumpPressed(InputAction.CallbackContext obj)
     {
         jumpHeld = true;
-        
-       
     }
     void NotJumpPressed(InputAction.CallbackContext obj)
     {
         jumpHeld = false;
 
     }
-    IEnumerator ResetJump()
-    {
-        canJump = false;
-        rb.drag = player.airDrag;
-        yield return new WaitForSeconds(0.3f);
-        yield return new WaitUntil(() => grounded);
-        rb.drag = player.groundDrag;
-        canJump = true;
-        jumps = 0;
+IEnumerator ResetJump()
+{
+    jumps++;
+    canJump = false;
+    rb.drag = player.airDrag;
+    rb.velocity = new Vector3(0, 0, 0);
+    rb.AddForce(transform.up * player.jumpForce, ForceMode.Impulse);
+    yield return new WaitForSeconds(0.1f);
+    while (jumpHeld && !grounded) {
+        yield return new WaitForEndOfFrame();
     }
+    if (jumps < player.maxJumps)
+    {
+        canJump = true;
+    }
+    yield return new WaitUntil(() => grounded);
+    rb.drag = player.groundDrag;
+    canJump = true;
+    jumps = 0;
+}
 
     void SpeedControl()
     {
@@ -113,36 +113,49 @@ public class PlayerMovement : MonoBehaviour
     {
 
         Vector2 moveInput = input.movement;
-        bool sloped = OnSlope();
-        if (sloped)
+        Debug.Log(moveInput);
+        //direction = transform.forward * moveInput.y + transform.right * moveInput.x;
+        //rb.AddForce(direction.normalized * player.speed, ForceMode.Force);
+
+        //Vector2 moveInput = movementInput.ReadValue<Vector2>();
+
+        //Debug.Log(moveInput);
+        //bool sloped = OnSlope();
+        //if (moveInput.x == 0 && moveInput.y == 0)
+        //{
+        //    rb.velocity = new Vector3(0, rb.velocity.y, 0);
+        //}
+        //if (sloped)
+        //{
+        //    if (moveInput.y == 0 && moveInput.x == 0 && !jumpHeld)
+        //    {
+        //        rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+        //        rb.velocity = new Vector3(0, 0, 0);
+        //    }
+        //    else
+        //    {
+        //        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+        //        Vector3 slopeMoveDirection = Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
+        //        rb.AddForce(slopeMoveDirection * player.speed, ForceMode.Force);
+        //    }
+        //    rb.AddForce(Vector3.down * 80, ForceMode.Force);
+        //}
+        //else
+        //{
+        //    rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+        //}
+        if (moveInput.y == 0 && moveInput.x == 0 && !grounded) // && !sloped
         {
-            if (moveInput.y == 0 && moveInput.x == 0 && jumpHeld)
-            {
-                rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-                rb.velocity = new Vector3(0, 0, 0);
-            }
-            else
-            {
-                rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-                Vector3 slopeMoveDirection = Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
-                rb.AddForce(slopeMoveDirection * player.speed, ForceMode.Force);
-            }
-            rb.AddForce(Vector3.down * 80, ForceMode.Force);
-        }
-        else
-        {
-            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-        }
-        if (moveInput.y == 0 && moveInput.x == 0 && !grounded && !sloped)
-        {
-            direction = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-            rb.AddForce(direction.normalized * -(player.speed *0.5f), ForceMode.Force);
+            rb.velocity = new (0, rb.velocity.y, 0);
+            //direction = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            //rb.AddForce(direction.normalized * -(player.speed * 0.1f), ForceMode.Force);
         }
         else
         {
             direction = transform.forward * moveInput.y + transform.right * moveInput.x;
             rb.AddForce(direction.normalized * player.speed, ForceMode.Force);
         }
+        //Debug.Log(rb.velocity);
     }
 
     void ApplyGravity()
@@ -151,8 +164,6 @@ public class PlayerMovement : MonoBehaviour
         if (rb.velocity.y > player.gravitySwitchY)
         {
             gravity = player.gravityUp;
-            //Debug.Log(player.gravityUp);
-            //Debug.Log(gravity);
         }
         else
         {
@@ -162,9 +173,7 @@ public class PlayerMovement : MonoBehaviour
         {
             gravity /= player.gravityJumpHeld;
         }
-        Debug.Log(gravity);
         rb.velocity += new Vector3(0, -1 * (gravity * Time.deltaTime), 0);
-        Debug.Log(new Vector3(0, -1 * (gravity * Time.deltaTime), 0));
     }
 
     bool OnSlope()
