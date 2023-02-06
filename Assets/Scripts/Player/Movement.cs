@@ -14,11 +14,11 @@ public class Movement : MonoBehaviour
     float gravity;
     int jumps = 1;
     bool jumping;
-    
-    PlayerInputAction playerInput;
+    bool applyingGravity = true;
     InputAction movementInput;
     bool jumpHeld = false;
     bool canJump = true;
+    bool dashing = false;
 
     void Awake()
     {
@@ -27,24 +27,28 @@ public class Movement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         groundMask = LayerMask.GetMask("Ground");
-        playerInput = new PlayerInputAction();
         rb.drag = player.groundDrag;
 
     }
     void OnEnable()
     {
-        movementInput = playerInput.Player.Move;
+        movementInput = InputManager.playerInput.Player.Move;
         movementInput.Enable();
 
-        playerInput.Player.Jump.performed += JumpPressed;
-        playerInput.Player.Jump.canceled += NotJumpPressed;
-        playerInput.Player.Jump.Enable();
+        InputManager.playerInput.Player.Jump.performed += JumpPressed;
+        InputManager.playerInput.Player.Jump.canceled += NotJumpPressed;
+        InputManager.playerInput.Player.Jump.Enable();
+
+        InputManager.playerInput.Player.Dash.performed += Dash;
+        InputManager.playerInput.Player.Dash.Enable();
+
 
     }
     void OnDisable()
     {
         movementInput.Disable();
-        playerInput.Player.Jump.Disable();
+        InputManager.playerInput.Player.Jump.Disable();
+        InputManager.playerInput.Player.Dash.Disable();
     }
 
     void FixedUpdate()
@@ -65,7 +69,10 @@ public class Movement : MonoBehaviour
         grounded = Physics.CheckSphere(groundCheck.position, player.groundDistance, groundMask);
         DragControl();
         SpeedControl();
-        ApplyGravity();
+        if (applyingGravity)
+        {
+            ApplyGravity();
+        }
     }
     void Jump()
     {
@@ -86,6 +93,7 @@ public class Movement : MonoBehaviour
         jumping = true;
         jumps++;
         canJump = false;
+        dashing = false;
         rb.velocity = new Vector3(0, 0, 0);
         rb.AddForce(transform.up * player.jumpForce, ForceMode.Impulse);
         yield return new WaitForSeconds(0.1f);
@@ -168,14 +176,13 @@ public class Movement : MonoBehaviour
 
     void ApplyGravity()
     {
-        
         if (rb.velocity.y > player.gravitySwitchY)
         {
             gravity = player.gravityUp;
-            if (jumpHeld)
-            {
-                gravity /= player.gravityJumpHeld;
-            }
+            //if (jumpHeld)
+            //{
+            //    gravity /= player.gravityJumpHeld;
+            //}
         }
         else
         {
@@ -194,5 +201,47 @@ public class Movement : MonoBehaviour
         }
         return false;
     }
-    
+    void Dash(InputAction.CallbackContext obj)
+    {
+        StopCoroutine(StartDash());
+        StartCoroutine(StartDash());
+        //Vector3 dashDirection;
+        //Vector2 moveInput = movementInput.ReadValue<Vector2>();
+        //if (moveInput.x == 0 && moveInput.y == 0)
+        //    dashDirection = transform.forward;
+        //else
+        //{
+        //    dashDirection = transform.forward * moveInput.y + transform.right * moveInput.x;
+        //}
+        //rb.AddForce(dashDirection.normalized * 50, ForceMode.Impulse);
+        //rb.velocity = dashDirection.normalized * 500000;
+    }
+    IEnumerator StartDash()
+    {
+        Vector2 moveInput = movementInput.ReadValue<Vector2>();
+        dashing = true;
+        applyingGravity = false;
+        rb.useGravity = false;
+        rb.velocity = Vector3.zero;
+        Vector3 dashDirection;
+        if (moveInput.x == 0 && moveInput.y == 0)
+            dashDirection = transform.forward;
+        else
+        {
+            dashDirection = transform.forward * moveInput.y + transform.right * moveInput.x;
+        }
+        float timeStarted = Time.time;
+        while (Time.time - timeStarted < player.dashTime && dashing)
+        {
+            rb.AddForce(dashDirection.normalized * player.dashForce * Time.deltaTime, ForceMode.Force);
+            yield return new WaitForEndOfFrame();
+        }
+        //rb.velocity = dashDirection.normalized * 500000;
+        //Debug.Log(dashDirection.normalized * 100);
+
+        //yield return new WaitForSeconds(1f);
+        rb.useGravity = true;
+        applyingGravity = true;
+        dashing = false;
+    }
 }

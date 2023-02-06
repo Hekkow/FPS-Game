@@ -16,3 +16,6 @@ MonoBehaviour:
   description: doubles bullet speed
   sprite: bulletsped.jpeg
   functionName: BulletSpeed
+  maxAmount: 100
+  amount:
+  - 1.5

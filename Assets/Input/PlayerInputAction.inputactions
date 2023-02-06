@@ -33,18 +33,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ShootLeft",
+                    "name": "Shoot",
                     "type": "Button",
                     "id": "09220603-7607-41c3-b5c3-bb83345f711b",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "ShootRight",
-                    "type": "Button",
-                    "id": "cfc7f4a3-d526-4182-b97e-b0a7ae97e518",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -60,16 +51,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "InteractLeft",
-                    "type": "Button",
-                    "id": "f1a91d3a-8541-4344-b285-266859df0a09",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "InteractRight",
+                    "name": "Interact",
                     "type": "Button",
                     "id": "87de6b54-d79e-42ae-a1f1-da5151fdae43",
                     "expectedControlType": "Button",
@@ -78,9 +60,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Switch",
+                    "name": "Dash",
                     "type": "Button",
-                    "id": "fb5c4a24-1eb7-4329-ae8d-386dbed39172",
+                    "id": "477c1e92-6780-440c-897a-db3e2bd9dbe7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Console",
+                    "type": "Button",
+                    "id": "7f8c9a91-78ff-4f85-b828-af1caa2e680c",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -161,18 +152,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ShootLeft",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "670a230d-84ed-4718-aa94-1405cd52bd07",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ShootRight",
+                    "action": "Shoot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -184,17 +164,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Throw",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "7c157e13-afa2-4624-8347-6047ef13b1d7",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "InteractLeft",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -216,18 +185,57 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "InteractRight",
+                    "action": "Interact",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "8c56ef63-1bb0-48ce-aba3-59c3dfda2b97",
-                    "path": "<Keyboard>/g",
+                    "id": "ff9002f5-116d-4a3e-9549-06c3916c6b08",
+                    "path": "<Keyboard>/leftShift",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Switch",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "eb10d29f-c763-44c3-8c28-2d313796b103",
+                    "path": "<Keyboard>/slash",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Console",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "UI",
+            "id": "78da6820-a544-4d7b-afcf-ecc9cea09033",
+            "actions": [
+                {
+                    "name": "Execute",
+                    "type": "Button",
+                    "id": "b43d2f43-1ade-4647-acb0-2c62694feaf5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "2df3e5e4-a2b7-4760-91af-7ce70707ebb7",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Execute",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

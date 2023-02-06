@@ -55,18 +55,9 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""ShootLeft"",
+                    ""name"": ""Shoot"",
                     ""type"": ""Button"",
                     ""id"": ""09220603-7607-41c3-b5c3-bb83345f711b"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""ShootRight"",
-                    ""type"": ""Button"",
-                    ""id"": ""cfc7f4a3-d526-4182-b97e-b0a7ae97e518"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -82,16 +73,7 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""InteractLeft"",
-                    ""type"": ""Button"",
-                    ""id"": ""f1a91d3a-8541-4344-b285-266859df0a09"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""InteractRight"",
+                    ""name"": ""Interact"",
                     ""type"": ""Button"",
                     ""id"": ""87de6b54-d79e-42ae-a1f1-da5151fdae43"",
                     ""expectedControlType"": ""Button"",
@@ -100,9 +82,18 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Switch"",
+                    ""name"": ""Dash"",
                     ""type"": ""Button"",
-                    ""id"": ""fb5c4a24-1eb7-4329-ae8d-386dbed39172"",
+                    ""id"": ""477c1e92-6780-440c-897a-db3e2bd9dbe7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Console"",
+                    ""type"": ""Button"",
+                    ""id"": ""7f8c9a91-78ff-4f85-b828-af1caa2e680c"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -183,18 +174,7 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ShootLeft"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""670a230d-84ed-4718-aa94-1405cd52bd07"",
-                    ""path"": ""<Mouse>/rightButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ShootRight"",
+                    ""action"": ""Shoot"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -206,17 +186,6 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Throw"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""7c157e13-afa2-4624-8347-6047ef13b1d7"",
-                    ""path"": ""<Keyboard>/q"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""InteractLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -238,18 +207,57 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""InteractRight"",
+                    ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""8c56ef63-1bb0-48ce-aba3-59c3dfda2b97"",
-                    ""path"": ""<Keyboard>/g"",
+                    ""id"": ""ff9002f5-116d-4a3e-9549-06c3916c6b08"",
+                    ""path"": ""<Keyboard>/leftShift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Switch"",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""eb10d29f-c763-44c3-8c28-2d313796b103"",
+                    ""path"": ""<Keyboard>/slash"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Console"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""UI"",
+            ""id"": ""78da6820-a544-4d7b-afcf-ecc9cea09033"",
+            ""actions"": [
+                {
+                    ""name"": ""Execute"",
+                    ""type"": ""Button"",
+                    ""id"": ""b43d2f43-1ade-4647-acb0-2c62694feaf5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""2df3e5e4-a2b7-4760-91af-7ce70707ebb7"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Execute"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -263,12 +271,14 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
-        m_Player_ShootLeft = m_Player.FindAction("ShootLeft", throwIfNotFound: true);
-        m_Player_ShootRight = m_Player.FindAction("ShootRight", throwIfNotFound: true);
+        m_Player_Shoot = m_Player.FindAction("Shoot", throwIfNotFound: true);
         m_Player_Throw = m_Player.FindAction("Throw", throwIfNotFound: true);
-        m_Player_InteractLeft = m_Player.FindAction("InteractLeft", throwIfNotFound: true);
-        m_Player_InteractRight = m_Player.FindAction("InteractRight", throwIfNotFound: true);
-        m_Player_Switch = m_Player.FindAction("Switch", throwIfNotFound: true);
+        m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
+        m_Player_Console = m_Player.FindAction("Console", throwIfNotFound: true);
+        // UI
+        m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
+        m_UI_Execute = m_UI.FindAction("Execute", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -331,12 +341,11 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Jump;
-    private readonly InputAction m_Player_ShootLeft;
-    private readonly InputAction m_Player_ShootRight;
+    private readonly InputAction m_Player_Shoot;
     private readonly InputAction m_Player_Throw;
-    private readonly InputAction m_Player_InteractLeft;
-    private readonly InputAction m_Player_InteractRight;
-    private readonly InputAction m_Player_Switch;
+    private readonly InputAction m_Player_Interact;
+    private readonly InputAction m_Player_Dash;
+    private readonly InputAction m_Player_Console;
     public struct PlayerActions
     {
         private @PlayerInputAction m_Wrapper;
@@ -344,12 +353,11 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
-        public InputAction @ShootLeft => m_Wrapper.m_Player_ShootLeft;
-        public InputAction @ShootRight => m_Wrapper.m_Player_ShootRight;
+        public InputAction @Shoot => m_Wrapper.m_Player_Shoot;
         public InputAction @Throw => m_Wrapper.m_Player_Throw;
-        public InputAction @InteractLeft => m_Wrapper.m_Player_InteractLeft;
-        public InputAction @InteractRight => m_Wrapper.m_Player_InteractRight;
-        public InputAction @Switch => m_Wrapper.m_Player_Switch;
+        public InputAction @Interact => m_Wrapper.m_Player_Interact;
+        public InputAction @Dash => m_Wrapper.m_Player_Dash;
+        public InputAction @Console => m_Wrapper.m_Player_Console;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -368,24 +376,21 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                 @Jump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
-                @ShootLeft.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShootLeft;
-                @ShootLeft.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShootLeft;
-                @ShootLeft.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShootLeft;
-                @ShootRight.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShootRight;
-                @ShootRight.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShootRight;
-                @ShootRight.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShootRight;
+                @Shoot.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
+                @Shoot.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
+                @Shoot.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
                 @Throw.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnThrow;
                 @Throw.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnThrow;
                 @Throw.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnThrow;
-                @InteractLeft.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteractLeft;
-                @InteractLeft.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteractLeft;
-                @InteractLeft.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteractLeft;
-                @InteractRight.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteractRight;
-                @InteractRight.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteractRight;
-                @InteractRight.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteractRight;
-                @Switch.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitch;
-                @Switch.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitch;
-                @Switch.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitch;
+                @Interact.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
+                @Interact.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
+                @Interact.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
+                @Dash.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @Dash.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @Dash.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @Console.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnConsole;
+                @Console.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnConsole;
+                @Console.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnConsole;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -399,38 +404,71 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
-                @ShootLeft.started += instance.OnShootLeft;
-                @ShootLeft.performed += instance.OnShootLeft;
-                @ShootLeft.canceled += instance.OnShootLeft;
-                @ShootRight.started += instance.OnShootRight;
-                @ShootRight.performed += instance.OnShootRight;
-                @ShootRight.canceled += instance.OnShootRight;
+                @Shoot.started += instance.OnShoot;
+                @Shoot.performed += instance.OnShoot;
+                @Shoot.canceled += instance.OnShoot;
                 @Throw.started += instance.OnThrow;
                 @Throw.performed += instance.OnThrow;
                 @Throw.canceled += instance.OnThrow;
-                @InteractLeft.started += instance.OnInteractLeft;
-                @InteractLeft.performed += instance.OnInteractLeft;
-                @InteractLeft.canceled += instance.OnInteractLeft;
-                @InteractRight.started += instance.OnInteractRight;
-                @InteractRight.performed += instance.OnInteractRight;
-                @InteractRight.canceled += instance.OnInteractRight;
-                @Switch.started += instance.OnSwitch;
-                @Switch.performed += instance.OnSwitch;
-                @Switch.canceled += instance.OnSwitch;
+                @Interact.started += instance.OnInteract;
+                @Interact.performed += instance.OnInteract;
+                @Interact.canceled += instance.OnInteract;
+                @Dash.started += instance.OnDash;
+                @Dash.performed += instance.OnDash;
+                @Dash.canceled += instance.OnDash;
+                @Console.started += instance.OnConsole;
+                @Console.performed += instance.OnConsole;
+                @Console.canceled += instance.OnConsole;
             }
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // UI
+    private readonly InputActionMap m_UI;
+    private IUIActions m_UIActionsCallbackInterface;
+    private readonly InputAction m_UI_Execute;
+    public struct UIActions
+    {
+        private @PlayerInputAction m_Wrapper;
+        public UIActions(@PlayerInputAction wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Execute => m_Wrapper.m_UI_Execute;
+        public InputActionMap Get() { return m_Wrapper.m_UI; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(UIActions set) { return set.Get(); }
+        public void SetCallbacks(IUIActions instance)
+        {
+            if (m_Wrapper.m_UIActionsCallbackInterface != null)
+            {
+                @Execute.started -= m_Wrapper.m_UIActionsCallbackInterface.OnExecute;
+                @Execute.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnExecute;
+                @Execute.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnExecute;
+            }
+            m_Wrapper.m_UIActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Execute.started += instance.OnExecute;
+                @Execute.performed += instance.OnExecute;
+                @Execute.canceled += instance.OnExecute;
+            }
+        }
+    }
+    public UIActions @UI => new UIActions(this);
     public interface IPlayerActions
     {
         void OnLook(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
-        void OnShootLeft(InputAction.CallbackContext context);
-        void OnShootRight(InputAction.CallbackContext context);
+        void OnShoot(InputAction.CallbackContext context);
         void OnThrow(InputAction.CallbackContext context);
-        void OnInteractLeft(InputAction.CallbackContext context);
-        void OnInteractRight(InputAction.CallbackContext context);
-        void OnSwitch(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
+        void OnDash(InputAction.CallbackContext context);
+        void OnConsole(InputAction.CallbackContext context);
+    }
+    public interface IUIActions
+    {
+        void OnExecute(InputAction.CallbackContext context);
     }
 }

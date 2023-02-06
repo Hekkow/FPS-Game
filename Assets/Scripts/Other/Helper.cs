@@ -44,6 +44,7 @@ public static class Helper
         dmg.knockback = knockback;
         dmg.thrown = thrown;
         dmg.oneTime = oneTime;
+        dmg.environment = false;
     }
     public static void ApplyLayerToChildren(GameObject thing, string layername)
     {

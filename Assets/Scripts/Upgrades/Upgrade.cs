@@ -9,4 +9,7 @@ public class Upgrade : ScriptableObject
     public string description;
     public string sprite;
     public string functionName;
+    public float chance;
+    public int maxAmount;
+    public float[] amount;
 }

@@ -28,6 +28,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] float ragdollMass;
 
     [Header("Pathfinding")]
+    [SerializeField] bool pathfinding;
     [SerializeField] float distanceHeightMultiplier;
     [SerializeField] float tinyBitOfExtraHeight;
     [SerializeField] float enemyHeight;
@@ -65,6 +66,8 @@ public class Enemy : MonoBehaviour
 
     IEnumerator knockCoroutine;
 
+    float fallDamageVelocity;
+
     private void Start()
     {
         target = GameObject.Find("Player").transform;
@@ -78,23 +81,30 @@ public class Enemy : MonoBehaviour
         agent.autoTraverseOffMeshLink = false;
         //agent.avoidancePriority = Random.Range(1, 99);
         //agent.updateRotation = false;
-
+        if (!pathfinding)
+        {
+            rb.isKinematic = false;
+            agent.enabled = false;
+        }
         
     }
     void Update()
     {
         
         //currentTime = Time.time;
-        if (!agent.isOnOffMeshLink && !jumping)
+        if (pathfinding)
         {
-            agent.SetDestination(player.transform.position);
-
-        }
-        else
-        {
-            if (!jumping)
+            if (!agent.isOnOffMeshLink && !jumping)
             {
-                StartCoroutine(Jump());
+                agent.SetDestination(player.transform.position);
+
+            }
+            else
+            {
+                if (!jumping)
+                {
+                    StartCoroutine(Jump());
+                }
             }
         }
         if (!health.alive)
@@ -116,6 +126,7 @@ public class Enemy : MonoBehaviour
         //}
         UpdateHealthBar();
         velo = rb.velocity;
+        fallDamageVelocity = rb.velocity.y;
         //if (jumping && rb.velocity.magnitude < 0.5f && currentTime - startedTime > 3)
         //{
         //    agent.velocity -= new Vector3(0, 5, 0);
@@ -128,15 +139,6 @@ public class Enemy : MonoBehaviour
         //    here = false;
         //}
     }
-
-
-
-
-
-
-
-
-
     IEnumerator Fall(float time)
     {
         fallingVelocity = 0;
@@ -341,4 +343,17 @@ public class Enemy : MonoBehaviour
         rb.velocity = Vector3.zero;
         knocked = false;
     }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (fallDamageVelocity < -20)
+        {
+            health.Damage(-fallDamageVelocity*2.5f);
+            TMP_Text damageNumbersText = Instantiate(Resources.Load<TMP_Text>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform);
+            damageNumbersText.text = Mathf.RoundToInt(-fallDamageVelocity * 2.5f).ToString();
+            DamageNumber dn = damageNumbersText.gameObject.AddComponent<DamageNumber>();
+            dn.collision = collision;
+        }
+    }
+
 }

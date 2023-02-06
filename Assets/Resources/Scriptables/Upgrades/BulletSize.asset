@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: BulletSize
   m_EditorClassIdentifier: 
   name: Bullet Size
-  description: doubles bullet size
+  description: triples bullet size
   sprite: bulletsize
   functionName: BulletSize
+  maxAmount: 100
+  amount:
+  - 3

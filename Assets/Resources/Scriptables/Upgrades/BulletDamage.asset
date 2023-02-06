@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f25c7e940241ae4ca840918b236ff33, type: 3}
-  m_Name: DoubleHealth
+  m_Name: BulletDamage
   m_EditorClassIdentifier: 
-  name: Health
-  description: doubles health
-  sprite: health.jpeg
-  functionName: Health
+  name: Bullet Damage
+  description: bullet damage
+  sprite: bullet damage
+  functionName: BulletDamage
   maxAmount: 100
   amount:
   - 2

@@ -16,3 +16,6 @@ MonoBehaviour:
   description: doubles attack speed
   sprite: attackspeed
   functionName: AttackSpeed
+  maxAmount: 100
+  amount:
+  - 2

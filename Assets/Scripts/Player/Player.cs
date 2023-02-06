@@ -31,9 +31,12 @@ public class Player : MonoBehaviour
     public float gravitySwitchY;
     public int maxJumps;
 
+    [Header("Dash")]
+    public float dashTime;
+    public float dashForce;
+
     [Header("Upgrades")]
     public int maxUpgrades = 3;
-    public float dashForce;
 
     [Header("Ground Check")]
 
@@ -42,16 +45,5 @@ public class Player : MonoBehaviour
     [Header("Slope Check")]
     public float playerHeight;
     public float maxSlopeAngle;
-
-    [Header("Bullet Stats")]
-
-    public float bulletSpeedMultiplier;
-    public float bulletSizeMultiplier;
-    public float attackSpeedMultiplier;
-    public float bulletSpreadMultiplier;
-    public float bulletKnockbackMultiplier;
-    public int bulletsPerTapMultiplier; // burst
-    public int bulletsPerShotMultiplier; // shotgun
-    public int bulletDamageMultiplier;
 
 }
