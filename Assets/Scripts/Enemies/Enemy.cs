@@ -325,6 +325,9 @@ public class Enemy : MonoBehaviour
         gameObject.AddComponent<Pickup>();
         
         gameObject.AddComponent<NavMeshObstacle>();
+
+        Instantiate(Resources.Load<GameObject>("Prefabs/Loot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
+
         Destroy(instantiatedAnimation);
         Destroy(this);
     }

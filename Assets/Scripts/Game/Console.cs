@@ -76,20 +76,13 @@ public class Console : MonoBehaviour
         }
         else if (words[0] == "spawn")
         {
-            if (words[1] == "enemy")
+            if (words.Length == 2)
             {
-                if (words.Length == 2)
-                {
-                    //Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, 10);
-                    Instantiate(Resources.Load<GameObject>("Prefabs/Enemy"), Camera.main.transform.TransformPoint(Vector3.forward * 10), Quaternion.identity);
-                }
-                //else
-                //{
-                //    //for (int i = 0; i < int.Parse(words[2]); i++)
-                //    //{
-                //    //    upgradeManager.ApplyUpgrade(upgradeManager.FindUpgrade(words[1]));
-                //    //}
-                //}
+                StartCoroutine(Spawn(words[1][0].ToString().ToUpper() + words[1].Substring(1), 1, 10, 0.3f));
+            }
+            else if (words.Length == 3)
+            {
+                StartCoroutine(Spawn(words[1][0].ToString().ToUpper() + words[1].Substring(1), int.Parse(words[2]), 10, 0.3f));
             }
             
         }
@@ -107,15 +100,12 @@ public class Console : MonoBehaviour
         showConsole = !showConsole;
         command = "";
     }
-    //void OpenConsole(InputAction.CallbackContext obj)
-    //{
-    //    inputField.gameObject.SetActive(true);
-    //    inputField.Select();
-    //}
-    //public void ExecuteCommand(string command)
-    //{
-    //    Debug.Log(command);
-    //    inputField.text = "";
-    //    inputField.gameObject.SetActive(false);
-    //}
+    IEnumerator Spawn(string prefabPath, int amount, float distance, float timeBetween)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            Instantiate(Resources.Load<GameObject>("Prefabs/" + prefabPath), Camera.main.transform.TransformPoint(Vector3.forward * distance), Quaternion.identity);
+            yield return new WaitForSeconds(timeBetween);
+        }
+    }
 }

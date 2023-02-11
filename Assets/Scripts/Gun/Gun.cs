@@ -12,8 +12,6 @@ public class Gun : MonoBehaviour
     [SerializeField] Player player;
 
     [SerializeField] Transform attackPoint;
-
-    UpgradeManager upgradeManager;
     int bulletsPerShot = 1;
     int bulletsPerTap = 1;
     float bulletSize = 7;
@@ -22,39 +20,54 @@ public class Gun : MonoBehaviour
     float bulletKnockback = 2000;
     float attackSpeed = 1;
     float bulletSpread = 0;
+    float reloadTime = 3f;
     int bulletsShot;
+    public int bulletsPerMag = 3;
+    public int bulletsLeft = 3;
     bool readyToShoot = true;
     bool allowInvoke = true;
     bool shooting = false;
+    bool gunShot = false;
+    bool reloading = false;
     new Camera camera;
+    Coroutine reloadCoroutine;
 
     void Awake()
     {
         camera = Camera.main;
         shootAnimator = GetComponent<Animator>();
-        upgradeManager = GameObject.Find("GameManager").GetComponent<UpgradeManager>();
-
+        reloadCoroutine = StartCoroutine(WaitThenReload());
+        StopCoroutine(reloadCoroutine);
     }
 
     void OnEnable()
     {
         InputManager.playerInput.Player.Shoot.performed += (obj) => shooting = true;
         InputManager.playerInput.Player.Shoot.canceled += (obj) => shooting = false;
+        InputManager.playerInput.Player.Reload.performed += Reload;
+        InputManager.playerInput.Player.Reload.Enable();
         InputManager.playerInput.Player.Shoot.Enable();
         
     }
     void OnDisable()
     {
+        InputManager.playerInput.Player.Reload.Disable();
         InputManager.playerInput.Player.Shoot.Disable();
     }
     void Update()
     {
         if (shooting)
         {
-            if (readyToShoot)
+            if (readyToShoot && bulletsLeft > 0)
             {
+                bulletsLeft--;
                 bulletsShot = 0;
                 ShootGun();
+
+                if (bulletsLeft <= 0)
+                {
+                    reloadCoroutine = StartCoroutine(WaitThenReload());
+                }
             }
         }
         
@@ -62,6 +75,8 @@ public class Gun : MonoBehaviour
 
     void ShootGun()
     {
+        StopCoroutine(reloadCoroutine);
+        gunShot = true;
         readyToShoot = false;
 
         // calculates direction
@@ -119,6 +134,7 @@ public class Gun : MonoBehaviour
         shootAnimator.Play("shoot", 0, 0f);
 
         shootAnimator.speed = attackSpeed * UpgradeManager.attackSpeedMultiplier;
+        gunShot = false;
     }
 
 
@@ -135,5 +151,17 @@ public class Gun : MonoBehaviour
     {
         readyToShoot = true;
         allowInvoke = true;
+    }
+    void Reload(InputAction.CallbackContext obj)
+    {
+        if (!reloading) reloadCoroutine = StartCoroutine(WaitThenReload());
+    }
+    IEnumerator WaitThenReload()
+    {
+        reloading = true;
+        yield return new WaitForSeconds(reloadTime / UpgradeManager.reloadTimeMultiplier);
+        reloading = false;
+        bulletsLeft = bulletsPerMag;
+
     }
 }

@@ -118,6 +118,7 @@ public class PlayerOther : MonoBehaviour
             return hit.collider.gameObject.GetComponent<Pickup>();
         }
         Pickup[] objects = FindObjectsOfType<Pickup>();
+
         Pickup closest = null;
         float dot = -2;
         for (int i = 0; i < objects.Length; i++)

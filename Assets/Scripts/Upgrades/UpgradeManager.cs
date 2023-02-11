@@ -25,16 +25,39 @@ public class UpgradeManager : MonoBehaviour
     public static float bulletsPerShotAddition = 0;
     public static float bulletsPerTapAddition = 0;
     public static float bulletSpreadAddition = 0;
+    public static float reloadTimeMultiplier = 1;
 
     // bullets
     public static bool gravityFlip = false;
 
-    void Start()
+    void Awake()
     {
         ownedUpgrades = new Dictionary<Upgrade, int>();
-        //ownedUpgrades = new List<Upgrade>();
         allUpgrades = Resources.LoadAll("Scriptables/Upgrades", typeof(Upgrade)).Cast<Upgrade>().ToList();
         player = GameObject.Find("Player").GetComponent<Player>();
+    }
+    public static List<Upgrade> RandomUpgrade()
+    {
+        List<Upgrade> list = new List<Upgrade>();
+        int counter = 0;
+        while (list.Count < 3 && counter < 200)
+        {
+            int x = Random.Range(0, allUpgrades.Count - 1);
+            Upgrade upgrade = UpgradeManager.allUpgrades[x];
+            if (ownedUpgrades.ContainsKey(upgrade))
+            {
+                if (ownedUpgrades[upgrade] < upgrade.maxAmount && !list.Contains(upgrade))
+                {
+                    list.Add(upgrade);
+                }
+            }
+            else if (!list.Contains(upgrade))
+            {
+                list.Add(upgrade);
+            }
+            counter++;
+        }
+        return list;
     }
     public Upgrade FindUpgrade(string name)
     {
@@ -101,5 +124,9 @@ public class UpgradeManager : MonoBehaviour
     void GravityFlip()
     {
         gravityFlip = true;
+    }
+    void ReloadTime()
+    {
+        reloadTimeMultiplier *= currentUpgrade.amount[0];
     }
 }

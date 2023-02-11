@@ -54,6 +54,8 @@ public class Movement : MonoBehaviour
     void FixedUpdate()
     {
         Move();
+        if (Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, player.groundDistance + 1)) grounded = true;
+        else grounded = false;
         if (jumpHeld)
         {
             if (canJump)
@@ -66,7 +68,8 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        grounded = Physics.CheckSphere(groundCheck.position, player.groundDistance, groundMask);
+        
+        //grounded = Physics.CheckSphere(groundCheck.position, player.groundDistance, groundMask);
         DragControl();
         SpeedControl();
         if (applyingGravity)
@@ -90,6 +93,7 @@ public class Movement : MonoBehaviour
     }
     IEnumerator ResetJump()
     {
+
         jumping = true;
         jumps++;
         canJump = false;

@@ -11,6 +11,7 @@ public class HUD : MonoBehaviour
     TMP_Text fpsText;
     TMP_Text healthText;
     TMP_Text speedText;
+    TMP_Text bulletsText;
     float fps;
     float minfps = 10000;
     float maxfps = 0;
@@ -24,6 +25,7 @@ public class HUD : MonoBehaviour
         fpsText = gameObject.transform.Find("FPS").GetComponent<TMP_Text>();
         healthText = gameObject.transform.Find("Health").GetComponent<TMP_Text>();
         speedText = gameObject.transform.Find("Speed").GetComponent<TMP_Text>();
+        bulletsText = gameObject.transform.Find("Bullets").GetComponent<TMP_Text>();
 
         InvokeRepeating("PrintFPS", 1, 0.1f);
         InvokeRepeating("PrintSpeed", 0, 0.1f);
@@ -34,10 +36,11 @@ public class HUD : MonoBehaviour
     void Update()
     {
         PrintHealth();
+        PrintBullets(); 
     }
     void PrintFPS()
     {
-        fps = Mathf.Round(1 / Time.unscaledDeltaTime);
+        fps = Mathf.Round(1 / Time.deltaTime);
         if (fps < minfps) { minfps = fps; }
         if (fps > maxfps) { maxfps = fps; }
         fpsList.Add(fps);
@@ -60,7 +63,23 @@ public class HUD : MonoBehaviour
     }
     void PrintHealth()
     {
-
         healthText.text = "Health " + Helper.HealthToHashtags(health);
+    }
+    void PrintBullets()
+    {
+        Gun gun = player.gameObject.GetComponentInChildren<Gun>();
+        if (gun != null)
+        {
+            string hashtags = "";
+            for (int i = 0; i < gun.bulletsLeft; i++)
+            {
+                hashtags += "#";
+            }
+            for (int i = 0; i < gun.bulletsPerMag - gun.bulletsLeft; i++) 
+            {
+                hashtags += "-";
+            }
+            bulletsText.text = hashtags;
+        }
     }
 }
