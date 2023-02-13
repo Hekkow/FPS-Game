@@ -73,6 +73,16 @@ public class Console : MonoBehaviour
                     Debug.Log(entry.Key.name + " x " + entry.Value);
                 }
             }
+            else if (words[1] == "all")
+            {
+                if (words[2] == "upgrades")
+                {
+                    for (int i = 0; i < UpgradeManager.allUpgrades.Count; i++)
+                    {
+                        Debug.Log(UpgradeManager.allUpgrades[i].name);
+                    }
+                }
+            }
         }
         else if (words[0] == "spawn")
         {

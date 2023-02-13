@@ -22,10 +22,12 @@ public class UpgradeManager : MonoBehaviour
     public static float bulletDamageMultiplier = 1;
     public static float bulletSizeMultiplier = 1;
     public static float bulletSpeedMultiplier = 1;
-    public static float bulletsPerShotAddition = 0;
-    public static float bulletsPerTapAddition = 0;
+    public static int bulletsPerShotAddition = 0;
+    public static int bulletsPerTapAddition = 0;
     public static float bulletSpreadAddition = 0;
     public static float reloadTimeMultiplier = 1;
+    public static int bulletsPerMagAddition = 0;
+
 
     // bullets
     public static bool gravityFlip = false;
@@ -35,6 +37,10 @@ public class UpgradeManager : MonoBehaviour
         ownedUpgrades = new Dictionary<Upgrade, int>();
         allUpgrades = Resources.LoadAll("Scriptables/Upgrades", typeof(Upgrade)).Cast<Upgrade>().ToList();
         player = GameObject.Find("Player").GetComponent<Player>();
+        for (int i = 0; i  < allUpgrades.Count; i++)
+        {
+            Debug.Log(allUpgrades[i]);
+        }
     }
     public static List<Upgrade> RandomUpgrade()
     {
@@ -42,7 +48,7 @@ public class UpgradeManager : MonoBehaviour
         int counter = 0;
         while (list.Count < 3 && counter < 200)
         {
-            int x = Random.Range(0, allUpgrades.Count - 1);
+            int x = Random.Range(0, allUpgrades.Count); 
             Upgrade upgrade = UpgradeManager.allUpgrades[x];
             if (ownedUpgrades.ContainsKey(upgrade))
             {
@@ -85,13 +91,21 @@ public class UpgradeManager : MonoBehaviour
             }
             else ownedUpgrades.Add(upgrade, 1);
             Invoke(upgrade.functionName, 0);
+            StartCoroutine(ResetBullets());
+            
+
         }
         else
         {
             Debug.Log("Invalid upgrade");
         }
     }
-
+    IEnumerator ResetBullets()
+    {
+        yield return new WaitForEndOfFrame();
+        if (Inventory.HasGuns(0)) Inventory.guns[0].ResetBullets();
+        if (Inventory.HasGuns(1)) Inventory.guns[1].ResetBullets();
+    }
     void Health()
     {
         GameObject.Find("Player").GetComponent<Health>().MultiplyMaxHealth(currentUpgrade.amount[0]);
@@ -114,12 +128,18 @@ public class UpgradeManager : MonoBehaviour
     }
     void BulletsPerShot()
     {
-        bulletsPerShotAddition += currentUpgrade.amount[0];
+        bulletsPerShotAddition += (int)currentUpgrade.amount[0];
         bulletSpreadAddition += currentUpgrade.amount[1];
+        Inventory.guns[0].bulletsPerMag += bulletsPerShotAddition * Inventory.guns[0].bulletsPerMag;
+
+        //bulletsPerMagAddition *= (int)currentUpgrade.amount[0];
+
     }
     void BulletsPerTap()
     {
-        bulletsPerTapAddition += currentUpgrade.amount[0];
+        bulletsPerTapAddition += (int)currentUpgrade.amount[0];
+        Inventory.guns[0].bulletsPerMag += bulletsPerTapAddition * Inventory.guns[0].bulletsPerMag;
+        Debug.Log("here1");
     }
     void GravityFlip()
     {

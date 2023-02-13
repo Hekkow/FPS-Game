@@ -22,8 +22,8 @@ public class Gun : MonoBehaviour
     float bulletSpread = 0;
     float reloadTime = 1f;
     int bulletsShot;
-    public int bulletsPerMag = 3;
-    public int bulletsLeft = 3;
+    public int bulletsPerMag = 6;
+    public int bulletsLeft = 6;
     bool readyToShoot = true;
     bool allowInvoke = true;
     bool shooting = false;
@@ -36,7 +36,7 @@ public class Gun : MonoBehaviour
     {
         camera = Camera.main;
         shootAnimator = GetComponent<Animator>();
-        reloadCoroutine = StartCoroutine(WaitThenReload());
+        reloadCoroutine = StartCoroutine(WaitThenReload(0));
         StopCoroutine(reloadCoroutine);
     }
 
@@ -60,14 +60,8 @@ public class Gun : MonoBehaviour
         {
             if (readyToShoot && bulletsLeft > 0)
             {
-                bulletsLeft--;
                 bulletsShot = 0;
                 ShootGun();
-
-                if (bulletsLeft <= 0)
-                {
-                    reloadCoroutine = StartCoroutine(WaitThenReload());
-                }
             }
         }
         
@@ -75,7 +69,9 @@ public class Gun : MonoBehaviour
 
     void ShootGun()
     {
+        reloading = false;
         StopCoroutine(reloadCoroutine);
+        
         gunShot = true;
         readyToShoot = false;
 
@@ -96,7 +92,7 @@ public class Gun : MonoBehaviour
 
         for (int i = 0; i < bulletsPerShot + UpgradeManager.bulletsPerShotAddition; i++)
         {
-
+            bulletsLeft--;
             Vector3 direction = targetPoint - attackPoint.position; // + RandomSpread();
 
             // creates bullet and sends it zoomin
@@ -106,7 +102,7 @@ public class Gun : MonoBehaviour
             Vector3 randomSpread = RandomSpread();
             currentBullet.transform.Rotate(randomSpread);
             currentBullet.transform.localScale *= bulletSize * UpgradeManager.bulletSizeMultiplier;
-            currentBullet.GetComponent<Rigidbody>().velocity = direction.normalized * bulletSpeed * UpgradeManager.bulletSpeedMultiplier;
+            currentBullet.GetComponent<Rigidbody>().velocity = bulletSpeed * UpgradeManager.bulletSpeedMultiplier * direction.normalized;
 
             // creates bullet with specified stats
             Helper.AddDamage(currentBullet, bulletDamage * UpgradeManager.bulletDamageMultiplier, bulletKnockback, false, false);
@@ -128,13 +124,18 @@ public class Gun : MonoBehaviour
 
         if (bulletsShot < bulletsPerTap + UpgradeManager.bulletsPerTapAddition)
         {
+
             Invoke("ShootGun", 1 / (attackSpeed * UpgradeManager.attackSpeedMultiplier * (UpgradeManager.bulletsPerTapAddition+1)));
         }
 
         shootAnimator.Play("shoot", 0, 0f);
 
-        shootAnimator.speed = attackSpeed * UpgradeManager.attackSpeedMultiplier;
+        shootAnimator.speed = attackSpeed * UpgradeManager.attackSpeedMultiplier; 
         gunShot = false;
+        if (bulletsLeft <= 0)
+        {
+            reloadCoroutine = StartCoroutine(WaitThenReload(1 / (attackSpeed * UpgradeManager.attackSpeedMultiplier)));
+        }
     }
 
 
@@ -155,17 +156,26 @@ public class Gun : MonoBehaviour
     void Reload(InputAction.CallbackContext obj)
     {
 
-        if (!reloading) reloadCoroutine = StartCoroutine(WaitThenReload());
+        if (!reloading && bulletsPerMag > bulletsLeft)
+        {
+            Debug.Log("HERE");
+            reloadCoroutine = StartCoroutine(WaitThenReload(0));
+        }
     }
-    IEnumerator WaitThenReload()
+    IEnumerator WaitThenReload(float time)
     {
-        yield return new WaitForSeconds(1 / (attackSpeed * UpgradeManager.attackSpeedMultiplier));
+        yield return new WaitForSeconds(time);
         reloading = true;
         shootAnimator.Play("reload", 0, 0f);
-        shootAnimator.speed = reloadTime / UpgradeManager.reloadTimeMultiplier;
+        shootAnimator.speed = reloadTime * UpgradeManager.reloadTimeMultiplier;
         yield return new WaitForSeconds(reloadTime / UpgradeManager.reloadTimeMultiplier);
         reloading = false;
+        ResetBullets();
+    }
+    public void ResetBullets()
+    {
         bulletsLeft = bulletsPerMag;
+        readyToShoot = true;
 
     }
 }

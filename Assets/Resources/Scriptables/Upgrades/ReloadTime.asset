@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: ReloadTime
   m_EditorClassIdentifier: 
   name: Reload Time
-  description: 
-  sprite: 
+  description: reload time
+  sprite: reloadtime
   functionName: ReloadTime
   chance: 0
   maxAmount: 100

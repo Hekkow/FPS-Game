@@ -77,12 +77,17 @@ public class PlayerOther : MonoBehaviour
         item.parent = GameObject.Find("Objects").transform;
         item.AddComponent<Pickup>();
         Helper.ApplyLayerToChildren(item.gameObject, "Ground");
+        Inventory.DropGun();
     }
     void PickUp(Pickup item)
     {
         bool gun = item.gameObject.GetComponent<Gun>();
         Drop(gun);
-        if (gun) item.transform.parent = rightHandLocation;
+        if (gun)
+        {
+            item.transform.parent = rightHandLocation;
+            Inventory.PickupGun(item.gameObject.GetComponent<Gun>());
+        }
         else item.transform.parent = leftHandLocation;
         Helper.MakePhysical(item.gameObject, false);
         item.transform.localPosition = Vector3.zero;
