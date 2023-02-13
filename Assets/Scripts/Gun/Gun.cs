@@ -20,7 +20,7 @@ public class Gun : MonoBehaviour
     float bulletKnockback = 2000;
     float attackSpeed = 1;
     float bulletSpread = 0;
-    float reloadTime = 3f;
+    float reloadTime = 1f;
     int bulletsShot;
     public int bulletsPerMag = 3;
     public int bulletsLeft = 3;
@@ -154,11 +154,15 @@ public class Gun : MonoBehaviour
     }
     void Reload(InputAction.CallbackContext obj)
     {
+
         if (!reloading) reloadCoroutine = StartCoroutine(WaitThenReload());
     }
     IEnumerator WaitThenReload()
     {
+        yield return new WaitForSeconds(1 / (attackSpeed * UpgradeManager.attackSpeedMultiplier));
         reloading = true;
+        shootAnimator.Play("reload", 0, 0f);
+        shootAnimator.speed = reloadTime / UpgradeManager.reloadTimeMultiplier;
         yield return new WaitForSeconds(reloadTime / UpgradeManager.reloadTimeMultiplier);
         reloading = false;
         bulletsLeft = bulletsPerMag;
