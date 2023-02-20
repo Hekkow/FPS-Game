@@ -6,18 +6,20 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] GameObject player;
     [SerializeField] float timeScale;
+    [SerializeField] Console console;
 
     public static Vector3 spawnLocation = new Vector3(0, 100, 0);
 
     Health playerHealth;
 
-    void Start()
+    void Awake()
     {
         Time.timeScale = timeScale;
         playerHealth = player.GetComponent<Health>();
         SaveData data = SaveSystem.ReadSave();
         if (data != null)
         {
+            console.commandHistory = data.commandHistory;
             //playerHealth.maxHealth = data.maxHealth;
             //playerHealth.currentHealth = data.currentHealth;
             //player.transform.position = data.position;
@@ -34,6 +36,7 @@ public class GameManager : MonoBehaviour
         data.position = player.transform.position;
         data.rotation = player.transform.rotation;
         data.scale = player.transform.localScale;
+        data.commandHistory = console.commandHistory;
         SaveSystem.WriteSave(JsonUtility.ToJson(data));
     }
     public static void Spawn()

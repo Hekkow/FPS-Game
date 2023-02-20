@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,6 +12,7 @@ public class PlayerOther : MonoBehaviour
     [SerializeField] Transform rightHandLocation;
 
     Player player;
+    bool canSwitch = true;
 
     void Awake()
     {
@@ -20,17 +20,39 @@ public class PlayerOther : MonoBehaviour
     }
     void OnEnable()
     {
-        InputManager.playerInput.Player.Interact.performed += PickupRight;
+        InputManager.playerInput.Player.Interact.performed += PickupItem;
         InputManager.playerInput.Player.Throw.performed += ThrowItem;
+        InputManager.playerInput.Player.SwitchDown.performed += Switch;
         InputManager.playerInput.Player.Interact.Enable();
         InputManager.playerInput.Player.Throw.Enable();
+        InputManager.playerInput.Player.SwitchDown.Enable();
+
     }
     void OnDisable()
     {
         InputManager.playerInput.Player.Interact.Disable();
         InputManager.playerInput.Player.Throw.Disable();
     }
-    void PickupRight(InputAction.CallbackContext obj)
+    void Switch(InputAction.CallbackContext obj)
+    {
+        if (canSwitch)
+        {
+            if (Inventory.HasGun() >= 2)
+            {
+                Inventory.guns[0].gameObject.SetActive(false);
+                Inventory.SwitchGun(up: obj.ReadValue<float>() > 0);
+                Inventory.guns[0].gameObject.SetActive(true);
+            }
+            StartCoroutine(RenableSwitch());
+        }
+    }
+    IEnumerator RenableSwitch()
+    {
+        canSwitch = false;
+        yield return new WaitForSeconds(0.05f);
+        canSwitch = true;
+    }
+    void PickupItem(InputAction.CallbackContext obj)
     {
         Pickup item = GetClosest();
         if (item != null)
@@ -38,7 +60,6 @@ public class PlayerOther : MonoBehaviour
             PickUp(item);
         }
     }
-    
     void Update()
     {
         if (transform.position.y < -100)
@@ -63,7 +84,7 @@ public class PlayerOther : MonoBehaviour
         Transform item;
         if (gun && rightHandLocation.childCount > 0)
         {
-            item = rightHandLocation.GetChild(0);
+            item = Inventory.guns[0].transform;
         }
         else if (leftHandLocation.childCount > 0)
         {
@@ -81,14 +102,47 @@ public class PlayerOther : MonoBehaviour
     }
     void PickUp(Pickup item)
     {
-        bool gun = item.gameObject.GetComponent<Gun>();
-        Drop(gun);
-        if (gun)
+        Gun gun = item.gameObject.GetComponent<Gun>();
+
+        if (gun == null)
         {
-            item.transform.parent = rightHandLocation;
-            Inventory.PickupGun(item.gameObject.GetComponent<Gun>());
+            Drop(false);
+            item.transform.parent = leftHandLocation;
         }
-        else item.transform.parent = leftHandLocation;
+        if (gun != null)
+        {
+            List<Upgrade> removedUpgrades = new List<Upgrade>();
+
+            if (Inventory.HasGun() == 3)
+            {
+                for (int i = 0; i < UpgradeManager.ownedUpgrades.Count; i++)
+                {
+                    if (UpgradeManager.ownedUpgrades[i].slot == Inventory.guns[0].slot)
+                    {
+                        int count = UpgradeManager.ownedUpgrades[i].amount;
+                        for (int j = 0; j < count; j++)
+                        {
+                            removedUpgrades.Add(UpgradeManager.ownedUpgrades[i].upgrade);
+                            UpgradeManager.DeactivateUpgrade(UpgradeManager.ownedUpgrades[i].upgrade);
+                        }
+                    }
+                }
+                gun.slot = -1;
+                Drop(true);
+            }
+            item.gameObject.GetComponent<Gun>().slot = Inventory.slotCount;
+            
+            Inventory.PickupGun(item.gameObject.GetComponent<Gun>());
+            for (int i = 0; i < removedUpgrades.Count; i++)
+            {
+                UpgradeManager.ActivateUpgrade(removedUpgrades[i]);
+            }
+            if (Inventory.HasGun() > 1)
+            {
+                Inventory.guns[1].gameObject.SetActive(false); 
+            }
+            item.transform.parent = rightHandLocation;
+        }
         Helper.MakePhysical(item.gameObject, false);
         item.transform.localPosition = Vector3.zero;
         item.transform.localRotation = Quaternion.identity;
@@ -100,7 +154,7 @@ public class PlayerOther : MonoBehaviour
     }
     void ThrowItem(InputAction.CallbackContext obj)
     {
-        GameObject item;
+        GameObject item = null;
         bool gun = false;
         if (leftHandLocation.childCount > 0)
         {
@@ -108,13 +162,17 @@ public class PlayerOther : MonoBehaviour
         }
         else if (rightHandLocation.childCount > 0)
         {
-            item = rightHandLocation.GetChild(0).gameObject;
+            item = Inventory.guns[0].gameObject; 
             gun = true;
         }
         else return;
         Drop(gun);
         CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
         Helper.AddDamage(item, player.throwDamage, player.throwKnockback, true, true);
+        if (Inventory.HasGun() > 0) 
+        {
+            Inventory.guns[0].gameObject.SetActive(true);
+        }
     }
     Pickup GetClosest()
     {

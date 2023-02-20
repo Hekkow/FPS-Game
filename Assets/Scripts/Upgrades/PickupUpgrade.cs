@@ -23,7 +23,7 @@ public class PickupUpgrade : MonoBehaviour
     {
         if (collision.gameObject.GetComponent<Bullet>() != null && !upgraded)
         {
-            upgradeManager.ApplyUpgrade(upgrade);
+            //upgradeManager.ApplyUpgrade(upgrade);
             StartCoroutine(Destroys());
         }
     }

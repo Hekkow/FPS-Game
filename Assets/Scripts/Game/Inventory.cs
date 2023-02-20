@@ -4,32 +4,98 @@ using UnityEngine;
 
 public static class Inventory
 {
-    public static Gun[] guns = new Gun[2];
+    public static Gun[] guns = new Gun[3];
+    public static int slotCount = 0;
+
     public static void PickupGun(Gun gun)
     {
-        if (guns[1] == null)
+        if (guns[0] == null)
+        {
+            guns[0] = gun;
+            slotCount++;
+        }
+        else if (guns[1] == null)
         {
             guns[1] = guns[0];
             guns[0] = gun;
+            slotCount++;
         }
-        else 
+        else if (guns[2] == null)
+        {
+            guns[2] = guns[1];
+            guns[1] = guns[0];
+            guns[0] = gun;
+            slotCount++;
+        }
+        else
         {
             guns[0] = gun;
         }
     }
-    public static void SwitchGun()
+    public static bool SwitchGun(bool up)
     {
-        Gun tmp = guns[0];
-        guns[0] = guns[1];
-        guns[1] = tmp;
+        if (guns[0] == null) { return false; }
+        else if (guns[1] == null) { return false; }
+        else if (guns[2] == null)
+        {
+            Gun tmp = guns[0];
+            guns[0] = guns[1];
+            guns[1] = tmp;
+            return true;
+        }
+        else
+        {
+            if (up)
+            {
+                Gun tmp = guns[0];
+                guns[0] = guns[1];
+                guns[1] = guns[2];
+                guns[2] = tmp;
+                return true;
+            }
+            else
+            {
+                Gun tmp = guns[2];
+                guns[2] = guns[1];
+                guns[1] = guns[0];
+                guns[0] = tmp;
+                return true;
+            }
+        }
     }
     public static void DropGun()
     {
-        guns[0] = guns[1];
-        guns[1] = null;
+        if (guns[0] == null) { }
+        else if (guns[1] == null)
+        {
+            guns[0] = null;
+            slotCount--;
+        }
+        else if (guns[2] == null)
+        {
+            guns[0] = guns[1];
+            guns[1] = null;
+            slotCount--;
+        }
+        else
+        {
+            guns[0] = guns[1];
+            guns[1] = guns[2];
+            guns[2] = null;
+            slotCount--;
+        }
     }
-    public static bool HasGuns(int i)
+    public static int HasGun()
     {
-        return guns[i] != null;
+        if (guns[0] == null) return 0;
+        if (guns[1] == null) return 1;
+        if (guns[2] == null) return 2;
+        return 3;
+    }
+    public static void ResetBullets()
+    {
+        if (guns[0] != null) guns[0].ResetBullets();
+        if (guns[1] != null) guns[1].ResetBullets();
+        if (guns[2] != null) guns[2].ResetBullets();
     }
 }

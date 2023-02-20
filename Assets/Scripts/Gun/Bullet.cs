@@ -6,16 +6,15 @@ using UnityEngine.AI;
 
 public class Bullet : MonoBehaviour
 {
-    float timeSpawned;
+    public bool gravityFlip;
     void Start()
     {
-        timeSpawned = Time.time;
         StartCoroutine(BulletDecay());
     }
     void OnCollisionEnter(Collision collision)
     {
         //Debug.Log(Time.time - timeSpawned + " " + collision.gameObject.name);
-        if (UpgradeManager.gravityFlip)
+        if (gravityFlip)
         {
             collision.gameObject.AddComponent<BulletEffects>().FlipGravity();
         }

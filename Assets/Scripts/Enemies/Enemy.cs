@@ -50,7 +50,7 @@ public class Enemy : MonoBehaviour
     float viewAngle;
     float timeDetected;
     float gravity = -Physics.gravity.y;
-    bool playerDetected = false;
+    //bool playerDetected = false;
     bool detectedOnce = false;
 
     bool alreadyAttacked = false;

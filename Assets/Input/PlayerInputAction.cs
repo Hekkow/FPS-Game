@@ -107,6 +107,24 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Tab"",
+                    ""type"": ""Button"",
+                    ""id"": ""ad908f54-40db-4ec3-8ab8-94d978bd0d52"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SwitchDown"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""2451877a-efda-486a-88d1-4fe511d922b7"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -252,17 +270,57 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                     ""action"": ""Reload"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ce51a332-c789-42ca-990d-48974912d8a9"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3d896d2b-a9c9-4a6b-9a5e-c523ae64961d"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwitchDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
         {
-            ""name"": ""UI"",
+            ""name"": ""Console"",
             ""id"": ""78da6820-a544-4d7b-afcf-ecc9cea09033"",
             ""actions"": [
                 {
                     ""name"": ""Execute"",
                     ""type"": ""Button"",
                     ""id"": ""b43d2f43-1ade-4647-acb0-2c62694feaf5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Previous"",
+                    ""type"": ""Button"",
+                    ""id"": ""4c0697cf-d52b-4330-8cef-2245741ae05a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Next"",
+                    ""type"": ""Button"",
+                    ""id"": ""a58eaeb4-67a4-48fa-90d3-943954652100"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -278,6 +336,28 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Execute"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""81496e1d-1053-4a6e-bfd2-bbd017d53207"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Previous"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6e578c90-a1b8-4441-b36d-7617175175f5"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Next"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -297,9 +377,13 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_Console = m_Player.FindAction("Console", throwIfNotFound: true);
         m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
-        // UI
-        m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
-        m_UI_Execute = m_UI.FindAction("Execute", throwIfNotFound: true);
+        m_Player_Tab = m_Player.FindAction("Tab", throwIfNotFound: true);
+        m_Player_SwitchDown = m_Player.FindAction("SwitchDown", throwIfNotFound: true);
+        // Console
+        m_Console = asset.FindActionMap("Console", throwIfNotFound: true);
+        m_Console_Execute = m_Console.FindAction("Execute", throwIfNotFound: true);
+        m_Console_Previous = m_Console.FindAction("Previous", throwIfNotFound: true);
+        m_Console_Next = m_Console.FindAction("Next", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -368,6 +452,8 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_Console;
     private readonly InputAction m_Player_Reload;
+    private readonly InputAction m_Player_Tab;
+    private readonly InputAction m_Player_SwitchDown;
     public struct PlayerActions
     {
         private @PlayerInputAction m_Wrapper;
@@ -381,6 +467,8 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputAction @Console => m_Wrapper.m_Player_Console;
         public InputAction @Reload => m_Wrapper.m_Player_Reload;
+        public InputAction @Tab => m_Wrapper.m_Player_Tab;
+        public InputAction @SwitchDown => m_Wrapper.m_Player_SwitchDown;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -417,6 +505,12 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                 @Reload.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
                 @Reload.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
                 @Reload.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
+                @Tab.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTab;
+                @Tab.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTab;
+                @Tab.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTab;
+                @SwitchDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitchDown;
+                @SwitchDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitchDown;
+                @SwitchDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitchDown;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -448,43 +542,65 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                 @Reload.started += instance.OnReload;
                 @Reload.performed += instance.OnReload;
                 @Reload.canceled += instance.OnReload;
+                @Tab.started += instance.OnTab;
+                @Tab.performed += instance.OnTab;
+                @Tab.canceled += instance.OnTab;
+                @SwitchDown.started += instance.OnSwitchDown;
+                @SwitchDown.performed += instance.OnSwitchDown;
+                @SwitchDown.canceled += instance.OnSwitchDown;
             }
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
 
-    // UI
-    private readonly InputActionMap m_UI;
-    private IUIActions m_UIActionsCallbackInterface;
-    private readonly InputAction m_UI_Execute;
-    public struct UIActions
+    // Console
+    private readonly InputActionMap m_Console;
+    private IConsoleActions m_ConsoleActionsCallbackInterface;
+    private readonly InputAction m_Console_Execute;
+    private readonly InputAction m_Console_Previous;
+    private readonly InputAction m_Console_Next;
+    public struct ConsoleActions
     {
         private @PlayerInputAction m_Wrapper;
-        public UIActions(@PlayerInputAction wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Execute => m_Wrapper.m_UI_Execute;
-        public InputActionMap Get() { return m_Wrapper.m_UI; }
+        public ConsoleActions(@PlayerInputAction wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Execute => m_Wrapper.m_Console_Execute;
+        public InputAction @Previous => m_Wrapper.m_Console_Previous;
+        public InputAction @Next => m_Wrapper.m_Console_Next;
+        public InputActionMap Get() { return m_Wrapper.m_Console; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(UIActions set) { return set.Get(); }
-        public void SetCallbacks(IUIActions instance)
+        public static implicit operator InputActionMap(ConsoleActions set) { return set.Get(); }
+        public void SetCallbacks(IConsoleActions instance)
         {
-            if (m_Wrapper.m_UIActionsCallbackInterface != null)
+            if (m_Wrapper.m_ConsoleActionsCallbackInterface != null)
             {
-                @Execute.started -= m_Wrapper.m_UIActionsCallbackInterface.OnExecute;
-                @Execute.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnExecute;
-                @Execute.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnExecute;
+                @Execute.started -= m_Wrapper.m_ConsoleActionsCallbackInterface.OnExecute;
+                @Execute.performed -= m_Wrapper.m_ConsoleActionsCallbackInterface.OnExecute;
+                @Execute.canceled -= m_Wrapper.m_ConsoleActionsCallbackInterface.OnExecute;
+                @Previous.started -= m_Wrapper.m_ConsoleActionsCallbackInterface.OnPrevious;
+                @Previous.performed -= m_Wrapper.m_ConsoleActionsCallbackInterface.OnPrevious;
+                @Previous.canceled -= m_Wrapper.m_ConsoleActionsCallbackInterface.OnPrevious;
+                @Next.started -= m_Wrapper.m_ConsoleActionsCallbackInterface.OnNext;
+                @Next.performed -= m_Wrapper.m_ConsoleActionsCallbackInterface.OnNext;
+                @Next.canceled -= m_Wrapper.m_ConsoleActionsCallbackInterface.OnNext;
             }
-            m_Wrapper.m_UIActionsCallbackInterface = instance;
+            m_Wrapper.m_ConsoleActionsCallbackInterface = instance;
             if (instance != null)
             {
                 @Execute.started += instance.OnExecute;
                 @Execute.performed += instance.OnExecute;
                 @Execute.canceled += instance.OnExecute;
+                @Previous.started += instance.OnPrevious;
+                @Previous.performed += instance.OnPrevious;
+                @Previous.canceled += instance.OnPrevious;
+                @Next.started += instance.OnNext;
+                @Next.performed += instance.OnNext;
+                @Next.canceled += instance.OnNext;
             }
         }
     }
-    public UIActions @UI => new UIActions(this);
+    public ConsoleActions @Console => new ConsoleActions(this);
     public interface IPlayerActions
     {
         void OnLook(InputAction.CallbackContext context);
@@ -496,9 +612,13 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
         void OnDash(InputAction.CallbackContext context);
         void OnConsole(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
+        void OnTab(InputAction.CallbackContext context);
+        void OnSwitchDown(InputAction.CallbackContext context);
     }
-    public interface IUIActions
+    public interface IConsoleActions
     {
         void OnExecute(InputAction.CallbackContext context);
+        void OnPrevious(InputAction.CallbackContext context);
+        void OnNext(InputAction.CallbackContext context);
     }
 }

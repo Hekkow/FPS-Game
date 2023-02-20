@@ -75,7 +75,7 @@ public class HUD : MonoBehaviour
             {
                 hashtags += "#";
             }
-            for (int i = 0; i < gun.bulletsPerMag - gun.bulletsLeft; i++) 
+            for (int i = 0; i < gun.bulletsPerMag - gun.bulletsLeft; i++)
             {
                 hashtags += "-";
             }

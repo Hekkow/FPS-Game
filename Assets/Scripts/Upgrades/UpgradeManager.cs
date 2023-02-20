@@ -6,147 +6,155 @@ using UnityEngine;
 
 public class UpgradeManager : MonoBehaviour
 {
-    public static Dictionary<Upgrade, int> ownedUpgrades;
+    public static List<UpgradeInfo> ownedUpgrades;
     public static List<Upgrade> allUpgrades;
-    //public static List<Upgrade> ownedUpgrades;
-    float[] parameters;
-    Player player;
-    Upgrade currentUpgrade;
+    public class UpgradeInfo
+    {
+        public Upgrade upgrade;
+        public int slot;
+        public int amount = 0; 
+        public void SetSlot(int slot)
+        {
+            this.slot = slot;
+        }
+        public void ChangeAmount(int changeBy)
+        {
+            this.amount += changeBy;
+        }
+        public UpgradeInfo(Upgrade upgrade, int slot, int amount)
+        {
+            this.upgrade = upgrade;
+            this.slot = slot;
+            this.amount = amount;
+        }
+    }
+    void Start()
+    {
+        ownedUpgrades = new List<UpgradeInfo>();
+        allUpgrades = new List<Upgrade> 
+        {
+            new AttackSpeed(),
+            new BulletDamage(),
+            new BulletSpeed(),
+            new BulletsPerShot(),
+            new GravityFlip(),
+            new HealthBoost(),
+        };
+    }
+    public static void MoveUpgrades(Gun gun1, Gun gun2)
+    {
+        //for (int i = 0; i < ownedUpgrades.Count; i++)
+        //{
+        //    if (ownedUpgrades[i].slot == gun1.slot)
+        //    {
+        //        for (int j = 0; j < ownedUpgrades[i].amount; j++)
+        //        {
+        //            DeactivateUpgrade(ownedUpgrades[i].upgrade);
+        //            ActivateUpgrade(ownedUpgrades[i].upgrade);
+        //        }
+        //    }
+        //}
+    }
+    public static void ActivateUpgrade(Upgrade upgrade, int slot = 0)
+    {
+        if (upgrade != null)
+        {
+            int upgradeIndex = HasUpgrade(upgrade);
+            if (upgradeIndex == -1)
+            {
+                upgrade.Activate();
+                if (upgrade.category == Upgrade.Category.Gun) ownedUpgrades.Add(new UpgradeInfo(upgrade, Inventory.guns[0].slot, 1));
+                else ownedUpgrades.Add(new UpgradeInfo(upgrade, -1, 1));
+                Inventory.ResetBullets();
+            }
+            else if (ownedUpgrades[upgradeIndex].amount < upgrade.maxAmount)
+            {
+                upgrade.Activate(); 
+                ownedUpgrades[upgradeIndex].ChangeAmount(1);
+                Inventory.ResetBullets();
 
-    // mobility
-    public static bool canDash = false;
+            }
+        }
+    }
     
-    // stats
-    public static float healthMultiplier = 1;
-    public static float attackSpeedMultiplier = 1;
-    public static float bulletDamageMultiplier = 1;
-    public static float bulletSizeMultiplier = 1;
-    public static float bulletSpeedMultiplier = 1;
-    public static int bulletsPerShotAddition = 0;
-    public static int bulletsPerTapAddition = 0;
-    public static float bulletSpreadAddition = 0;
-    public static float reloadTimeMultiplier = 1;
-    public static int bulletsPerMagAddition = 0;
-
-
-    // bullets
-    public static bool gravityFlip = false;
-
-    void Awake()
-    {
-        ownedUpgrades = new Dictionary<Upgrade, int>();
-        allUpgrades = Resources.LoadAll("Scriptables/Upgrades", typeof(Upgrade)).Cast<Upgrade>().ToList();
-        player = GameObject.Find("Player").GetComponent<Player>();
-        for (int i = 0; i  < allUpgrades.Count; i++)
+    public static void DeactivateUpgrade(Upgrade upgrade)
+    { 
+        if (upgrade != null)
         {
-            Debug.Log(allUpgrades[i]);
-        }
-    }
-    public static List<Upgrade> RandomUpgrade()
-    {
-        List<Upgrade> list = new List<Upgrade>();
-        int counter = 0;
-        while (list.Count < 3 && counter < 200)
-        {
-            int x = Random.Range(0, allUpgrades.Count); 
-            Upgrade upgrade = UpgradeManager.allUpgrades[x];
-            if (ownedUpgrades.ContainsKey(upgrade))
+            int upgradeIndex = HasUpgrade(upgrade);
+            if (upgradeIndex != -1)
             {
-                if (ownedUpgrades[upgrade] < upgrade.maxAmount && !list.Contains(upgrade))
+                upgrade.Deactivate();
+                if (ownedUpgrades[upgradeIndex].amount > 1)
                 {
-                    list.Add(upgrade);
+                    ownedUpgrades[upgradeIndex].ChangeAmount(-1);
                 }
+                else ownedUpgrades.RemoveAt(upgradeIndex);
             }
-            else if (!list.Contains(upgrade))
-            {
-                list.Add(upgrade);
-            }
-            counter++;
         }
-        return list;
     }
-    public Upgrade FindUpgrade(string name)
+    public static int HasUpgrade(Upgrade upgrade)
+    {
+        for (int i = 0; i < ownedUpgrades.Count; i++)
+        {
+            if (ownedUpgrades[i].upgrade == upgrade)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static Upgrade FindUpgrade(string name)
     {
         Upgrade upgrade = null;
         for (int i = 0; i < allUpgrades.Count; i++)
         {
-            if (allUpgrades[i].name.ToLower().Replace(" ", "") == name.ToLower())
+            if (allUpgrades[i].upgradeName.ToLower().Replace(" ", "") == name.ToLower())
             {
                 upgrade = allUpgrades[i];
             }
         }
         return upgrade;
     }
-    public void ApplyUpgrade(Upgrade upgrade, params float[] parameters)
+    //public static int GetSlot()
+    public static List<Upgrade> RandomUpgrades(int amount)
     {
-        if (upgrade != null) {
-            currentUpgrade = upgrade;
-            this.parameters = parameters;
-            if (ownedUpgrades.ContainsKey(upgrade))
-            {
-                if (ownedUpgrades[upgrade] < upgrade.maxAmount)
-                {
-                    ownedUpgrades[upgrade]++;
-                }
-            }
-            else ownedUpgrades.Add(upgrade, 1);
-            Invoke(upgrade.functionName, 0);
-            StartCoroutine(ResetBullets());
-            
-
-        }
-        else
+        List<Upgrade> list = new List<Upgrade>();
+        int counter = 0;
+        while (list.Count < amount && counter < 200)
         {
-            Debug.Log("Invalid upgrade");
+            int randomNumber = Random.Range(0, allUpgrades.Count);
+            Upgrade upgrade = UpgradeManager.allUpgrades[randomNumber];
+            if (UpgradeManager.HasUpgrade(upgrade) == -1 && !list.Contains(upgrade))
+            {
+                list.Add(upgrade);
+                //Debug.Log(list[list.Count-1]);
+
+            }
+            counter++;
+        }
+        return list;
+    }
+    public static void PrintAllUpgrades()
+    {
+        for (int i = 0; i < allUpgrades.Count; i++)
+        {
+            Debug.Log(allUpgrades[i].upgradeName);
         }
     }
-    IEnumerator ResetBullets()
+    public static void PrintOwnedUpgrades()
     {
-        yield return new WaitForEndOfFrame();
-        if (Inventory.HasGuns(0)) Inventory.guns[0].ResetBullets();
-        if (Inventory.HasGuns(1)) Inventory.guns[1].ResetBullets();
-    }
-    void Health()
-    {
-        GameObject.Find("Player").GetComponent<Health>().MultiplyMaxHealth(currentUpgrade.amount[0]);
-    }
-    void AttackSpeed()
-    {
-        attackSpeedMultiplier *= currentUpgrade.amount[0];
-    }
-    void BulletDamage()
-    {
-        bulletDamageMultiplier *= currentUpgrade.amount[0];
-    }
-    void BulletSize()
-    {
-        bulletSizeMultiplier *= currentUpgrade.amount[0];
-    }
-    void BulletSpeed()
-    {
-        bulletSpeedMultiplier *= currentUpgrade.amount[0];
-    }
-    void BulletsPerShot()
-    {
-        bulletsPerShotAddition += (int)currentUpgrade.amount[0];
-        bulletSpreadAddition += currentUpgrade.amount[1];
-        Inventory.guns[0].bulletsPerMag += bulletsPerShotAddition * Inventory.guns[0].bulletsPerMag;
-
-        //bulletsPerMagAddition *= (int)currentUpgrade.amount[0];
-
-    }
-    void BulletsPerTap()
-    {
-        bulletsPerTapAddition += (int)currentUpgrade.amount[0];
-        Inventory.guns[0].bulletsPerMag += bulletsPerTapAddition * Inventory.guns[0].bulletsPerMag;
-        Debug.Log("here1");
-    }
-    void GravityFlip()
-    {
-        gravityFlip = true;
-    }
-    void ReloadTime()
-    {
-        reloadTimeMultiplier *= currentUpgrade.amount[0];
+        for (int i = 0; i < ownedUpgrades.Count; i++)
+        {
+            if (ownedUpgrades[i].upgrade.category == Upgrade.Category.Gun)
+            {
+                Debug.Log(ownedUpgrades[i].upgrade.upgradeName + " at slot " + ownedUpgrades[i].slot + " x " + ownedUpgrades[i].amount);
+            }
+            else
+            {
+                Debug.Log(ownedUpgrades[i].upgrade.upgradeName + " x " + ownedUpgrades[i].amount);
+            }
+        }
     }
 }

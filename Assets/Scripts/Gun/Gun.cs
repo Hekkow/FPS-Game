@@ -12,22 +12,25 @@ public class Gun : MonoBehaviour
     [SerializeField] Player player;
 
     [SerializeField] Transform attackPoint;
-    int bulletsPerShot = 1;
-    int bulletsPerTap = 1;
-    float bulletSize = 7;
-    float bulletSpeed = 100;
-    float bulletDamage = 34;
-    float bulletKnockback = 2000;
-    float attackSpeed = 1;
-    float bulletSpread = 0;
-    float reloadTime = 1f;
-    int bulletsShot;
+    public int slot = -1;
+    public int bulletsPerShot = 1;
+    public int bulletsPerTap = 1;
+    public float bulletSize = 7;
+    public float bulletSpeed = 200;
+    public float bulletDamage = 34;
+    public float bulletKnockback = 2000;
+    public float attackSpeed = 1;
+    public float bulletSpread = 0;
+    public float reloadTime = 1f;
     public int bulletsPerMag = 6;
     public int bulletsLeft = 6;
+
+
+    public bool gravityFlip = false;
+
+
     bool readyToShoot = true;
-    bool allowInvoke = true;
     bool shooting = false;
-    bool gunShot = false;
     bool reloading = false;
     new Camera camera;
     Coroutine reloadCoroutine;
@@ -42,6 +45,10 @@ public class Gun : MonoBehaviour
 
     void OnEnable()
     {
+        if (bulletsLeft <= 0)
+        {
+            reloadCoroutine = StartCoroutine(WaitThenReload(0));
+        }
         InputManager.playerInput.Player.Shoot.performed += (obj) => shooting = true;
         InputManager.playerInput.Player.Shoot.canceled += (obj) => shooting = false;
         InputManager.playerInput.Player.Reload.performed += Reload;
@@ -51,6 +58,8 @@ public class Gun : MonoBehaviour
     }
     void OnDisable()
     {
+        StopCoroutine(reloadCoroutine);
+        readyToShoot = true; 
         InputManager.playerInput.Player.Reload.Disable();
         InputManager.playerInput.Player.Shoot.Disable();
     }
@@ -60,7 +69,6 @@ public class Gun : MonoBehaviour
         {
             if (readyToShoot && bulletsLeft > 0)
             {
-                bulletsShot = 0;
                 ShootGun();
             }
         }
@@ -71,8 +79,6 @@ public class Gun : MonoBehaviour
     {
         reloading = false;
         StopCoroutine(reloadCoroutine);
-        
-        gunShot = true;
         readyToShoot = false;
 
         // calculates direction
@@ -90,7 +96,7 @@ public class Gun : MonoBehaviour
         }
 
 
-        for (int i = 0; i < bulletsPerShot + UpgradeManager.bulletsPerShotAddition; i++)
+        for (int i = 0; i < bulletsPerShot; i++)
         {
             bulletsLeft--;
             Vector3 direction = targetPoint - attackPoint.position; // + RandomSpread();
@@ -101,64 +107,45 @@ public class Gun : MonoBehaviour
             currentBullet.transform.forward = direction.normalized;
             Vector3 randomSpread = RandomSpread();
             currentBullet.transform.Rotate(randomSpread);
-            currentBullet.transform.localScale *= bulletSize * UpgradeManager.bulletSizeMultiplier;
-            currentBullet.GetComponent<Rigidbody>().velocity = bulletSpeed * UpgradeManager.bulletSpeedMultiplier * direction.normalized;
+            currentBullet.transform.localScale *= bulletSize;
+            currentBullet.GetComponent<Rigidbody>().velocity = bulletSpeed * direction.normalized;
 
             // creates bullet with specified stats
-            Helper.AddDamage(currentBullet, bulletDamage * UpgradeManager.bulletDamageMultiplier, bulletKnockback, false, false);
-
+            Helper.AddDamage(currentBullet, bulletDamage, bulletKnockback, false, false);
+            Bullet bullet = currentBullet.GetComponent<Bullet>();
+            bullet.gravityFlip = gravityFlip;
 
         }
-        bulletsShot++;
 
-
-        // attack speed
-
-        if (allowInvoke)
-        {
-            Invoke("ResetShot", 1/(attackSpeed*UpgradeManager.attackSpeedMultiplier));
-            allowInvoke = false;
-        }
-
-        // time between all bullets from same tap
-
-        if (bulletsShot < bulletsPerTap + UpgradeManager.bulletsPerTapAddition)
-        {
-
-            Invoke("ShootGun", 1 / (attackSpeed * UpgradeManager.attackSpeedMultiplier * (UpgradeManager.bulletsPerTapAddition+1)));
-        }
+        StartCoroutine(ResetShot());
 
         shootAnimator.Play("shoot", 0, 0f);
 
-        shootAnimator.speed = attackSpeed * UpgradeManager.attackSpeedMultiplier; 
-        gunShot = false;
+        shootAnimator.speed = attackSpeed;
         if (bulletsLeft <= 0)
         {
-            reloadCoroutine = StartCoroutine(WaitThenReload(1 / (attackSpeed * UpgradeManager.attackSpeedMultiplier)));
+            reloadCoroutine = StartCoroutine(WaitThenReload(1/attackSpeed));
         }
     }
 
-
+    IEnumerator ResetShot()
+    {
+        yield return new WaitForSeconds(1 / (attackSpeed));
+        readyToShoot = true;
+    }
     Vector3 RandomSpread()
     {
 
-        float x = Random.Range(-bulletSpread - UpgradeManager.bulletSpreadAddition, bulletSpread + UpgradeManager.bulletSpreadAddition);
-        float y = Random.Range(-bulletSpread - UpgradeManager.bulletSpreadAddition, bulletSpread + UpgradeManager.bulletSpreadAddition);
+        float x = Random.Range(-bulletSpread, bulletSpread);
+        float y = Random.Range(-bulletSpread, bulletSpread);
         float z = 0;
         return new Vector3(x, y, z);
-    }
-
-    void ResetShot()
-    {
-        readyToShoot = true;
-        allowInvoke = true;
     }
     void Reload(InputAction.CallbackContext obj)
     {
 
         if (!reloading && bulletsPerMag > bulletsLeft)
         {
-            Debug.Log("HERE");
             reloadCoroutine = StartCoroutine(WaitThenReload(0));
         }
     }
@@ -167,8 +154,8 @@ public class Gun : MonoBehaviour
         yield return new WaitForSeconds(time);
         reloading = true;
         shootAnimator.Play("reload", 0, 0f);
-        shootAnimator.speed = reloadTime * UpgradeManager.reloadTimeMultiplier;
-        yield return new WaitForSeconds(reloadTime / UpgradeManager.reloadTimeMultiplier);
+        shootAnimator.speed = reloadTime;
+        yield return new WaitForSeconds(reloadTime);
         reloading = false;
         ResetBullets();
     }
@@ -176,6 +163,5 @@ public class Gun : MonoBehaviour
     {
         bulletsLeft = bulletsPerMag;
         readyToShoot = true;
-
     }
 }

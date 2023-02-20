@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
-using System.Diagnostics.Tracing;
+using UnityEngine.InputSystem;
 
 public class UI : MonoBehaviour {
     [SerializeField] GameObject player;
@@ -10,18 +9,72 @@ public class UI : MonoBehaviour {
     [SerializeField] GameObject upgradeMenu;
     [SerializeField] GameObject upgradeBox;
     [SerializeField] GameObject pauseMenu;
+    [SerializeField] GameObject tabMenu;
+    bool tabMenuActive = false;
     GameObject openMenu;
     GameObject HUD;
     new FPSCamera camera;
 
     [HideInInspector] public static bool inMenu = false;
 
+    void Start()
+    {
+        InputManager.playerInput.Player.Tab.performed += OpenTab;
+        InputManager.playerInput.Player.Tab.Enable();
+
+    }
+    void OpenTab(InputAction.CallbackContext obj)
+    {
+        if (tabMenuActive)
+        {
+            for (int i = 0; i < tabMenu.transform.childCount; i++)
+            {
+                Destroy(tabMenu.transform.GetChild(i).gameObject);
+            }
+            tabMenu.SetActive(false);
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            tabMenuActive = false;
+        }
+        else
+        {
+            tabMenu.SetActive(true);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            GameObject upgradeBoxTmp = Instantiate(Resources.Load<GameObject>("Prefabs/Button"), tabMenu.transform);
+            float width = upgradeBoxTmp.GetComponent<RectTransform>().sizeDelta.x;
+            float height = upgradeBoxTmp.GetComponent<RectTransform>().sizeDelta.y;
+            float count = UpgradeManager.ownedUpgrades.Count;
+            Destroy(upgradeBoxTmp);
+            int[] slots = new int[] { 0, 0, 0 };
+            for (int i = 0; i < count; i++)
+            {
+                Upgrade upgrade = UpgradeManager.ownedUpgrades[i].upgrade;
+                int slot = UpgradeManager.ownedUpgrades[i].slot;
+                if (slot != -1)
+                {
+                    GameObject upgradeBox = Instantiate(Resources.Load<GameObject>("Prefabs/Button"), tabMenu.transform);
+                    upgradeBox.GetComponentInChildren<TMP_Text>().text = upgrade.upgradeName;
+                    float x = slots[slot]%2 * width - Screen.width / 2 + width / 2 + slot * (Screen.width / 3) +5 ;
+                    float y = slots[slot]/2 * -height + Screen.height/2 - height/2 + 5;
+                    upgradeBox.transform.localPosition = new Vector3(x, y, 0);
+                    upgradeBox.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => UpgradeClicked(upgradeBox));
+                    slots[slot]++;
+                }
+            }
+            tabMenuActive = true;
+        }
+    }
+    void UpgradeClicked(GameObject box)
+    {
+        Debug.Log(box.name);
+    }
     //void Start()
     //{
     //    camera = player.GetComponentInChildren<PlayerCamera>();
     //    HUD = GameObject.Find("HUD");
     //}
-    
+
 
     //void Update() 
     //{

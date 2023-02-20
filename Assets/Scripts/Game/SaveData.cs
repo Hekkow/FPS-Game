@@ -9,8 +9,7 @@ public class SaveData
     public Quaternion rotation;
     public Vector3 scale;
     public Vector3 velocity;
-
-    public List<string> guns;
+    public List<string> commandHistory;
     public float maxHealth;
     public float currentHealth;
 

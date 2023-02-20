@@ -11,28 +11,47 @@ public class Console : MonoBehaviour
 
     UpgradeManager upgradeManager;
     [SerializeField] GameObject player;
+    public List<string> commandHistory;
+    int current;
     bool showConsole = false;
     string command;
     void Awake()
     {
         upgradeManager = GameObject.Find("GameManager").GetComponent<UpgradeManager>();
     }
+    void Start()
+    {
+        if (commandHistory == null)
+        {
+            commandHistory = new List<string>();
+        }
+        current = commandHistory.Count;
+    }
     void OnEnable()
     {
         InputManager.playerInput.Player.Console.performed += ToggleConsole;
-        InputManager.playerInput.UI.Execute.performed += ExecuteCommand;
+        InputManager.playerInput.Console.Execute.performed += ExecuteCommand;
+        InputManager.playerInput.Console.Previous.performed += PreviousCommand;
+        InputManager.playerInput.Console.Next.performed += NextCommand;
+
         InputManager.playerInput.Player.Console.Enable();
-        InputManager.playerInput.UI.Execute.Enable();
+        InputManager.playerInput.Console.Execute.Enable();
+        InputManager.playerInput.Console.Previous.Enable();
+        InputManager.playerInput.Console.Next.Enable();
+
     }
     void OnDisable()
     {
         InputManager.playerInput.Player.Console.Disable();
-        InputManager.playerInput.UI.Execute.Disable();
+        InputManager.playerInput.Console.Execute.Disable();
+        InputManager.playerInput.Console.Previous.Disable();
+        InputManager.playerInput.Console.Next.Disable();
     }
     void ToggleConsole(InputAction.CallbackContext obj)
     {
 
-        InputManager.SwitchActionMap(InputManager.playerInput.UI);
+        InputManager.SwitchActionMap(InputManager.playerInput.Console);
+        current = commandHistory.Count;
         showConsole = !showConsole;
         command = "";
     }
@@ -50,39 +69,78 @@ public class Console : MonoBehaviour
         string[] words = command.Split(' ');
         if (words[0] == "upgrade")
         {
-            if (words.Length == 2)
-            {
-                upgradeManager.ApplyUpgrade(upgradeManager.FindUpgrade(words[1]));
-            }
-            else
+            if (words[1] == "random")
             {
                 for (int i = 0; i < int.Parse(words[2]); i++)
                 {
-                    upgradeManager.ApplyUpgrade(upgradeManager.FindUpgrade(words[1]));
+                    List<Upgrade> upgrade = UpgradeManager.RandomUpgrades(1);
+                    UpgradeManager.ActivateUpgrade(upgrade[0]);
                 }
             }
-
-
+            else
+            {
+                int spot = 0;
+                if (words[1] == "-r")
+                {
+                    spot = 1;
+                }
+                Upgrade upgrade = UpgradeManager.FindUpgrade(words[1 + spot]);
+                if (upgrade != null)
+                {
+                    if (words.Length == 2 + spot)
+                    {
+                        if (spot == 0) UpgradeManager.ActivateUpgrade(upgrade);
+                        else UpgradeManager.DeactivateUpgrade(upgrade);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < int.Parse(words[2 + spot]); i++)
+                        {
+                            //for (int j = 0; j < UpgradeManager.ownedUpgrades.Count; j++)
+                            //{
+                            //    Debug.Log(UpgradeManager.ownedUpgrades[j].upgrade.upgradeName + " " + UpgradeManager.ownedUpgrades[j].amount);
+                            //} 
+                            if (spot == 0) UpgradeManager.ActivateUpgrade(upgrade);
+                            else UpgradeManager.DeactivateUpgrade(upgrade);
+                        }
+                        
+                    }
+                }
+            }
         }
         else if (words[0] == "print")
         {
             if (words[1] == "upgrades")
             {
-                foreach (KeyValuePair<Upgrade, int> entry in UpgradeManager.ownedUpgrades)
+                UpgradeManager.PrintOwnedUpgrades();
+                if (words.Length == 3 && words[2] == "amount") 
                 {
-                    Debug.Log(entry.Key.name + " x " + entry.Value);
+                    Debug.Log(UpgradeManager.ownedUpgrades.Count); 
                 }
             }
             else if (words[1] == "all")
             {
                 if (words[2] == "upgrades")
                 {
-                    for (int i = 0; i < UpgradeManager.allUpgrades.Count; i++)
+                    UpgradeManager.PrintAllUpgrades();
+                }
+            }
+            else if (words[1] == "random")
+            {
+                if (words[2] == "upgrades")
+                {
+                    List<Upgrade> upgrades = UpgradeManager.RandomUpgrades(int.Parse(words[3]));
+                    for (int i = 0; i < int.Parse(words[3]); i++)
                     {
-                        Debug.Log(UpgradeManager.allUpgrades[i].name);
+                        Debug.Log(upgrades[i]);
                     }
                 }
             }
+            else if (words[1] == "slot")
+            {
+                Debug.Log(Inventory.guns[0].slot);
+            }
+
         }
         else if (words[0] == "spawn")
         {
@@ -101,15 +159,46 @@ public class Console : MonoBehaviour
             Debug.Log("print upgrades");
             Debug.Log("upgrade upgradename [amount]");
         }
-
+        else if (words[0] == "history")
+        {
+            for (int i = 0; i < commandHistory.Count; i++)
+            {
+                Debug.Log(commandHistory[i]);
+            }
+        }
         else
         {
             if (command != "") Debug.Log("that command dont exist bruv");
         }
+        if (command != "" && command != commandHistory[commandHistory.Count-1]) commandHistory.Add(command);
         InputManager.SwitchActionMap(InputManager.playerInput.Player);
         showConsole = !showConsole;
         command = "";
     }
+
+    void PreviousCommand(InputAction.CallbackContext obj)
+    {
+        if (current > 0)
+        {
+            current--;
+
+            command = commandHistory[current];
+        }
+    }
+    void NextCommand(InputAction.CallbackContext obj)
+    {
+        if (current == commandHistory.Count-1) 
+        {
+            current = commandHistory.Count;
+            command = "";
+        }
+        else if (current < commandHistory.Count)
+        {
+            current++;
+            command = commandHistory[current];
+        }
+    }
+
     IEnumerator Spawn(string prefabPath, int amount, float distance, float timeBetween)
     {
         for (int i = 0; i < amount; i++)
