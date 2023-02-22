@@ -32,6 +32,7 @@ public class Player : MonoBehaviour
     public int maxJumps;
 
     [Header("Dash")]
+    public bool canDash = false;
     public float dashTime;
     public float dashForce;
 

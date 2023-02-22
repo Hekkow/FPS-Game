@@ -6,7 +6,6 @@ using UnityEngine;
 public class PickupUpgrade : MonoBehaviour
 {
     public Upgrade upgrade;
-    UpgradeManager upgradeManager;
     Transform parent;
     List<Transform> upgradeBoxes = new List<Transform>();
     bool upgraded = false;
@@ -17,13 +16,12 @@ public class PickupUpgrade : MonoBehaviour
         {
             upgradeBoxes.Add(transform.parent.GetChild(i));
         }
-        upgradeManager = GameObject.Find("GameManager").GetComponent<UpgradeManager>();
     }
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.GetComponent<Bullet>() != null && !upgraded)
         {
-            //upgradeManager.ApplyUpgrade(upgrade);
+            UpgradeManager.ActivateUpgrade(upgrade);
             StartCoroutine(Destroys());
         }
     }

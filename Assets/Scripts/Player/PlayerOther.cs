@@ -10,7 +10,7 @@ public class PlayerOther : MonoBehaviour
     [SerializeField] GameManager gameManager;
     [SerializeField] Transform leftHandLocation;
     [SerializeField] Transform rightHandLocation;
-
+    [SerializeField] GameEvent onWeaponChange;
     Player player;
     bool canSwitch = true;
 
@@ -44,6 +44,8 @@ public class PlayerOther : MonoBehaviour
                 Inventory.guns[0].gameObject.SetActive(true);
             }
             StartCoroutine(RenableSwitch());
+            onWeaponChange.Raise();
+
         }
     }
     IEnumerator RenableSwitch()
@@ -68,7 +70,7 @@ public class PlayerOther : MonoBehaviour
         }
         if (rightHandLocation.childCount > 0)
         {
-            Transform item = rightHandLocation.GetChild(0);
+            Transform item = Inventory.guns[0].transform;
             item.localPosition = Vector3.zero;
             item.localRotation = Quaternion.identity;
         }
@@ -151,6 +153,7 @@ public class PlayerOther : MonoBehaviour
         Helper.ToggleComponent<Gun>(item.gameObject, true);
         Helper.ToggleComponent<Animator>(item.gameObject, true);
         Destroy(item);
+        onWeaponChange.Raise();
     }
     void ThrowItem(InputAction.CallbackContext obj)
     {
@@ -173,6 +176,8 @@ public class PlayerOther : MonoBehaviour
         {
             Inventory.guns[0].gameObject.SetActive(true);
         }
+        onWeaponChange.Raise();
+
     }
     Pickup GetClosest()
     {

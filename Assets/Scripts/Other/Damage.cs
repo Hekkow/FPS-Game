@@ -68,9 +68,6 @@ public class Damage : MonoBehaviour
                     Rigidbody rb = GetComponent<Rigidbody>();
                     if (rb != null)
                     {
-
-                        //Debug.Log(velocityMagnitude * rb.mass / 10);
-                        //Debug.Log(gameObject.name + " velocity: " + velocityMagnitude + " mass: " + rb.mass + " / 10 " + (velocityMagnitude * rb.mass / 10));
                         damage = velocityMagnitude * rb.mass / 10;
                     }
                 }
@@ -115,6 +112,6 @@ public class Damage : MonoBehaviour
     }
     void HitMarker()
     {
-        GameObject.Find("Reticle").GetComponent<HitMarker>().Mark();
+        //GameObject.Find("Reticle").GetComponent<HitMarker>().Mark(); 
     }
 }

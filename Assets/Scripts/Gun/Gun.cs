@@ -12,6 +12,11 @@ public class Gun : MonoBehaviour
     [SerializeField] Player player;
 
     [SerializeField] Transform attackPoint;
+
+    public GameEvent onGunShot;
+    public GameEvent onReload;
+
+
     public int slot = -1;
     public int bulletsPerShot = 1;
     public int bulletsPerTap = 1;
@@ -24,6 +29,7 @@ public class Gun : MonoBehaviour
     public float reloadTime = 1f;
     public int bulletsPerMag = 6;
     public int bulletsLeft = 6;
+    public int shotsPerMag = 6;
 
 
     public bool gravityFlip = false;
@@ -34,9 +40,11 @@ public class Gun : MonoBehaviour
     bool reloading = false;
     new Camera camera;
     Coroutine reloadCoroutine;
+    GameObject bulletPrefab;
 
     void Awake()
     {
+        bulletPrefab = Resources.Load<GameObject>("Prefabs/Bullet");
         camera = Camera.main;
         shootAnimator = GetComponent<Animator>();
         reloadCoroutine = StartCoroutine(WaitThenReload(0));
@@ -99,17 +107,18 @@ public class Gun : MonoBehaviour
         for (int i = 0; i < bulletsPerShot; i++)
         {
             bulletsLeft--;
-            Vector3 direction = targetPoint - attackPoint.position; // + RandomSpread();
+            Vector3 direction = targetPoint - attackPoint.position;// + RandomSpread();
 
             // creates bullet and sends it zoomin
 
-            GameObject currentBullet = Instantiate(Resources.Load<GameObject>("Prefabs/Bullet"), attackPoint.position, Quaternion.identity);
+            GameObject currentBullet = Instantiate(bulletPrefab, attackPoint.position, Quaternion.identity);
+            currentBullet.layer = 20;
             currentBullet.transform.forward = direction.normalized;
             Vector3 randomSpread = RandomSpread();
             currentBullet.transform.Rotate(randomSpread);
             currentBullet.transform.localScale *= bulletSize;
-            currentBullet.GetComponent<Rigidbody>().velocity = bulletSpeed * direction.normalized;
-
+            currentBullet.GetComponent<Rigidbody>().velocity = bulletSpeed * currentBullet.transform.forward;
+            
             // creates bullet with specified stats
             Helper.AddDamage(currentBullet, bulletDamage, bulletKnockback, false, false);
             Bullet bullet = currentBullet.GetComponent<Bullet>();
@@ -126,6 +135,8 @@ public class Gun : MonoBehaviour
         {
             reloadCoroutine = StartCoroutine(WaitThenReload(1/attackSpeed));
         }
+        onGunShot.Raise();
+
     }
 
     IEnumerator ResetShot()
@@ -154,10 +165,11 @@ public class Gun : MonoBehaviour
         yield return new WaitForSeconds(time);
         reloading = true;
         shootAnimator.Play("reload", 0, 0f);
-        shootAnimator.speed = reloadTime;
+        shootAnimator.speed = 1/reloadTime;
         yield return new WaitForSeconds(reloadTime);
         reloading = false;
         ResetBullets();
+        onReload.Raise();
     }
     public void ResetBullets()
     {

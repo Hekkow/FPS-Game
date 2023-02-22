@@ -9,13 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f25c7e940241ae4ca840918b236ff33, type: 3}
-  m_Name: BulletSpeed
+  m_Script: {fileID: 11500000, guid: 7adba0a53773fc848af57969b9cb6836, type: 3}
+  m_Name: GunSwitched
   m_EditorClassIdentifier: 
-  name: Bullet Speed
-  description: doubles bullet speed
-  sprite: bulletsped.jpeg
-  functionName: BulletSpeed
-  maxAmount: 100
-  amount:
-  - 1.5
+  listeners: []

@@ -89,18 +89,26 @@ public class Console : MonoBehaviour
                 {
                     if (words.Length == 2 + spot)
                     {
-                        if (spot == 0) UpgradeManager.ActivateUpgrade(upgrade);
+                        if (spot == 0)
+                        {
+                            if (!UpgradeManager.ActivateUpgrade(upgrade))
+                            {
+                                Debug.Log("Upgrade not found");
+                            }
+                        }
                         else UpgradeManager.DeactivateUpgrade(upgrade);
                     }
                     else
                     {
                         for (int i = 0; i < int.Parse(words[2 + spot]); i++)
                         {
-                            //for (int j = 0; j < UpgradeManager.ownedUpgrades.Count; j++)
-                            //{
-                            //    Debug.Log(UpgradeManager.ownedUpgrades[j].upgrade.upgradeName + " " + UpgradeManager.ownedUpgrades[j].amount);
-                            //} 
-                            if (spot == 0) UpgradeManager.ActivateUpgrade(upgrade);
+                            if (spot == 0)
+                            {
+                                if (!UpgradeManager.ActivateUpgrade(upgrade))
+                                {
+                                    Debug.Log("Upgrade not found");
+                                }
+                            }
                             else UpgradeManager.DeactivateUpgrade(upgrade);
                         }
                         

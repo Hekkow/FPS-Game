@@ -207,8 +207,12 @@ public class Movement : MonoBehaviour
     }
     void Dash(InputAction.CallbackContext obj)
     {
-        StopCoroutine(StartDash());
-        StartCoroutine(StartDash());
+        if (player.canDash)
+        {
+            StopCoroutine(StartDash());
+            StartCoroutine(StartDash());
+        }
+        
         //Vector3 dashDirection;
         //Vector2 moveInput = movementInput.ReadValue<Vector2>();
         //if (moveInput.x == 0 && moveInput.y == 0)

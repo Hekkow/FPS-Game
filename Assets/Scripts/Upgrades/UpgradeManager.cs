@@ -8,6 +8,7 @@ public class UpgradeManager : MonoBehaviour
 {
     public static List<UpgradeInfo> ownedUpgrades;
     public static List<Upgrade> allUpgrades;
+    public GameEvent onUpgrade;
     public class UpgradeInfo
     {
         public Upgrade upgrade;
@@ -36,26 +37,13 @@ public class UpgradeManager : MonoBehaviour
             new AttackSpeed(),
             new BulletDamage(),
             new BulletSpeed(),
-            new BulletsPerShot(),
+            new BulletSize(), 
+            new Pellets(),
             new GravityFlip(),
             new HealthBoost(),
         };
     }
-    public static void MoveUpgrades(Gun gun1, Gun gun2)
-    {
-        //for (int i = 0; i < ownedUpgrades.Count; i++)
-        //{
-        //    if (ownedUpgrades[i].slot == gun1.slot)
-        //    {
-        //        for (int j = 0; j < ownedUpgrades[i].amount; j++)
-        //        {
-        //            DeactivateUpgrade(ownedUpgrades[i].upgrade);
-        //            ActivateUpgrade(ownedUpgrades[i].upgrade);
-        //        }
-        //    }
-        //}
-    }
-    public static void ActivateUpgrade(Upgrade upgrade, int slot = 0)
+    public static bool ActivateUpgrade(Upgrade upgrade)
     {
         if (upgrade != null)
         {
@@ -66,15 +54,19 @@ public class UpgradeManager : MonoBehaviour
                 if (upgrade.category == Upgrade.Category.Gun) ownedUpgrades.Add(new UpgradeInfo(upgrade, Inventory.guns[0].slot, 1));
                 else ownedUpgrades.Add(new UpgradeInfo(upgrade, -1, 1));
                 Inventory.ResetBullets();
+                Resources.Load<GameEvent>("Events/Upgrade").Raise();
+                return true;
             }
             else if (ownedUpgrades[upgradeIndex].amount < upgrade.maxAmount)
             {
                 upgrade.Activate(); 
                 ownedUpgrades[upgradeIndex].ChangeAmount(1);
                 Inventory.ResetBullets();
-
+                Resources.Load<GameEvent>("Events/Upgrade").Raise();
+                return true;
             }
         }
+        return false;
     }
     
     public static void DeactivateUpgrade(Upgrade upgrade)
@@ -129,7 +121,6 @@ public class UpgradeManager : MonoBehaviour
             if (UpgradeManager.HasUpgrade(upgrade) == -1 && !list.Contains(upgrade))
             {
                 list.Add(upgrade);
-                //Debug.Log(list[list.Count-1]);
 
             }
             counter++;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public abstract class Upgrade
 {
@@ -66,17 +67,47 @@ public class BulletSpeed : Upgrade
         //UpgradeManager.bulletDamageMultiplier /= 2;
     }
 }
-public class BulletsPerShot : Upgrade
+public class BulletSize : Upgrade
 {
-    public BulletsPerShot(params float[] parameters)
+    public BulletSize(params float[] parameters)
     {
-        upgradeName = "Bullets Per Shot";
+        upgradeName = "Bullet Size";
+        maxAmount = 100;
+    }
+    public override void Activate()
+    {
+        Inventory.guns[0].bulletSize *= 1.5f;
+    }
+    public override void Deactivate()
+    {
+        //UpgradeManager.bulletDamageMultiplier /= 2;
+    }
+}
+public class Pellets : Upgrade
+{
+    public Pellets(params float[] parameters)
+    {
+        upgradeName = "Pellets";
         maxAmount = 100;
     }
     public override void Activate()
     {
         Inventory.guns[0].bulletsPerShot += 8;
-        Inventory.guns[0].bulletsPerMag += 8 * Inventory.guns[0].bulletsPerMag;
+        Inventory.guns[0].shotsPerMag -= 1;
+        if (Inventory.guns[0].shotsPerMag < 3)
+        {
+            Inventory.guns[0].shotsPerMag = 3;
+            Inventory.guns[0].bulletsPerMag += 8 * (Inventory.guns[0].shotsPerMag);
+        }
+        else
+        {
+            Inventory.guns[0].bulletsPerMag += 8 * (Inventory.guns[0].shotsPerMag + 1) - Inventory.guns[0].bulletsPerShot;
+        }
+
+        Inventory.guns[0].bulletSpread += 2;
+        Inventory.guns[0].bulletSize /= 1.5f;
+        Inventory.guns[0].reloadTime += 0.2f;
+        Inventory.guns[0].bulletDamage *= 0.9f;
     }
     public override void Deactivate()
     {
