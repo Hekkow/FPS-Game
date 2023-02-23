@@ -7,18 +7,15 @@ using System.Xml;
 
 public class Console : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] TMP_InputField inputField;
-
-    UpgradeManager upgradeManager;
     [SerializeField] GameObject player;
-    public List<string> commandHistory;
+    [HideInInspector] public List<string> commandHistory;
+
     int current;
     bool showConsole = false;
     string command;
-    void Awake()
-    {
-        upgradeManager = GameObject.Find("GameManager").GetComponent<UpgradeManager>();
-    }
+
     void Start()
     {
         if (commandHistory == null)
@@ -183,7 +180,6 @@ public class Console : MonoBehaviour
         showConsole = !showConsole;
         command = "";
     }
-
     void PreviousCommand(InputAction.CallbackContext obj)
     {
         if (current > 0)
@@ -206,7 +202,6 @@ public class Console : MonoBehaviour
             command = commandHistory[current];
         }
     }
-
     IEnumerator Spawn(string prefabPath, int amount, float distance, float timeBetween)
     {
         for (int i = 0; i < amount; i++)

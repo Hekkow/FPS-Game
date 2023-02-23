@@ -4,9 +4,13 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] GameObject player;
-    [SerializeField] float timeScale;
     [SerializeField] Console console;
+
+    [Header("Options")]
+    [SerializeField] float timeScale;
+
 
     public static Vector3 spawnLocation = new Vector3(0, 100, 0);
 
@@ -27,7 +31,6 @@ public class GameManager : MonoBehaviour
             //player.transform.localScale = data.scale;
         }
     }
-    
     public void Save()
     {
         SaveData data = new SaveData();

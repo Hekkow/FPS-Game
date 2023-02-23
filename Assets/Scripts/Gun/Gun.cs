@@ -14,7 +14,9 @@ public class Gun : MonoBehaviour
     [SerializeField] Transform attackPoint;
 
     public GameEvent onGunShot;
-    public GameEvent onReload;
+    public GameEvent beforeReload;
+    public GameEvent afterReload;
+
 
 
     public int slot = -1;
@@ -26,11 +28,10 @@ public class Gun : MonoBehaviour
     public float bulletKnockback = 2000;
     public float attackSpeed = 1;
     public float bulletSpread = 0;
-    public float reloadTime = 1f;
+    public float reloadSpeed = 1f;
     public int bulletsPerMag = 6;
     public int bulletsLeft = 6;
     public int shotsPerMag = 6;
-
 
     public bool gravityFlip = false;
 
@@ -163,13 +164,14 @@ public class Gun : MonoBehaviour
     IEnumerator WaitThenReload(float time)
     {
         yield return new WaitForSeconds(time);
+        beforeReload.Raise();
         reloading = true;
         shootAnimator.Play("reload", 0, 0f);
-        shootAnimator.speed = 1/reloadTime;
-        yield return new WaitForSeconds(reloadTime);
+        shootAnimator.speed = reloadSpeed;
+        yield return new WaitForSeconds(1/reloadSpeed);
         reloading = false;
         ResetBullets();
-        onReload.Raise();
+        afterReload.Raise();
     }
     public void ResetBullets()
     {

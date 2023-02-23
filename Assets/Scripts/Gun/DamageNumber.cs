@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class DamageNumber : MonoBehaviour
 {
-    public TMP_Text damageNumbersText;
     public Collision collision;
+    TMP_Text damageNumbersText;
     Vector3 point;
     Vector3 randomizedLocation;
     void Start()
@@ -22,7 +22,6 @@ public class DamageNumber : MonoBehaviour
         if (screenPoint.z >= 0)
         {
             damageNumbersText.transform.position = screenPoint + randomizedLocation;
-
         }
     }
     IEnumerator DestroyThis()

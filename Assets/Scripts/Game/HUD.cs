@@ -6,60 +6,63 @@ using UnityEngine;
 
 public class HUD : MonoBehaviour
 {
+    [Header("Objects")]
     [SerializeField] GameObject player;
+
+    [Header("Reticles")]
     [SerializeField] GameObject unarmedReticle;
     [SerializeField] RectTransform armedReticle;
-    [SerializeField] AnimationCurve curve;
+
+    [Header("Curves")]
+    [SerializeField] AnimationCurve shotCurve;
+    [SerializeField] AnimationCurve reloadCurve;
+    
+    [Header("Text Fields")]
+    [SerializeField] TMP_Text fpsText;
+    [SerializeField] TMP_Text healthText;
+    [SerializeField] TMP_Text speedText;
+    [SerializeField] TMP_Text bulletsText;
 
     Health health;
-    TMP_Text fpsText;
-    TMP_Text healthText;
-    TMP_Text speedText;
-    TMP_Text bulletsText;
+
     float fps;
     float minfps = 10000;
     float maxfps = 0;
     float averagefps;
     List<float> fpsList;
+
     float reticleHoleSize;
+    float reticleBloomAmount = 20;
+    float defaultReticleHoleSize = 32;
+    float sizePerBulletSpread = 10;
 
     void Start()
     {
         fpsList = new List<float>();
         health = player.GetComponent<Health>();
-        fpsText = gameObject.transform.Find("FPS").GetComponent<TMP_Text>();
-        healthText = gameObject.transform.Find("Health").GetComponent<TMP_Text>();
-        speedText = gameObject.transform.Find("Speed").GetComponent<TMP_Text>();
-        bulletsText = gameObject.transform.Find("Bullets").GetComponent<TMP_Text>(); 
         InvokeRepeating("PrintFPS", 1, 0.1f);
         InvokeRepeating("PrintSpeed", 0, 0.1f);
-    }
-    void Update()
-    {
         PrintHealth();
     }
-    IEnumerator ReticleBloom()
+    IEnumerator ShotBloom()
     {
         float startTime = Time.time;
         while (Time.time - startTime < (1 / Inventory.guns[0].attackSpeed))
         {
+            reticleHoleSize = Inventory.guns[0].bulletSize + Inventory.guns[0].bulletSpread * sizePerBulletSpread + defaultReticleHoleSize + (shotCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].attackSpeed) * reticleBloomAmount);
+            armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
             yield return new WaitForEndOfFrame();
         }
-        //while (Time.time - startTime < (1 / Inventory.guns[0].attackSpeed) * (1f / 8f))
-        //{
-        //    reticleHoleSize *= 1.02f;
-        //    armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
-        //    yield return new WaitForEndOfFrame();
-        //}
-        //startTime = Time.time;
-        //while (reticleHoleSize > Inventory.guns[0].bulletSize + Inventory.guns[0].bulletSpread * 10 + 32 && Time.time - startTime < (1 / Inventory.guns[0].attackSpeed) * (7f / 8f))
-        //{
-        //    reticleHoleSize /= 1.004f;
-        //    armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
-        //    yield return new WaitForEndOfFrame();
-        //}
-        //reticleHoleSize = Inventory.guns[0].bulletSize + Inventory.guns[0].bulletSpread * 10 + 32;
-        //armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
+    }
+    IEnumerator ReloadBloom()
+    {
+        float startTime = Time.time;
+        while (Time.time - startTime < (1 / Inventory.guns[0].reloadSpeed))
+        {
+            reticleHoleSize = Inventory.guns[0].bulletSize + Inventory.guns[0].bulletSpread * sizePerBulletSpread + defaultReticleHoleSize + (reloadCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].reloadSpeed) * reticleBloomAmount);
+            armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
+            yield return new WaitForEndOfFrame();
+        }
     }
     public void RefreshReticle()
     {
@@ -67,7 +70,7 @@ public class HUD : MonoBehaviour
         {
             unarmedReticle.SetActive(false);
             armedReticle.gameObject.SetActive(true);
-            reticleHoleSize = Inventory.guns[0].bulletSize + Inventory.guns[0].bulletSpread * 8 + 32;
+            reticleHoleSize = Inventory.guns[0].bulletSize + Inventory.guns[0].bulletSpread * sizePerBulletSpread + defaultReticleHoleSize;
             armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
         }
         else
@@ -78,7 +81,11 @@ public class HUD : MonoBehaviour
     }
     public void Shot()
     {
-        StartCoroutine(ReticleBloom());
+        StartCoroutine(ShotBloom());
+    }
+    public void Reload()
+    {
+        StartCoroutine(ReloadBloom());
     }
     void PrintFPS()
     {
@@ -103,7 +110,7 @@ public class HUD : MonoBehaviour
         int speed = Mathf.RoundToInt(new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude);
         speedText.SetText(speed + " SPEEDS");
     }
-    void PrintHealth()
+    public void PrintHealth()
     {
         healthText.text = "Health " + Helper.HealthToHashtags(health);
     }

@@ -12,14 +12,4 @@ public class SaveData
     public List<string> commandHistory;
     public float maxHealth;
     public float currentHealth;
-
-    //public SaveData(Transform player)
-    //{
-    //    maxHealth = player.GetComponent<Health>().maxHealth;
-    //    //position = new float[3];
-    //    //position[0] = player.position.x;
-    //    //position[1] = player.position.y;
-    //    //position[2] = player.position.z;
-
-    //}
 }

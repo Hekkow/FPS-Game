@@ -41,6 +41,8 @@ public class UpgradeManager : MonoBehaviour
             new Pellets(),
             new GravityFlip(),
             new HealthBoost(),
+            new ReloadSpeed(),
+            new Dash()
         };
     }
     public static bool ActivateUpgrade(Upgrade upgrade)
@@ -68,7 +70,6 @@ public class UpgradeManager : MonoBehaviour
         }
         return false;
     }
-    
     public static void DeactivateUpgrade(Upgrade upgrade)
     { 
         if (upgrade != null)
@@ -96,7 +97,6 @@ public class UpgradeManager : MonoBehaviour
         }
         return -1;
     }
-
     public static Upgrade FindUpgrade(string name)
     {
         Upgrade upgrade = null;
@@ -109,16 +109,15 @@ public class UpgradeManager : MonoBehaviour
         }
         return upgrade;
     }
-    //public static int GetSlot()
     public static List<Upgrade> RandomUpgrades(int amount)
     {
         List<Upgrade> list = new List<Upgrade>();
         int counter = 0;
         while (list.Count < amount && counter < 200)
         {
-            int randomNumber = Random.Range(0, allUpgrades.Count);
-            Upgrade upgrade = UpgradeManager.allUpgrades[randomNumber];
-            if (UpgradeManager.HasUpgrade(upgrade) == -1 && !list.Contains(upgrade))
+            int randomNumber = Random.Range(0, allUpgrades.Count); 
+            Upgrade upgrade = allUpgrades[randomNumber];
+            if (HasUpgrade(upgrade) == -1 && !list.Contains(upgrade))
             {
                 list.Add(upgrade);
 

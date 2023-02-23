@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
-using UnityEngine.Timeline;
 
 public class Damage : MonoBehaviour
 {
@@ -13,15 +11,15 @@ public class Damage : MonoBehaviour
     public bool oneTime = false;
     public bool environment = true;
     public float velocityMagnitude;
-
+    
     bool didDamage = false;
-
     // for non solid things like animations
     Rigidbody rb;
+    GameEvent onPlayerHurt;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        
+        onPlayerHurt = Resources.Load<GameEvent>("Events/PlayerHurt");
     }
 
     void Update()
@@ -87,6 +85,7 @@ public class Damage : MonoBehaviour
                 if (player == null)
                 {
                     collisionObjectHealth.Damage(damage);
+                    onPlayerHurt.Raise();
                     StartCoroutine(ResetDidDamage());
 
                 }

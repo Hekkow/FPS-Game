@@ -11,6 +11,7 @@ public class PlayerOther : MonoBehaviour
     [SerializeField] Transform leftHandLocation;
     [SerializeField] Transform rightHandLocation;
     [SerializeField] GameEvent onWeaponChange;
+    [SerializeField] GameObject objectsParent;
     Player player;
     bool canSwitch = true;
 
@@ -97,7 +98,7 @@ public class PlayerOther : MonoBehaviour
         Helper.ToggleComponent<Gun>(item.gameObject, false);
         Helper.ToggleComponent<Animator>(item.gameObject, false);
         item.transform.localScale *= 2;
-        item.parent = GameObject.Find("Objects").transform;
+        item.parent = objectsParent.transform;
         item.AddComponent<Pickup>();
         Helper.ApplyLayerToChildren(item.gameObject, "Ground");
         Inventory.DropGun();

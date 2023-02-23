@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class PickupUpgrade : MonoBehaviour
 {
+    List<Transform> upgradeBoxes = new List<Transform>();
     public Upgrade upgrade;
     Transform parent;
-    List<Transform> upgradeBoxes = new List<Transform>();
     bool upgraded = false;
+
     private void Start()
     {
         parent = transform.parent;

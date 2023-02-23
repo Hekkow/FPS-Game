@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public abstract class Upgrade
 {
@@ -14,10 +13,8 @@ public abstract class Upgrade
     public int maxAmount;
     public Category category;
     public Gun gun;
-    
     public abstract void Activate();
     public abstract void Deactivate();
-    
 }
 public class AttackSpeed : Upgrade
 {
@@ -49,6 +46,38 @@ public class BulletDamage : Upgrade
     public override void Deactivate()
     {
         //Inventory.guns[0].bulletDamage /= 2;
+    }
+}
+public class ReloadSpeed : Upgrade
+{
+    public ReloadSpeed(params float[] parameters)
+    {
+        upgradeName = "Reload Speed";
+        maxAmount = 100;
+    }
+    public override void Activate()
+    {
+        Inventory.guns[0].reloadSpeed *= 2;
+    }
+    public override void Deactivate()
+    {
+        //UpgradeManager.bulletDamageMultiplier /= 2;
+    }
+}
+public class Dash : Upgrade
+{
+    public Dash(params float[] parameters)
+    {
+        upgradeName = "Dash";
+        maxAmount = 100;
+    }
+    public override void Activate()
+    {
+        GameObject.Find("Player").GetComponent<Player>().canDash = true;
+    }
+    public override void Deactivate()
+    {
+        //UpgradeManager.bulletDamageMultiplier /= 2;
     }
 }
 public class BulletSpeed : Upgrade
@@ -106,7 +135,7 @@ public class Pellets : Upgrade
 
         Inventory.guns[0].bulletSpread += 2;
         Inventory.guns[0].bulletSize /= 1.5f;
-        Inventory.guns[0].reloadTime += 0.2f;
+        Inventory.guns[0].reloadSpeed += 0.2f;
         Inventory.guns[0].bulletDamage *= 0.9f;
     }
     public override void Deactivate()
@@ -114,7 +143,6 @@ public class Pellets : Upgrade
         //UpgradeManager.bulletDamageMultiplier /= 2;
     }
 }
-
 public class GravityFlip : Upgrade
 {
     public GravityFlip(params float[] parameters)
@@ -131,7 +159,6 @@ public class GravityFlip : Upgrade
         //UpgradeManager.bulletDamageMultiplier /= 2;
     }
 }
-
 public class HealthBoost : Upgrade
 {
     public HealthBoost(params float[] parameters)
