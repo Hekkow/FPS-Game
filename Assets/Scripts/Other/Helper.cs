@@ -31,7 +31,7 @@ public static class Helper
             }
         }
     }
-    public static void AddDamage(GameObject thing, float damage, float knockback, bool thrown, bool oneTime)
+    public static Damage AddDamage(GameObject thing, float damage, float knockback, bool thrown, bool oneTime)
     {
         Damage dmg = thing.GetComponent<Damage>();
         if (dmg == null)
@@ -44,6 +44,7 @@ public static class Helper
         dmg.thrown = thrown;
         dmg.oneTime = oneTime;
         dmg.environment = false;
+        return dmg;
     }
     public static void ApplyLayerToChildren(GameObject thing, string layername)
     {

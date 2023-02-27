@@ -3,18 +3,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IDamageable
 {
     [Header("Objects")]
     [SerializeField] LayerMask playerMask;
     [SerializeField] LayerMask obstacles;
     [SerializeField] Player player;
 
-    [Header("Attack")]
-    [SerializeField] float timeBetweenAttacks; 
+    [Header("Attack")] 
     [SerializeField] float attackRange;
-    [SerializeField] float attackDamage;
-    [SerializeField] float animationTime;
 
     [Header("Vision")]
     [SerializeField] float viewRadiusBeforeDetected;
@@ -24,7 +21,6 @@ public class Enemy : MonoBehaviour
     [SerializeField] float detectionTime;
 
     [Header("Knockback")]
-    [SerializeField] float knockedTime;
     [SerializeField] float ragdollMass;
 
     [Header("Pathfinding")]
@@ -37,29 +33,29 @@ public class Enemy : MonoBehaviour
     [SerializeField] float extraDownwardsDistance;
     [Range(0,2)]
     [SerializeField] float walkSpeed;
-
     enum AnimationState
     {
         Idle,
         Punch,
-        Walk,
-        Dead
+        Walk
     }
-    [HideInInspector] public bool knocked = false;
     Animator animator;
     TMP_Text healthText;
     Transform target;
     Rigidbody rb;
     Health health;
     NavMeshAgent agent;
-    Damage damage;
-
+    AnimationState currentState;
     float viewRadius;
     float viewAngle;
     float timeDetected;
     bool playerDetected = false;
     bool detectedOnce = false;
     float fallingVelocity = 0;
+    bool animationLocked = false;
+    bool canDie = true;
+    Vector3 lastSeenLocation;
+    [SerializeField] GameObject rightArm;
     private void Start()
     {
         target = GameObject.Find("Player").transform;
@@ -70,52 +66,70 @@ public class Enemy : MonoBehaviour
         viewRadius = viewRadiusBeforeDetected;
         viewAngle = viewAngleBeforeDetected;
         agent = GetComponent<NavMeshAgent>();
-        animator.Play("Idle", 0, 0);
-        damage = GetComponentInChildren<Damage>();
-        damage.damage = 0;
+        currentState = AnimationState.Walk;
+        lastSeenLocation = transform.position;
+        RunState(AnimationState.Idle);
     }
     void Update()
     {
-        Vision();
-        if (Physics.CheckSphere(transform.position, attackRange, playerMask)) // if player's in attack range
+        if (health.alive)
         {
-            agent.SetDestination(transform.position);
-            AttackPlayer();
-        }
-        else if (pathfinding && playerDetected)
-        {
-            if (!animator.GetCurrentAnimatorStateInfo(0).IsName("Walk") && !animator.GetCurrentAnimatorStateInfo(0).IsName("Punch"))
+            Vision();
+            if (playerDetected)
             {
-                animator.Play("Walk", 0, 0);
+                if (Physics.CheckSphere(transform.position, attackRange, playerMask))
+                {
+                    RunState(AnimationState.Punch);
+                }
+                else
+                {
+                    RunState(AnimationState.Walk);
+                    if (currentState == AnimationState.Walk)
+                    {
+                        agent.SetDestination(player.transform.position);
+                    }
+                }
+            } 
+            else
+            {
+                RunState(AnimationState.Idle);
+            }
+            fallingVelocity = rb.velocity.y;
+        }
+        
+    }
+    void RunState(AnimationState state)
+    {
+        if (currentState != state && !animationLocked)
+        {
+            if (state == AnimationState.Walk)
+            {
+                animator.CrossFade("Walk", 0, 0);
                 animator.speed = walkSpeed;
             }
-            agent.SetDestination(player.transform.position);
+            else if (state == AnimationState.Idle)
+            {
+                animator.CrossFade("Idle", 0, 0);
+                agent.SetDestination(lastSeenLocation);
+            }
+            else if (state == AnimationState.Punch)
+            {
+                animationLocked = true;
+                Helper.AddDamage(rightArm, 20, 10, false, true);
+                animator.CrossFade("Punch", 0, 0);
+                animator.speed = 1;
+                agent.SetDestination(transform.position);
+                StartCoroutine(WaitUntilPunchDone());
+            }
+            currentState = state;
         }
-        else
-        {
-            animator.Play("Idle");
-            agent.SetDestination(transform.position);
-        }
-        UpdateHealthBar();
-        if (!health.alive)
-        {
-            Died();
-            return;
-        }
-        fallingVelocity = rb.velocity.y;
     }
     IEnumerator WaitUntilPunchDone()
     {
         yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1f);
-        damage.damage = 0;
-
-    }
-    void AttackPlayer()
-    {
-        damage.damage = 20;
-        animator.CrossFade("Punch", 0, 0);
-        animator.speed = 1;
-        StartCoroutine(WaitUntilPunchDone());
+        animationLocked = false;
+        Destroy(rightArm.GetComponent<Damage>());
+        RunState(AnimationState.Walk);
     }
     void Vision()
     {
@@ -138,6 +152,22 @@ public class Enemy : MonoBehaviour
         else playerDetected = false;
         if (!playerDetected && Time.time - timeDetected <= detectionTime && detectedOnce) playerDetected = true;
     }
+
+    public void Damaged(float amount, object collision)
+    {
+        if (amount >= 1)
+        {
+            health.Damage(amount);
+            UpdateHealthBar();
+            TMP_Text damageNumbersText = Instantiate(Resources.Load<TMP_Text>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform);
+            damageNumbersText.text = Mathf.RoundToInt(amount).ToString();
+            DamageNumber dn = damageNumbersText.gameObject.AddComponent<DamageNumber>();
+            dn.collision = (Collision)collision;
+            if (!health.alive && canDie) Died();
+        }
+        
+    }
+
     void UpdateHealthBar()
     {
         healthText.transform.LookAt(Camera.main.transform);
@@ -146,8 +176,8 @@ public class Enemy : MonoBehaviour
     }
     void Died()
     {
+        canDie = false;
         StartCoroutine(IdleAnimation());
-
         Destroy(agent);
         rb.isKinematic = false;
         rb.constraints = RigidbodyConstraints.None;
@@ -165,8 +195,6 @@ public class Enemy : MonoBehaviour
         outline.OutlineMode = Outline.Mode.OutlineVisible;
         outline.OutlineColor = new Color(0, 187, 255);
         outline.OutlineWidth = 10f;
-
-
     }
     IEnumerator IdleAnimation()
     {

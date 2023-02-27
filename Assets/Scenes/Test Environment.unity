@@ -2480,6 +2480,7 @@ GameObject:
   - component: {fileID: 283433913}
   - component: {fileID: 283433912}
   - component: {fileID: 283433915}
+  - component: {fileID: 283433916}
   m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
@@ -2563,7 +2564,8 @@ MonoBehaviour:
   leftHandLocation: {fileID: 1499338039}
   rightHandLocation: {fileID: 3841384664240955839}
   onWeaponChange: {fileID: 11400000, guid: afd8397b35c5f2a48980ce231ef78390, type: 2}
-  objectsParent: {fileID: 1138807527}
+  itemsParent: {fileID: 1138807528}
+  gunsParent: {fileID: 1352643477}
 --- !u!114 &283433911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2677,6 +2679,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   onUpgrade: {fileID: 0}
+--- !u!114 &283433916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 283433901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f243b757e78244140921aa0e92ebc88f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onPlayerHurt: {fileID: 11400000, guid: 458046fe1d3395842be39a9576a0f26e, type: 2}
 --- !u!1 &288692043
 GameObject:
   m_ObjectHideFlags: 0
@@ -14616,16 +14631,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   player: {fileID: 283433911}
-  timeBetweenAttacks: 0.5
   attackRange: 0.5
-  attackDamage: 34
-  animationTime: 0.2
   viewRadiusBeforeDetected: 20
-  viewRadiusAfterDetected: 50
-  viewAngleBeforeDetected: 150
+  viewRadiusAfterDetected: 200
+  viewAngleBeforeDetected: 170
   viewAngleAfterDetected: 360
-  detectionTime: 3
-  knockedTime: 0.1
+  detectionTime: 10
   ragdollMass: 5
   pathfinding: 1
   distanceHeightMultiplier: 20
@@ -14635,7 +14646,7 @@ MonoBehaviour:
   timeBeforeGroundCheck: 0.1
   extraDownwardsDistance: 1
   walkSpeed: 0.17
-  knocked: 0
+  rightArm: {fileID: 1853215099}
 --- !u!195 &1736296335
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -14646,7 +14657,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.37
-  m_Speed: 7.28
+  m_Speed: 17
   m_Acceleration: 500
   avoidancePriority: 50
   m_AngularSpeed: 360
@@ -15369,24 +15380,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: -974913863060375038, guid: 8ebfd5f0639057c4382698550237b2b8, type: 3}
   m_PrefabInstance: {fileID: 2131477330}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1853215103
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1853215099}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  knockback: 0
-  damage: 20
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  velocityMagnitude: 0
 --- !u!54 &1853215104
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -17109,7 +17102,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2070071995}
-  - component: {fileID: 2070071996}
   m_Layer: 6
   m_Name: UnarmedReticle
   m_TagString: Untagged
@@ -17139,18 +17131,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2070071996
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2070071994}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4827c15c805df34899e45ddcb6b191e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2098611619
 GameObject:
   m_ObjectHideFlags: 0
@@ -17614,15 +17594,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8ebfd5f0639057c4382698550237b2b8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.1233325
+      value: -4.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8ebfd5f0639057c4382698550237b2b8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.1195587
+      value: -1.1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8ebfd5f0639057c4382698550237b2b8, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -17.65445
+      value: -26.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8ebfd5f0639057c4382698550237b2b8, type: 3}
       propertyPath: m_LocalRotation.w

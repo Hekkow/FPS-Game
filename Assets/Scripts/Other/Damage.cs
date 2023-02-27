@@ -15,11 +15,9 @@ public class Damage : MonoBehaviour
     bool didDamage = false;
     // for non solid things like animations
     Rigidbody rb;
-    GameEvent onPlayerHurt;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        onPlayerHurt = Resources.Load<GameEvent>("Events/PlayerHurt");
     }
 
     void Update()
@@ -43,13 +41,13 @@ public class Damage : MonoBehaviour
         }
         if (collisionObjectHealth != null)
         {
-
-            if (collision.gameObject.transform != transform.root) {
-                collisionObjectHealth.Damage(damage);
+            IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
+            if (collision.gameObject.transform != transform.root && damageable != null) {
+                damageable.Damaged(damage, collision);
             }
-            if (collision.gameObject.GetComponent<Player>() != null)
+            if (oneTime)
             {
-                onPlayerHurt.Raise(null, null);
+                Destroy(this);
             }
         }
     }
@@ -79,29 +77,11 @@ public class Damage : MonoBehaviour
                         damage = velocityMagnitude * rb.mass / 10;
                     }
                 }
+                IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
+                if (damageable != null) damageable.Damaged(damage, collision);
                 if (thrown)
                 {
                     CustomPhysics.BounceUpAndBack(gameObject);
-                }
-                Enemy enemy = collision.gameObject.GetComponent<Enemy>();
-                if (enemy != null && collisionObjectHealth.alive)
-                {
-                    
-                    //enemy.KnockBack(knockback);
-                    DamageNumbers(collision);
-                    HitMarker();
-                }
-                Player player = collision.gameObject.GetComponent<Player>();
-                    collisionObjectHealth.Damage(damage);
-
-                if (player != null)
-                {
-                    StartCoroutine(ResetDidDamage());
-                    onPlayerHurt.Raise(null, null);
-                }
-                else
-                {
-                    
                 }
                 if (oneTime)
                 {
@@ -110,22 +90,5 @@ public class Damage : MonoBehaviour
             }
             
         }
-    }
-    IEnumerator ResetDidDamage()
-    {
-        didDamage = true;
-        yield return new WaitForSeconds(0.5f);
-        didDamage = false;
-    }
-    void DamageNumbers(Collision collision)
-    {
-        TMP_Text damageNumbersText = Instantiate(Resources.Load<TMP_Text>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform);
-        damageNumbersText.text = Mathf.RoundToInt(damage).ToString();
-        DamageNumber dn = damageNumbersText.gameObject.AddComponent<DamageNumber>();
-        dn.collision = collision;
-    }
-    void HitMarker()
-    {
-        //GameObject.Find("Reticle").GetComponent<HitMarker>().Mark(); 
     }
 }
