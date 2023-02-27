@@ -46,7 +46,6 @@ public class Console : MonoBehaviour
     }
     void ToggleConsole(InputAction.CallbackContext obj)
     {
-
         InputManager.SwitchActionMap(InputManager.playerInput.Console);
         current = commandHistory.Count;
         showConsole = !showConsole;
@@ -170,6 +169,11 @@ public class Console : MonoBehaviour
             {
                 Debug.Log(commandHistory[i]);
             }
+        }
+        else if (words[0] == "hurt")
+        {
+            GameObject.Find("Player").GetComponent<Health>().Damage(int.Parse(words[1]));
+            Resources.Load<GameEvent>("Events/PlayerHurt").Raise(null, null);
         }
         else
         {

@@ -85,17 +85,21 @@ public static class Inventory
             slotCount--;
         }
     }
-    public static int HasGun()
+    public static int HasGuns()
     {
         if (guns[0] == null) return 0;
         if (guns[1] == null) return 1;
         if (guns[2] == null) return 2;
         return 3;
     }
+    public static bool HasGun()
+    {
+        return guns[0] != null;
+    }
     public static void ResetBullets()
     {
-        if (guns[0] != null) guns[0].ResetBullets();
-        if (guns[1] != null) guns[1].ResetBullets();
-        if (guns[2] != null) guns[2].ResetBullets();
+        if (guns[0] != null) guns[0].ResetBulletsAfterUpgrade();
+        if (guns[1] != null) guns[1].ResetBulletsAfterUpgrade();
+        if (guns[2] != null) guns[2].ResetBulletsAfterUpgrade();
     }
 }

@@ -125,6 +125,15 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RightClick"",
+                    ""type"": ""Button"",
+                    ""id"": ""eb796cea-e709-40a5-b6c8-2fe0a564c5f0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -292,6 +301,17 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                     ""action"": ""SwitchDown"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2fb16308-04ba-4c19-be6d-ead6f797943b"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RightClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -379,6 +399,7 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
         m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
         m_Player_Tab = m_Player.FindAction("Tab", throwIfNotFound: true);
         m_Player_SwitchDown = m_Player.FindAction("SwitchDown", throwIfNotFound: true);
+        m_Player_RightClick = m_Player.FindAction("RightClick", throwIfNotFound: true);
         // Console
         m_Console = asset.FindActionMap("Console", throwIfNotFound: true);
         m_Console_Execute = m_Console.FindAction("Execute", throwIfNotFound: true);
@@ -454,6 +475,7 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Reload;
     private readonly InputAction m_Player_Tab;
     private readonly InputAction m_Player_SwitchDown;
+    private readonly InputAction m_Player_RightClick;
     public struct PlayerActions
     {
         private @PlayerInputAction m_Wrapper;
@@ -469,6 +491,7 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
         public InputAction @Reload => m_Wrapper.m_Player_Reload;
         public InputAction @Tab => m_Wrapper.m_Player_Tab;
         public InputAction @SwitchDown => m_Wrapper.m_Player_SwitchDown;
+        public InputAction @RightClick => m_Wrapper.m_Player_RightClick;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -511,6 +534,9 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                 @SwitchDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitchDown;
                 @SwitchDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitchDown;
                 @SwitchDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitchDown;
+                @RightClick.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRightClick;
+                @RightClick.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRightClick;
+                @RightClick.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRightClick;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -548,6 +574,9 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                 @SwitchDown.started += instance.OnSwitchDown;
                 @SwitchDown.performed += instance.OnSwitchDown;
                 @SwitchDown.canceled += instance.OnSwitchDown;
+                @RightClick.started += instance.OnRightClick;
+                @RightClick.performed += instance.OnRightClick;
+                @RightClick.canceled += instance.OnRightClick;
             }
         }
     }
@@ -614,6 +643,7 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
         void OnReload(InputAction.CallbackContext context);
         void OnTab(InputAction.CallbackContext context);
         void OnSwitchDown(InputAction.CallbackContext context);
+        void OnRightClick(InputAction.CallbackContext context);
     }
     public interface IConsoleActions
     {

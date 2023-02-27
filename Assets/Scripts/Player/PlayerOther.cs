@@ -38,14 +38,14 @@ public class PlayerOther : MonoBehaviour
     {
         if (canSwitch)
         {
-            if (Inventory.HasGun() >= 2)
+            if (Inventory.HasGuns() >= 2)
             {
                 Inventory.guns[0].gameObject.SetActive(false);
                 Inventory.SwitchGun(up: obj.ReadValue<float>() > 0);
                 Inventory.guns[0].gameObject.SetActive(true);
             }
             StartCoroutine(RenableSwitch());
-            onWeaponChange.Raise();
+            onWeaponChange.Raise(null, null);
 
         }
     }
@@ -65,6 +65,7 @@ public class PlayerOther : MonoBehaviour
     }
     void Update()
     {
+        //Debug.Log(Inventory.guns[0].name);
         if (transform.position.y < -100)
         {
             GameManager.Spawn();
@@ -101,7 +102,11 @@ public class PlayerOther : MonoBehaviour
         item.parent = objectsParent.transform;
         item.AddComponent<Pickup>();
         Helper.ApplyLayerToChildren(item.gameObject, "Ground");
-        Inventory.DropGun();
+        if (gun)
+        {
+            Inventory.guns[0].shootAnimator.Play("idle", 0, 0);
+            Inventory.DropGun();
+        }
     }
     void PickUp(Pickup item)
     {
@@ -116,7 +121,7 @@ public class PlayerOther : MonoBehaviour
         {
             List<Upgrade> removedUpgrades = new List<Upgrade>();
 
-            if (Inventory.HasGun() == 3)
+            if (Inventory.HasGuns() == 3)
             {
                 for (int i = 0; i < UpgradeManager.ownedUpgrades.Count; i++)
                 {
@@ -140,7 +145,7 @@ public class PlayerOther : MonoBehaviour
             {
                 UpgradeManager.ActivateUpgrade(removedUpgrades[i]);
             }
-            if (Inventory.HasGun() > 1)
+            if (Inventory.HasGuns() > 1)
             {
                 Inventory.guns[1].gameObject.SetActive(false); 
             }
@@ -154,11 +159,11 @@ public class PlayerOther : MonoBehaviour
         Helper.ToggleComponent<Gun>(item.gameObject, true);
         Helper.ToggleComponent<Animator>(item.gameObject, true);
         Destroy(item);
-        onWeaponChange.Raise();
+        onWeaponChange.Raise(null, null);
     }
     void ThrowItem(InputAction.CallbackContext obj)
     {
-        GameObject item = null;
+        GameObject item;
         bool gun = false;
         if (leftHandLocation.childCount > 0)
         {
@@ -173,11 +178,11 @@ public class PlayerOther : MonoBehaviour
         Drop(gun);
         CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
         Helper.AddDamage(item, player.throwDamage, player.throwKnockback, true, true);
-        if (Inventory.HasGun() > 0) 
+        if (Inventory.HasGun() && gun) 
         {
             Inventory.guns[0].gameObject.SetActive(true);
         }
-        onWeaponChange.Raise();
+        onWeaponChange.Raise(null, null);
 
     }
     Pickup GetClosest()

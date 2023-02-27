@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UpgradeManager : MonoBehaviour
@@ -56,7 +57,7 @@ public class UpgradeManager : MonoBehaviour
                 if (upgrade.category == Upgrade.Category.Gun) ownedUpgrades.Add(new UpgradeInfo(upgrade, Inventory.guns[0].slot, 1));
                 else ownedUpgrades.Add(new UpgradeInfo(upgrade, -1, 1));
                 Inventory.ResetBullets();
-                Resources.Load<GameEvent>("Events/Upgrade").Raise();
+                Resources.Load<GameEvent>("Events/Upgrade").Raise(null, null);
                 return true;
             }
             else if (ownedUpgrades[upgradeIndex].amount < upgrade.maxAmount)
@@ -64,7 +65,7 @@ public class UpgradeManager : MonoBehaviour
                 upgrade.Activate(); 
                 ownedUpgrades[upgradeIndex].ChangeAmount(1);
                 Inventory.ResetBullets();
-                Resources.Load<GameEvent>("Events/Upgrade").Raise();
+                Resources.Load<GameEvent>("Events/Upgrade").Raise(null, null);
                 return true;
             }
         }

@@ -23,7 +23,6 @@ public class HUD : MonoBehaviour
     [SerializeField] TMP_Text speedText;
     [SerializeField] TMP_Text bulletsText;
 
-    Health health;
 
     float fps;
     float minfps = 10000;
@@ -39,7 +38,6 @@ public class HUD : MonoBehaviour
     void Start()
     {
         fpsList = new List<float>();
-        health = player.GetComponent<Health>();
         InvokeRepeating("PrintFPS", 1, 0.1f);
         InvokeRepeating("PrintSpeed", 0, 0.1f);
         PrintHealth();
@@ -47,12 +45,12 @@ public class HUD : MonoBehaviour
     IEnumerator ShotBloom()
     {
         float startTime = Time.time;
-        while (Time.time - startTime < (1 / Inventory.guns[0].attackSpeed))
+        while (Inventory.HasGun() && Time.time - startTime < (1 / Inventory.guns[0].attackSpeed))
         {
             reticleHoleSize = Inventory.guns[0].bulletSize + Inventory.guns[0].bulletSpread * sizePerBulletSpread + defaultReticleHoleSize + (shotCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].attackSpeed) * reticleBloomAmount);
             armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
             yield return new WaitForEndOfFrame();
-        }
+        } 
     }
     IEnumerator ReloadBloom()
     {
@@ -66,7 +64,7 @@ public class HUD : MonoBehaviour
     }
     public void RefreshReticle()
     {
-        if (Inventory.HasGun() > 0)
+        if (Inventory.HasGun())
         {
             unarmedReticle.SetActive(false);
             armedReticle.gameObject.SetActive(true);
@@ -81,7 +79,10 @@ public class HUD : MonoBehaviour
     }
     public void Shot()
     {
-        StartCoroutine(ShotBloom());
+        
+        {
+            StartCoroutine(ShotBloom());
+        }
     }
     public void Reload()
     {
@@ -112,11 +113,11 @@ public class HUD : MonoBehaviour
     }
     public void PrintHealth()
     {
-        healthText.text = "Health " + Helper.HealthToHashtags(health);
+        healthText.text = "Health " + Helper.HealthToHashtags(GameObject.Find("Player").GetComponent<Health>()); 
     }
     public void PrintBullets()
     {
-        if (Inventory.HasGun() > 0)
+        if (Inventory.HasGun())
         {
             bulletsText.text = Inventory.guns[0].bulletsLeft + "/" + Inventory.guns[0].bulletsPerMag;
         }

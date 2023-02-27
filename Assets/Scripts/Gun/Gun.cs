@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 public class Gun : MonoBehaviour
 {
     [Header("Objects")]
-    Animator shootAnimator;
+    public Animator shootAnimator;
 
     [SerializeField] Player player;
 
@@ -83,7 +83,6 @@ public class Gun : MonoBehaviour
         }
         
     }
-
     void ShootGun()
     {
         reloading = false;
@@ -136,7 +135,7 @@ public class Gun : MonoBehaviour
         {
             reloadCoroutine = StartCoroutine(WaitThenReload(1/attackSpeed));
         }
-        onGunShot.Raise();
+        onGunShot.Raise(null, null);
 
     }
 
@@ -164,18 +163,23 @@ public class Gun : MonoBehaviour
     IEnumerator WaitThenReload(float time)
     {
         yield return new WaitForSeconds(time);
-        beforeReload.Raise();
+        beforeReload.Raise(null, null);
         reloading = true;
         shootAnimator.Play("reload", 0, 0f);
         shootAnimator.speed = reloadSpeed;
         yield return new WaitForSeconds(1/reloadSpeed);
         reloading = false;
         ResetBullets();
-        afterReload.Raise();
+        afterReload.Raise(null, null);
     }
     public void ResetBullets()
     {
         bulletsLeft = bulletsPerMag;
         readyToShoot = true;
+    }
+    public void ResetBulletsAfterUpgrade()
+    {
+        bulletsLeft = bulletsPerMag;
+        readyToShoot = false;
     }
 }

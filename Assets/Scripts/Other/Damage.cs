@@ -24,7 +24,10 @@ public class Damage : MonoBehaviour
 
     void Update()
     {
-        velocityMagnitude = rb.velocity.magnitude;
+        if (rb != null)
+        {
+            velocityMagnitude = rb.velocity.magnitude;
+        }
     }
 
     void OnTriggerEnter(Collider collision)
@@ -40,7 +43,14 @@ public class Damage : MonoBehaviour
         }
         if (collisionObjectHealth != null)
         {
-            collisionObjectHealth.Damage(damage);
+
+            if (collision.gameObject.transform != transform.root) {
+                collisionObjectHealth.Damage(damage);
+            }
+            if (collision.gameObject.GetComponent<Player>() != null)
+            {
+                onPlayerHurt.Raise(null, null);
+            }
         }
     }
 
@@ -77,23 +87,28 @@ public class Damage : MonoBehaviour
                 if (enemy != null && collisionObjectHealth.alive)
                 {
                     
-                    enemy.KnockBack(knockback);
+                    //enemy.KnockBack(knockback);
                     DamageNumbers(collision);
                     HitMarker();
                 }
                 Player player = collision.gameObject.GetComponent<Player>();
-                if (player == null)
-                {
                     collisionObjectHealth.Damage(damage);
-                    onPlayerHurt.Raise();
-                    StartCoroutine(ResetDidDamage());
 
+                if (player != null)
+                {
+                    StartCoroutine(ResetDidDamage());
+                    onPlayerHurt.Raise(null, null);
+                }
+                else
+                {
+                    
+                }
+                if (oneTime)
+                {
+                    Destroy(this);
                 }
             }
-            if (oneTime)
-            {
-                Destroy(this);
-            }
+            
         }
     }
     IEnumerator ResetDidDamage()

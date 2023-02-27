@@ -11,7 +11,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] Player player;
 
     [Header("Attack")]
-    [SerializeField] float timeBetweenAttacks;
+    [SerializeField] float timeBetweenAttacks; 
     [SerializeField] float attackRange;
     [SerializeField] float attackDamage;
     [SerializeField] float animationTime;
@@ -35,235 +35,90 @@ public class Enemy : MonoBehaviour
     [SerializeField] float groundHeight;
     [SerializeField] float timeBeforeGroundCheck;
     [SerializeField] float extraDownwardsDistance;
+    [Range(0,2)]
+    [SerializeField] float walkSpeed;
 
+    enum AnimationState
+    {
+        Idle,
+        Punch,
+        Walk,
+        Dead
+    }
     [HideInInspector] public bool knocked = false;
-
-    GameObject instantiatedAnimation;
+    Animator animator;
     TMP_Text healthText;
     Transform target;
     Rigidbody rb;
     Health health;
     NavMeshAgent agent;
-    new Camera camera;
+    Damage damage;
 
     float viewRadius;
     float viewAngle;
     float timeDetected;
-    float gravity = -Physics.gravity.y;
-    //bool playerDetected = false;
+    bool playerDetected = false;
     bool detectedOnce = false;
-
-    bool alreadyAttacked = false;
-
-    public bool jumping = false;
-
-    public float startedTime = 0;
-    public float currentTime;
-    public Vector3 velo;
-    public bool here;
-    public bool falling;
-    public float fallingVelocity;
-
-    IEnumerator knockCoroutine;
-
-    float fallDamageVelocity;
-
+    float fallingVelocity = 0;
     private void Start()
     {
         target = GameObject.Find("Player").transform;
         health = GetComponent<Health>();
         rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
         healthText = transform.GetComponentInChildren<TMP_Text>();
         viewRadius = viewRadiusBeforeDetected;
         viewAngle = viewAngleBeforeDetected;
-        camera = Camera.main;
         agent = GetComponent<NavMeshAgent>();
-        agent.autoTraverseOffMeshLink = false;
-        //agent.avoidancePriority = Random.Range(1, 99);
-        //agent.updateRotation = false;
-        if (!pathfinding)
-        {
-            rb.isKinematic = false;
-            agent.enabled = false;
-        }
-        
+        animator.Play("Idle", 0, 0);
+        damage = GetComponentInChildren<Damage>();
+        damage.damage = 0;
     }
     void Update()
     {
-        
-        //currentTime = Time.time;
-        if (pathfinding)
+        Vision();
+        if (Physics.CheckSphere(transform.position, attackRange, playerMask)) // if player's in attack range
         {
-            if (!agent.isOnOffMeshLink && !jumping)
-            {
-                agent.SetDestination(player.transform.position);
-
-            }
-            else
-            {
-                if (!jumping)
-                {
-                    StartCoroutine(Jump());
-                }
-            }
+            agent.SetDestination(transform.position);
+            AttackPlayer();
         }
+        else if (pathfinding && playerDetected)
+        {
+            if (!animator.GetCurrentAnimatorStateInfo(0).IsName("Walk") && !animator.GetCurrentAnimatorStateInfo(0).IsName("Punch"))
+            {
+                animator.Play("Walk", 0, 0);
+                animator.speed = walkSpeed;
+            }
+            agent.SetDestination(player.transform.position);
+        }
+        else
+        {
+            animator.Play("Idle");
+            agent.SetDestination(transform.position);
+        }
+        UpdateHealthBar();
         if (!health.alive)
         {
             Died();
             return;
         }
-        //if (Time.time > 1 && agent.velocity.magnitude < float.Epsilon && agent.hasPath)
-        //{
-        //    Debug.Log(gameObject.name + " is STUCK");
-        //}
-        //Vision();
-        //if (!knocked)
-        //{
-        //    if (Physics.CheckSphere(transform.position, attackRange, playerMask)) // if player's in attack range
-        //    {
-        //        AttackPlayer();
-        //    }
-        //}
-        UpdateHealthBar();
-        velo = rb.velocity;
-        fallDamageVelocity = rb.velocity.y;
-        //if (jumping && rb.velocity.magnitude < 0.5f && currentTime - startedTime > 3)
-        //{
-        //    agent.velocity -= new Vector3(0, 5, 0);
-        //    rb.velocity -= new Vector3(0, 1000, 0);
-        //    here = true;
-
-        //}
-        //else
-        //{
-        //    here = false;
-        //}
+        fallingVelocity = rb.velocity.y;
     }
-    IEnumerator Fall(float time)
+    IEnumerator WaitUntilPunchDone()
     {
-        fallingVelocity = 0;
-        while (!Physics.Raycast(transform.position, -Vector3.up, enemyHeight + groundHeight))
-        {
-            if (Time.time - time > 3)
-            {
-                fallingVelocity -= gravity / 10;
-                rb.velocity = new Vector3(0, fallingVelocity, 0);
-                agent.velocity = new Vector3(0, fallingVelocity, 0);
+        yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1f);
+        damage.damage = 0;
 
-
-            }
-            yield return new WaitForSeconds(0.1f);
-        }
-        fallingVelocity = 0;
     }
-    IEnumerator Jump()
+    void AttackPlayer()
     {
-        float startTime = Time.time;
-        Vector3 startPos = agent.currentOffMeshLinkData.startPos;
-        Vector3 endPos = agent.currentOffMeshLinkData.endPos;
-        // controlled by rigidbody now
-        jumping = true;
-        rb.isKinematic = false;
-        agent.enabled = false;
-
-        // move towards starting location
-
-        Vector3 velocityToStart = (startPos - transform.position).normalized * agent.speed;
-        float distanceToStart = Mathf.Sqrt(Mathf.Pow(startPos.x - transform.position.x, 2) + Mathf.Pow(startPos.z - transform.position.z, 2));
-        float timeToStart = distanceToStart / agent.speed;
-        rb.velocity = new Vector3(velocityToStart.x, 0, velocityToStart.z);
-        yield return new WaitForSeconds(timeToStart);
-
-        //while (Vector3.Distance(transform.position, startPos) > 1)
-        //{
-        //    Vector3 velocityToStart = (startPos - transform.position).normalized * agent.speed;
-        //    rb.velocity = new Vector3(velocityToStart.x, 0, velocityToStart.z);
-        //    yield return new WaitForEndOfFrame();
-        //}
-
-        rb.velocity = Vector3.zero;
-
-
-        float actualTime = Time.time;
-        float distance = Mathf.Sqrt(Mathf.Pow(startPos.x - endPos.x, 2) + Mathf.Pow(startPos.z - endPos.z, 2));
-        float extraHeight = tinyBitOfExtraHeight + distance/distanceHeightMultiplier;
-        float height = endPos.y - startPos.y + extraHeight;
-        float angle = Mathf.Rad2Deg * Mathf.Atan(height / distance);
-        float timeUp;
-        float timeDown;
-        if (angle < 0)
-        {
-            timeUp = Mathf.Sqrt((2 * extraHeight) / gravity);
-            timeDown = Mathf.Sqrt(Mathf.Abs((2 * height) / gravity));
-        }
-        else
-        {
-            timeUp = Mathf.Sqrt((2 * height) / gravity);
-            timeDown = Mathf.Sqrt((2 * extraHeight) / gravity);
-        }
-        float jumpTime = timeUp + timeDown;
-        float velocityY = (height / jumpTime) + (gravity * jumpTime/2);
-        Vector3 velocity = (endPos-startPos).normalized;
-
-        // if going down, keep moving until off platform
-        if (angle < 0)
-        {
-            while (Physics.Raycast(transform.position, -Vector3.up, enemyHeight + groundHeight))
-            {
-                rb.velocity = new Vector3((velocity.x * (distance+extraDownwardsDistance)) / timeDown, 0, (velocity.z * (distance+ extraDownwardsDistance)) / timeDown);
-                yield return new WaitForEndOfFrame();
-            }
-        }
-        else
-        {
-            rb.velocity = new Vector3((velocity.x * distance) / timeUp, velocityY, (velocity.z * distance) / timeUp);
-        }
-        // wait until landed
-        yield return new WaitForSeconds(timeBeforeGroundCheck);
-        //while (!Physics.Raycast(transform.position, -Vector3.up, enemyHeight + groundHeight))
-        //{
-        //    if (Time.time - startTime > 3 && rb.velocity.magnitude < 0.1f && agent.velocity.magnitude < 0.1f)
-        //    {
-        //        Debug.Log(gameObject.name + " " + rb.velocity + " " + agent.velocity);
-        //        rb.velocity -= new Vector3(0, 100f, 0);
-        //    }
-        //    yield return new WaitForEndOfFrame();
-        //}
-        StartCoroutine(Fall(Time.time));
-        yield return new WaitUntil(() => Physics.Raycast(transform.position, -Vector3.up, enemyHeight + groundHeight));
-        //if (Time.time - startTime > 3)
-        //{
-        //    //rb.isKinematic = true;
-        //    //rb.isKinematic = false;
-        //    //agent.enabled = true;
-        //    //agent.enabled = false;
-        //    rb.velocity -= new Vector3(0, -100f, 0);
-        //    yield return new WaitUntil(() => Physics.Raycast(transform.position, -Vector3.up, enemyHeight + groundHeight));
-        //}
-        // reset
-        
-        jumping = false;
-        rb.isKinematic = true;
-        agent.enabled = true;
-        agent.CompleteOffMeshLink();
+        damage.damage = 20;
+        animator.CrossFade("Punch", 0, 0);
+        animator.speed = 1;
+        StartCoroutine(WaitUntilPunchDone());
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     void Vision()
     {
-        bool playerDetected;
         Vector3 playerTarget = (target.transform.position - transform.position).normalized;
         if (Vector3.Angle(transform.forward, playerTarget) < viewAngle / 2)
         {
@@ -283,80 +138,48 @@ public class Enemy : MonoBehaviour
         else playerDetected = false;
         if (!playerDetected && Time.time - timeDetected <= detectionTime && detectedOnce) playerDetected = true;
     }
-    void AttackPlayer()
-    {
-        transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
-        if (!alreadyAttacked)
-        {
-            instantiatedAnimation = Instantiate(Resources.Load<GameObject>("Prefabs/EnemyAttack"), transform.position, new Quaternion(1, 0, 0, 1));
-            Helper.AddDamage(instantiatedAnimation.gameObject, attackDamage, attackDamage, false, true);
-            instantiatedAnimation.transform.SetParent(transform);
-            StartCoroutine(AttackAnimationTime());
-            alreadyAttacked = true;
-            Invoke(nameof(ResetAttack), timeBetweenAttacks);
-        }
-    }
-    void ResetAttack()
-    {
-        alreadyAttacked = false;
-    }
-    IEnumerator AttackAnimationTime()
-    {
-
-        yield return new WaitForSeconds(animationTime);
-        Destroy(instantiatedAnimation);
-    }
     void UpdateHealthBar()
     {
-        healthText.transform.LookAt(camera.transform);
-        healthText.transform.rotation = Quaternion.LookRotation(camera.transform.forward);
+        healthText.transform.LookAt(Camera.main.transform);
+        healthText.transform.rotation = Quaternion.LookRotation(Camera.main.transform.forward);
         healthText.text = Helper.HealthToHashtags(health);
     }
     void Died()
     {
+        StartCoroutine(IdleAnimation());
+
         Destroy(agent);
         rb.isKinematic = false;
         rb.constraints = RigidbodyConstraints.None;
         rb.velocity = Vector3.zero;
         rb.mass = ragdollMass; // ragbody haha
-        
+
         healthText.enabled = false;
         transform.Rotate(0, 0, 90); // flop haha
         gameObject.AddComponent<Pickup>();
-        
+
         gameObject.AddComponent<NavMeshObstacle>();
 
-        Instantiate(Resources.Load<GameObject>("Prefabs/Loot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
+        GameObject loot = Instantiate(Resources.Load<GameObject>("Prefabs/Loot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
+        Outline outline = loot.AddComponent<Outline>();
+        outline.OutlineMode = Outline.Mode.OutlineVisible;
+        outline.OutlineColor = new Color(0, 187, 255);
+        outline.OutlineWidth = 10f;
 
-        Destroy(instantiatedAnimation);
+
+    }
+    IEnumerator IdleAnimation()
+    {
+        animator.CrossFade("Idle", 0, 0);
+        yield return new WaitForEndOfFrame();
+        Destroy(animator);
         Destroy(this);
     }
-    public void KnockBack(float knockbackAmount)
-    {
-        knockCoroutine = KnockBackCoroutine(knockbackAmount);
-        StopCoroutine(knockCoroutine);
-        StartCoroutine(knockCoroutine);
-    }
-    IEnumerator KnockBackCoroutine(float knockbackAmount)
-    {
-        Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), GetComponent<Collider>());
-        knocked = true;
-        CustomPhysics.KnockBack(gameObject, knockbackAmount);
-        yield return new WaitForSeconds(knockedTime);
-        rb.velocity = Vector3.zero;
-        knocked = false;
-    }
-
     void OnCollisionEnter(Collision collision)
     {
-        if (fallDamageVelocity < -20)
+        if (fallingVelocity < -20)
         {
-            health.Damage(-fallDamageVelocity*2.5f);
-            TMP_Text damageNumbersText = Instantiate(Resources.Load<TMP_Text>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform);
-            damageNumbersText.text = Mathf.RoundToInt(-fallDamageVelocity * 2.5f).ToString();
-            DamageNumber dn = damageNumbersText.gameObject.AddComponent<DamageNumber>();
-            dn.collision = collision;
+            health.Damage(-fallingVelocity * 2.5f);
         }
     }
-
 }
