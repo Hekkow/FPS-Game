@@ -12,6 +12,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
     [Header("Attack")] 
     [SerializeField] float attackRange;
+    [SerializeField] GameObject rightArm;
 
     [Header("Vision")]
     [SerializeField] float viewRadiusBeforeDetected;
@@ -24,14 +25,6 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] float ragdollMass;
 
     [Header("Pathfinding")]
-    [SerializeField] bool pathfinding;
-    [SerializeField] float distanceHeightMultiplier;
-    [SerializeField] float tinyBitOfExtraHeight;
-    [SerializeField] float enemyHeight;
-    [SerializeField] float groundHeight;
-    [SerializeField] float timeBeforeGroundCheck;
-    [SerializeField] float extraDownwardsDistance;
-    [Range(0,2)]
     [SerializeField] float walkSpeed;
     enum AnimationState
     {
@@ -39,43 +32,45 @@ public class Enemy : MonoBehaviour, IDamageable
         Punch,
         Walk
     }
-    Animator animator;
-    TMP_Text healthText;
-    Transform target;
-    Rigidbody rb;
-    Health health;
-    NavMeshAgent agent;
     AnimationState currentState;
+    TMP_Text healthText;
+    NavMeshAgent agent;
+    Animator animator;
+    GameObject target;
+    Health health;
+    Rigidbody rb;
     float viewRadius;
     float viewAngle;
     float timeDetected;
+    float fallingVelocity = 0;
     bool playerDetected = false;
     bool detectedOnce = false;
-    float fallingVelocity = 0;
     bool animationLocked = false;
     bool canDie = true;
     Vector3 lastSeenLocation;
-    [SerializeField] GameObject rightArm;
-    private void Start()
+    void Start()
     {
-        target = GameObject.Find("Player").transform;
-        health = GetComponent<Health>();
+        target = GameObject.Find("Player");
         rb = GetComponent<Rigidbody>();
+        health = GetComponent<Health>();
         animator = GetComponent<Animator>();
-        healthText = transform.GetComponentInChildren<TMP_Text>();
+        agent = GetComponent<NavMeshAgent>();
+        healthText = GetComponentInChildren<TMP_Text>();
         viewRadius = viewRadiusBeforeDetected;
         viewAngle = viewAngleBeforeDetected;
-        agent = GetComponent<NavMeshAgent>();
         currentState = AnimationState.Walk;
         lastSeenLocation = transform.position;
         RunState(AnimationState.Idle);
+    }
+    void FixedUpdate()
+    {
+        Vision();
     }
     void Update()
     {
         if (health.alive)
         {
-            Vision();
-            if (playerDetected)
+            if (playerDetected && agent.enabled)
             {
                 if (Physics.CheckSphere(transform.position, attackRange, playerMask))
                 {
@@ -86,7 +81,7 @@ public class Enemy : MonoBehaviour, IDamageable
                     RunState(AnimationState.Walk);
                     if (currentState == AnimationState.Walk)
                     {
-                        agent.SetDestination(player.transform.position);
+                        agent.SetDestination(target.transform.position);
                     }
                 }
             } 
@@ -96,6 +91,7 @@ public class Enemy : MonoBehaviour, IDamageable
             }
             fallingVelocity = rb.velocity.y;
         }
+        UpdateHealthBar();
         
     }
     void RunState(AnimationState state)
@@ -152,22 +148,18 @@ public class Enemy : MonoBehaviour, IDamageable
         else playerDetected = false;
         if (!playerDetected && Time.time - timeDetected <= detectionTime && detectedOnce) playerDetected = true;
     }
-
     public void Damaged(float amount, object collision)
     {
         if (amount >= 1)
         {
             health.Damage(amount);
-            UpdateHealthBar();
             TMP_Text damageNumbersText = Instantiate(Resources.Load<TMP_Text>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform);
             damageNumbersText.text = Mathf.RoundToInt(amount).ToString();
-            DamageNumber dn = damageNumbersText.gameObject.AddComponent<DamageNumber>();
-            dn.collision = (Collision)collision;
+            DamageNumber damageNumber = damageNumbersText.gameObject.AddComponent<DamageNumber>();
+            damageNumber.collision = (Collision)collision;
             if (!health.alive && canDie) Died();
         }
-        
     }
-
     void UpdateHealthBar()
     {
         healthText.transform.LookAt(Camera.main.transform);
@@ -177,37 +169,46 @@ public class Enemy : MonoBehaviour, IDamageable
     void Died()
     {
         canDie = false;
-        StartCoroutine(IdleAnimation());
-        Destroy(agent);
-        rb.isKinematic = false;
-        rb.constraints = RigidbodyConstraints.None;
-        rb.velocity = Vector3.zero;
-        rb.mass = ragdollMass; // ragbody haha
-
-        healthText.enabled = false;
-        transform.Rotate(0, 0, 90); // flop haha
-        gameObject.AddComponent<Pickup>();
-
-        gameObject.AddComponent<NavMeshObstacle>();
-
+        StartCoroutine(IdleThenDestroy());
         GameObject loot = Instantiate(Resources.Load<GameObject>("Prefabs/Loot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
         Outline outline = loot.AddComponent<Outline>();
         outline.OutlineMode = Outline.Mode.OutlineVisible;
         outline.OutlineColor = new Color(0, 187, 255);
         outline.OutlineWidth = 10f;
     }
-    IEnumerator IdleAnimation()
+    IEnumerator IdleThenDestroy()
     {
         animator.CrossFade("Idle", 0, 0);
         yield return new WaitForEndOfFrame();
+        rb.isKinematic = false;
+        rb.constraints = RigidbodyConstraints.None;
+        rb.velocity = Vector3.zero;
+        rb.mass = ragdollMass;
+        healthText.enabled = false;
+        transform.Rotate(0, 0, 90);
         Destroy(animator);
+        Destroy(agent);
         Destroy(this);
+    }
+    public IEnumerator DisableAgentCoroutine()
+    {
+        rb.isKinematic = false;
+        agent.enabled = false;
+        yield return new WaitForSeconds(1);
+        yield return new WaitUntil(() => !health.alive || Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, agent.height+0.3f));
+        if (health.alive)
+        {
+            rb.isKinematic = true;
+            agent.enabled = true;
+        }
+        
     }
     void OnCollisionEnter(Collision collision)
     {
-        if (fallingVelocity < -20)
+        
+        if (fallingVelocity < -10)
         {
-            health.Damage(-fallingVelocity * 2.5f);
+            Damaged(-fallingVelocity * 2.5f, collision);
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEditor.Progress;
 
 public class PlayerOther : MonoBehaviour
 {
@@ -14,6 +13,7 @@ public class PlayerOther : MonoBehaviour
     [SerializeField] GameEvent onWeaponChange;
     [SerializeField] Transform itemsParent;
     [SerializeField] Transform gunsParent;
+
     Player player;
     bool canSwitch = true;
     bool holdingItem = false;
@@ -37,26 +37,12 @@ public class PlayerOther : MonoBehaviour
         InputManager.playerInput.Player.Interact.Disable();
         InputManager.playerInput.Player.Throw.Disable();
     }
-    
-
-    void Update()
+    void FixedUpdate()
     {
         if (transform.position.y < -100)
         {
-            GameManager.Spawn();
+            transform.position = new Vector3(0, 100, 0);
         }
-        //if (rightHandLocation.childCount > 0)
-        //{
-        //    Transform item = Inventory.guns[0].transform;
-        //    item.localPosition = Vector3.zero;
-        //    item.localRotation = Quaternion.identity;
-        //}
-        //if (leftHandLocation.childCount > 0)
-        //{
-        //    Transform item = leftHandLocation.GetChild(0);
-        //    item.localPosition = Vector3.zero;
-        //    item.localRotation = Quaternion.identity;
-        //}
     }
     void DropItem()
     {

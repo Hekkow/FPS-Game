@@ -11,9 +11,6 @@ public class GameManager : MonoBehaviour
     [Header("Options")]
     [SerializeField] float timeScale;
 
-
-    public static Vector3 spawnLocation = new Vector3(0, 100, 0);
-
     Health playerHealth;
 
     void Awake()
@@ -41,10 +38,6 @@ public class GameManager : MonoBehaviour
         data.scale = player.transform.localScale;
         data.commandHistory = console.commandHistory;
         SaveSystem.WriteSave(JsonUtility.ToJson(data));
-    }
-    public static void Spawn()
-    {
-        GameObject.Find("Player").transform.position = spawnLocation;
     }
     void OnApplicationQuit()
     {

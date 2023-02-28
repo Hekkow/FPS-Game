@@ -12,25 +12,29 @@ public class Bullet : MonoBehaviour
     }
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.GetComponent<Player>() == null)
+        if (collision.gameObject.GetComponent<Player>() != null)
         {
-            if (collision.gameObject.GetComponent<BulletEffects>() == null)
+            return;
+        }
+        if (collision.gameObject.GetComponent<BulletEffects>() == null)
+        {
+            if (gravityFlip)
             {
-                if (gravityFlip)
-                {
-                    collision.gameObject.AddComponent<BulletEffects>().FlipGravity();
-                }
+                collision.gameObject.AddComponent<BulletEffects>().FlipGravity();
             }
-            else
+        }
+        else
+        {
+            if (gravityFlip)
             {
                 collision.gameObject.GetComponent<BulletEffects>().FlipGravity();
             }
-            Destroy(gameObject);
         }
+        Destroy(gameObject);
     }
     IEnumerator BulletDecay()
     {
-        yield return new WaitForSeconds(20);
+        yield return new WaitForSeconds(120);
         Destroy(gameObject);
     }
 }

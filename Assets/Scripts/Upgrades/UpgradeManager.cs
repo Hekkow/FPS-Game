@@ -56,7 +56,7 @@ public class UpgradeManager : MonoBehaviour
                 upgrade.Activate();
                 if (upgrade.category == Upgrade.Category.Gun) ownedUpgrades.Add(new UpgradeInfo(upgrade, Inventory.guns[0].slot, 1));
                 else ownedUpgrades.Add(new UpgradeInfo(upgrade, -1, 1));
-                Inventory.ResetBullets();
+                Inventory.ResetBulletsAfterUpgrade();
                 Resources.Load<GameEvent>("Events/Upgrade").Raise(null, null);
                 return true;
             }
@@ -64,7 +64,7 @@ public class UpgradeManager : MonoBehaviour
             {
                 upgrade.Activate(); 
                 ownedUpgrades[upgradeIndex].ChangeAmount(1);
-                Inventory.ResetBullets();
+                Inventory.ResetBulletsAfterUpgrade();
                 Resources.Load<GameEvent>("Events/Upgrade").Raise(null, null);
                 return true;
             }

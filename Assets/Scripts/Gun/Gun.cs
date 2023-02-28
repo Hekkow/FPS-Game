@@ -6,18 +6,15 @@ using UnityEngine.InputSystem;
 
 public class Gun : MonoBehaviour
 {
+    [HideInInspector] public Animator shootAnimator;
+
     [Header("Objects")]
-    public Animator shootAnimator;
-
     [SerializeField] Player player;
-
     [SerializeField] Transform attackPoint;
 
     public GameEvent onGunShot;
     public GameEvent beforeReload;
     public GameEvent afterReload;
-
-
 
     public int slot = -1;
     public int bulletsPerShot = 1;
@@ -35,23 +32,19 @@ public class Gun : MonoBehaviour
 
     public bool gravityFlip = false;
 
-
     bool readyToShoot = true;
     bool shooting = false;
     bool reloading = false;
-    new Camera camera;
     Coroutine reloadCoroutine;
     GameObject bulletPrefab;
 
     void Awake()
     {
         bulletPrefab = Resources.Load<GameObject>("Prefabs/Bullet");
-        camera = Camera.main;
         shootAnimator = GetComponent<Animator>();
         reloadCoroutine = StartCoroutine(WaitThenReload(0));
         StopCoroutine(reloadCoroutine);
     }
-
     void OnEnable()
     {
         if (bulletsLeft <= 0)
@@ -88,10 +81,7 @@ public class Gun : MonoBehaviour
         reloading = false;
         StopCoroutine(reloadCoroutine);
         readyToShoot = false;
-
-        // calculates direction
-
-        Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
         Vector3 targetPoint;
         if (Physics.Raycast(ray, out hit))
@@ -107,38 +97,32 @@ public class Gun : MonoBehaviour
         for (int i = 0; i < bulletsPerShot; i++)
         {
             bulletsLeft--;
-            Vector3 direction = targetPoint - attackPoint.position;// + RandomSpread();
-
-            // creates bullet and sends it zoomin
+            Vector3 direction = targetPoint - attackPoint.position;
 
             GameObject currentBullet = Instantiate(bulletPrefab, attackPoint.position, Quaternion.identity);
-            currentBullet.layer = 20;
             currentBullet.transform.forward = direction.normalized;
             Vector3 randomSpread = RandomSpread();
             currentBullet.transform.Rotate(randomSpread);
             currentBullet.transform.localScale *= bulletSize;
             currentBullet.GetComponent<Rigidbody>().velocity = bulletSpeed * currentBullet.transform.forward;
-            
-            // creates bullet with specified stats
             Helper.AddDamage(currentBullet, bulletDamage, bulletKnockback, false, false);
             Bullet bullet = currentBullet.GetComponent<Bullet>();
             bullet.gravityFlip = gravityFlip;
-
         }
 
         StartCoroutine(ResetShot());
 
         shootAnimator.Play("shoot", 0, 0f);
-
         shootAnimator.speed = attackSpeed;
+
         if (bulletsLeft <= 0)
         {
             reloadCoroutine = StartCoroutine(WaitThenReload(1/attackSpeed));
         }
+
         onGunShot.Raise(null, null);
 
     }
-
     IEnumerator ResetShot()
     {
         yield return new WaitForSeconds(1 / (attackSpeed));

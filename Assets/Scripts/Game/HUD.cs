@@ -23,13 +23,6 @@ public class HUD : MonoBehaviour
     [SerializeField] TMP_Text speedText;
     [SerializeField] TMP_Text bulletsText;
 
-
-    float fps;
-    float minfps = 10000;
-    float maxfps = 0;
-    float averagefps;
-    List<float> fpsList;
-
     float reticleHoleSize;
     float reticleBloomAmount = 20;
     float defaultReticleHoleSize = 32;
@@ -37,10 +30,27 @@ public class HUD : MonoBehaviour
 
     void Start()
     {
-        fpsList = new List<float>();
-        InvokeRepeating("PrintFPS", 1, 0.1f);
-        InvokeRepeating("PrintSpeed", 0, 0.1f);
+        StartCoroutine(PrintFPS());
+        StartCoroutine(PrintSpeed());
         PrintHealth();
+    }
+    IEnumerator PrintFPS()
+    {
+        while (true)
+        {
+            fpsText.text = Mathf.Round(1f / Time.unscaledDeltaTime) + " FPS\n";
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
+    IEnumerator PrintSpeed()
+    {
+        Rigidbody rb = player.GetComponent<Rigidbody>();
+        while (true)
+        {
+            speedText.text = Mathf.RoundToInt(new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude) + " SPEEDS";
+            yield return new WaitForSeconds(0.1f);
+        }
+
     }
     IEnumerator ShotBloom()
     {
@@ -79,37 +89,11 @@ public class HUD : MonoBehaviour
     }
     public void Shot()
     {
-        
-        {
-            StartCoroutine(ShotBloom());
-        }
+        StartCoroutine(ShotBloom());
     }
     public void Reload()
     {
         StartCoroutine(ReloadBloom());
-    }
-    void PrintFPS()
-    {
-        fps = Mathf.Round(1 / Time.deltaTime);
-        if (fps < minfps) { minfps = fps; }
-        if (fps > maxfps) { maxfps = fps; }
-        fpsList.Add(fps);
-        if (fpsList.Count > 100)
-        {
-            fpsList.RemoveAt(0);
-
-        }
-        averagefps = Mathf.Round(fpsList.Average());
-
-        fpsText.text = fps + " FPS\n" + maxfps + " FPS MAX\n" + minfps + " FPS MIN\n " + averagefps + " FPS AVERAGE";
-
-
-    }
-    void PrintSpeed()
-    {
-        Rigidbody rb = player.GetComponent<Rigidbody>();
-        int speed = Mathf.RoundToInt(new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude);
-        speedText.SetText(speed + " SPEEDS");
     }
     public void PrintHealth()
     {

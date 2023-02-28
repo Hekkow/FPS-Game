@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.InputSystem;
-using System.Xml;
 
 public class Console : MonoBehaviour
 {
@@ -85,30 +84,22 @@ public class Console : MonoBehaviour
                 {
                     if (words.Length == 2 + spot)
                     {
-                        if (spot == 0)
-                        {
-                            if (!UpgradeManager.ActivateUpgrade(upgrade))
-                            {
-                                Debug.Log("Upgrade not found");
-                            }
-                        }
+                        if (spot == 0) UpgradeManager.ActivateUpgrade(upgrade);
                         else UpgradeManager.DeactivateUpgrade(upgrade);
                     }
                     else
                     {
                         for (int i = 0; i < int.Parse(words[2 + spot]); i++)
                         {
-                            if (spot == 0)
-                            {
-                                if (!UpgradeManager.ActivateUpgrade(upgrade))
-                                {
-                                    Debug.Log("Upgrade not found");
-                                }
-                            }
+                            if (spot == 0) UpgradeManager.ActivateUpgrade(upgrade);
                             else UpgradeManager.DeactivateUpgrade(upgrade);
                         }
-                        
                     }
+                    Inventory.ResetBullets();
+                }
+                else
+                {
+                    Debug.Log("Upgrade not found");
                 }
             }
         }
@@ -179,8 +170,11 @@ public class Console : MonoBehaviour
         {
             if (command != "") Debug.Log("that command dont exist bruv");
         }
+
         if (command != "" && command != commandHistory[commandHistory.Count-1]) commandHistory.Add(command);
+
         InputManager.SwitchActionMap(InputManager.playerInput.Player);
+
         showConsole = !showConsole;
         command = "";
     }

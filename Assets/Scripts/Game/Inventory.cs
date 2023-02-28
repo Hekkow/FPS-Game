@@ -96,10 +96,16 @@ public static class Inventory
     {
         return guns[0] != null;
     }
-    public static void ResetBullets()
+    public static void ResetBulletsAfterUpgrade()
     {
         if (guns[0] != null) guns[0].ResetBulletsAfterUpgrade();
         if (guns[1] != null) guns[1].ResetBulletsAfterUpgrade();
         if (guns[2] != null) guns[2].ResetBulletsAfterUpgrade();
+    }
+    public static void ResetBullets()
+    {
+        if (guns[0] != null) guns[0].ResetBullets();
+        if (guns[1] != null) guns[1].ResetBullets();
+        if (guns[2] != null) guns[2].ResetBullets();
     }
 }
