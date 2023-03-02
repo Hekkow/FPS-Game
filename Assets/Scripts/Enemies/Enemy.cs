@@ -30,7 +30,6 @@ public class Enemy : MonoBehaviour, IDamageable
         Kick,
         Walk
     }
-    protected TMP_Text healthText;
     protected NavMeshAgent agent;
     protected GameObject target;
     protected Health health;
@@ -49,7 +48,6 @@ public class Enemy : MonoBehaviour, IDamageable
         rb = GetComponent<Rigidbody>();
         health = GetComponent<Health>();
         agent = GetComponent<NavMeshAgent>();
-        healthText = GetComponentInChildren<TMP_Text>();
     }
     protected virtual void Start()
     {
@@ -58,10 +56,7 @@ public class Enemy : MonoBehaviour, IDamageable
         lastSeenLocation = transform.position;
         StartCoroutine(Vision());
     }
-    protected virtual void Update()
-    {
-        UpdateHealthBar();
-    }
+    protected virtual void Update() { }
     IEnumerator Vision()
     {
         while (health.alive)
@@ -77,6 +72,7 @@ public class Enemy : MonoBehaviour, IDamageable
                         playerDetected = true;
                         detectedOnce = true;
                         timeDetected = Time.time;
+                        lastSeenLocation = target.transform.position;
                     }
                     else playerDetected = false;
                 }
@@ -96,28 +92,17 @@ public class Enemy : MonoBehaviour, IDamageable
             {
                 if (collision is Collision)
                 {
-                    TMP_Text damageNumbersText = Instantiate(Resources.Load<TMP_Text>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform);
-                    damageNumbersText.text = Mathf.RoundToInt(amount).ToString();
-                    DamageNumber damageNumber = damageNumbersText.gameObject.AddComponent<DamageNumber>();
-                    damageNumber.collision = (Collision)collision;
+                    Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform).Init(amount, (Collision)collision);
                 }
                 else
                 {
-                    // later
+                    Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform).Init(amount, (Collider)collision);
                 }
             }
             else if (canDie) Died();
         }
     }
     protected virtual void Died() { }
-    protected virtual void OnCollisionEnter(Collision collision) { }
-
-    void UpdateHealthBar()
-    {
-        healthText.transform.LookAt(Camera.main.transform);
-        healthText.transform.rotation = Quaternion.LookRotation(Camera.main.transform.forward);
-        healthText.text = Helper.HealthToHashtags(health);
-    }
     public virtual IEnumerator DisableAgentCoroutine()
     {
         animationLocked = true;

@@ -10,14 +10,14 @@ public class PunchDude : Enemy
 
     
     AnimationState currentState;
-    float fallingVelocity = 0;
 
     Animator animator;
-
+    HealthBar healthBar;
     protected override void Awake()
     {
         base.Awake();
         animator = GetComponent<Animator>();
+        healthBar = GetComponent<HealthBar>();
     }
     protected override void Start()
     {
@@ -49,7 +49,6 @@ public class PunchDude : Enemy
             {
                 RunState(AnimationState.Idle);
             }
-            fallingVelocity = rb.velocity.y;
         }
     }
     void RunState(AnimationState state)
@@ -91,11 +90,7 @@ public class PunchDude : Enemy
     {
         canDie = false;
         StartCoroutine(IdleThenDestroy());
-        GameObject loot = Instantiate(Resources.Load<GameObject>("Prefabs/Loot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
-        Outline outline = loot.AddComponent<Outline>();
-        outline.OutlineMode = Outline.Mode.OutlineVisible;
-        outline.OutlineColor = new Color(0, 187, 255);
-        outline.OutlineWidth = 10f;
+        Instantiate(Resources.Load<GameObject>("Prefabs/Loot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
     }
     IEnumerator IdleThenDestroy()
     {
@@ -105,19 +100,13 @@ public class PunchDude : Enemy
         rb.constraints = RigidbodyConstraints.None;
         rb.velocity = Vector3.zero;
         rb.mass = ragdollMass;
-        healthText.enabled = false;
+        healthBar.Disable();
         transform.Rotate(0, 0, 90);
         Destroy(animator);
         Destroy(agent);
         Destroy(this);
     }
-    protected override void OnCollisionEnter(Collision collision)
-    {
-        if (fallingVelocity < -10)
-        {
-            Damaged(-fallingVelocity * 2.5f, collision);
-        }
-    }
+    
     public override IEnumerator DisableAgentCoroutine()
     {
         yield return StartCoroutine(base.DisableAgentCoroutine());

@@ -19,7 +19,7 @@ public class Gun : MonoBehaviour
     public int slot = -1;
     public int bulletsPerShot = 1;
     public int bulletsPerTap = 1;
-    public float bulletSize = 7;
+    public float bulletSize = 0.1f;
     public float bulletSpeed = 200;
     public float bulletDamage = 34;
     public float bulletKnockback = 2000;
@@ -29,8 +29,6 @@ public class Gun : MonoBehaviour
     public int bulletsPerMag = 6;
     public int bulletsLeft = 6;
     public int shotsPerMag = 6;
-
-    public bool gravityFlip = false;
 
     bool readyToShoot = true;
     bool shooting = false;
@@ -53,10 +51,10 @@ public class Gun : MonoBehaviour
         }
         InputManager.playerInput.Player.Shoot.performed += (obj) => shooting = true;
         InputManager.playerInput.Player.Shoot.canceled += (obj) => shooting = false;
+        InputManager.playerInput.Player.Shoot.Enable(); 
         InputManager.playerInput.Player.Reload.performed += Reload;
         InputManager.playerInput.Player.Reload.Enable();
-        InputManager.playerInput.Player.Shoot.Enable();
-        
+
     }
     void OnDisable()
     {
@@ -71,43 +69,32 @@ public class Gun : MonoBehaviour
         {
             if (readyToShoot && bulletsLeft > 0)
             {
-                ShootGun();
+                Shoot();
             }
         }
-        
     }
-    void ShootGun()
+
+    void Shoot()
     {
         reloading = false;
         StopCoroutine(reloadCoroutine);
         readyToShoot = false;
-        Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        RaycastHit hit;
-        Vector3 targetPoint;
-        if (Physics.Raycast(ray, out hit))
-        {
-            targetPoint = hit.point;
-        }
-        else
-        {
-            targetPoint = ray.GetPoint(100);
-        }
-
-
         for (int i = 0; i < bulletsPerShot; i++)
         {
             bulletsLeft--;
-            Vector3 direction = targetPoint - attackPoint.position;
-
-            GameObject currentBullet = Instantiate(bulletPrefab, attackPoint.position, Quaternion.identity);
-            currentBullet.transform.forward = direction.normalized;
-            Vector3 randomSpread = RandomSpread();
-            currentBullet.transform.Rotate(randomSpread);
-            currentBullet.transform.localScale *= bulletSize;
-            currentBullet.GetComponent<Rigidbody>().velocity = bulletSpeed * currentBullet.transform.forward;
-            Helper.AddDamage(currentBullet, bulletDamage, bulletKnockback, false, false);
-            Bullet bullet = currentBullet.GetComponent<Bullet>();
-            bullet.gravityFlip = gravityFlip;
+            RaycastHit hit;
+            if (Physics.SphereCast(new Ray(Camera.main.transform.position, Camera.main.transform.forward), bulletSize, out hit))
+            {
+                if (hit.transform.TryGetComponent(out IDamageable damage))
+                {
+                    damage.Damaged(bulletDamage, hit.collider);
+                }
+                if (hit.rigidbody != null)
+                {
+                    //hit.rigidbody.AddForce(Camera.main.transform.forward * 200);
+                    hit.rigidbody.AddForce(-hit.normal * 300);
+                }
+            }
         }
 
         StartCoroutine(ResetShot());
@@ -117,12 +104,59 @@ public class Gun : MonoBehaviour
 
         if (bulletsLeft <= 0)
         {
-            reloadCoroutine = StartCoroutine(WaitThenReload(1/attackSpeed));
+            reloadCoroutine = StartCoroutine(WaitThenReload(1 / attackSpeed));
         }
 
         onGunShot.Raise(null, null);
 
+        
     }
+
+    //void ShootGun()
+    //{
+    //    reloading = false;
+    //    StopCoroutine(reloadCoroutine);
+    //    readyToShoot = false;
+    //    Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+    //    RaycastHit hit;
+    //    Vector3 targetPoint;
+    //    if (Physics.Raycast(ray, out hit))
+    //    {
+    //        targetPoint = hit.point;
+    //    }
+    //    else
+    //    {
+    //        targetPoint = ray.GetPoint(100);
+    //    }
+
+    //    for (int i = 0; i < bulletsPerShot; i++)
+    //    {
+    //        bulletsLeft--;
+    //        Vector3 direction = targetPoint - attackPoint.position;
+
+    //        GameObject currentBullet = Instantiate(bulletPrefab, attackPoint.position, Quaternion.identity);
+    //        currentBullet.transform.forward = direction.normalized;
+    //        Vector3 randomSpread = RandomSpread();
+    //        currentBullet.transform.Rotate(randomSpread);
+    //        currentBullet.transform.localScale *= bulletSize;
+    //        currentBullet.GetComponent<Rigidbody>().velocity = bulletSpeed * currentBullet.transform.forward;
+    //        Helper.AddDamage(currentBullet, bulletDamage, bulletKnockback, false, false);
+    //        Bullet bullet = currentBullet.GetComponent<Bullet>();
+    //    }
+
+    //    StartCoroutine(ResetShot());
+
+    //    shootAnimator.Play("shoot", 0, 0f);
+    //    shootAnimator.speed = attackSpeed;
+
+    //    if (bulletsLeft <= 0)
+    //    {
+    //        reloadCoroutine = StartCoroutine(WaitThenReload(1/attackSpeed));
+    //    }
+
+    //    onGunShot.Raise(null, null);
+
+    //} 
     IEnumerator ResetShot()
     {
         yield return new WaitForSeconds(1 / (attackSpeed));

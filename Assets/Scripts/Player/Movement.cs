@@ -147,7 +147,6 @@ public class Movement : MonoBehaviour
     {
         if (player.canDash)
         {
-            StopCoroutine(StartDash());
             StartCoroutine(StartDash());
         }
     }

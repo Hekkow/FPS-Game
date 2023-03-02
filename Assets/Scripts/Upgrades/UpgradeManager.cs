@@ -40,7 +40,6 @@ public class UpgradeManager : MonoBehaviour
             new BulletSpeed(),
             new BulletSize(), 
             new Pellets(),
-            new GravityFlip(),
             new HealthBoost(),
             new ReloadSpeed(),
             new Dash()

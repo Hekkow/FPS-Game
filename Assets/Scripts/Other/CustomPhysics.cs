@@ -6,8 +6,8 @@ using UnityEngine.AI;
 
 public static class CustomPhysics
 {
-    static float backForce = 5;
-    static float upForce = 5;
+    static float backForce = 14;
+    static float upForce = 7;
     public static void BounceUpAndBack(GameObject item)
     {
         Rigidbody rb = item.GetComponent<Rigidbody>();

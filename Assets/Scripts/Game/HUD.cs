@@ -64,12 +64,15 @@ public class HUD : MonoBehaviour
     }
     IEnumerator ReloadBloom()
     {
-        float startTime = Time.time;
-        while (Time.time - startTime < (1 / Inventory.guns[0].reloadSpeed))
+        if (Inventory.HasGun())
         {
-            reticleHoleSize = Inventory.guns[0].bulletSize + Inventory.guns[0].bulletSpread * sizePerBulletSpread + defaultReticleHoleSize + (reloadCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].reloadSpeed) * reticleBloomAmount);
-            armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
-            yield return new WaitForEndOfFrame();
+            float startTime = Time.time;
+            while (Time.time - startTime < (1 / Inventory.guns[0].reloadSpeed))
+            {
+                reticleHoleSize = Inventory.guns[0].bulletSize + Inventory.guns[0].bulletSpread * sizePerBulletSpread + defaultReticleHoleSize + (reloadCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].reloadSpeed) * reticleBloomAmount);
+                armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
+                yield return new WaitForEndOfFrame();
+            }
         }
     }
     public void RefreshReticle()

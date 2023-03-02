@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class PickupUpgrade : MonoBehaviour
+public class PickupUpgrade : MonoBehaviour, IDamageable
 {
     List<Transform> upgradeBoxes = new List<Transform>();
     public Upgrade upgrade;
@@ -18,17 +18,18 @@ public class PickupUpgrade : MonoBehaviour
             upgradeBoxes.Add(transform.parent.GetChild(i));
         }
     }
-    void OnCollisionEnter(Collision collision)
+    public void Damaged(float amount, object collision)
     {
-        if (collision.gameObject.GetComponent<Bullet>() != null && !upgraded)
+        if (!upgraded)
         {
+            upgraded = true;
             UpgradeManager.ActivateUpgrade(upgrade);
             StartCoroutine(Destroys());
         }
+        
     }
     IEnumerator Destroys()
     {
-        upgraded = true;
         yield return new WaitForSeconds(0.2f);
         for (int i = 0; i < upgradeBoxes.Count; i++)
         {

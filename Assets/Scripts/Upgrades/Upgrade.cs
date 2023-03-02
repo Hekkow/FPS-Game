@@ -143,22 +143,6 @@ public class Pellets : Upgrade
         //UpgradeManager.bulletDamageMultiplier /= 2;
     }
 }
-public class GravityFlip : Upgrade
-{
-    public GravityFlip(params float[] parameters)
-    {
-        upgradeName = "Gravity Flip";
-        maxAmount = 1;
-    }
-    public override void Activate()
-    {
-        Inventory.guns[0].gravityFlip = true;
-    }
-    public override void Deactivate()
-    {
-        //UpgradeManager.bulletDamageMultiplier /= 2;
-    }
-}
 public class HealthBoost : Upgrade
 {
     public HealthBoost(params float[] parameters)

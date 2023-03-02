@@ -7,9 +7,9 @@ public class KickDude : Enemy
     [Header("Attack")]
     [SerializeField] float attackRange;
     [SerializeField] GameObject rightFoot;
+    HealthBar healthBar;
     
     AnimationState currentState;
-    float fallingVelocity = 0;
 
     Animator animator;
 
@@ -17,6 +17,7 @@ public class KickDude : Enemy
     {
         base.Awake();
         animator = GetComponent<Animator>();
+        healthBar = GetComponent<HealthBar>();
     }
     protected override void Start()
     {
@@ -44,11 +45,10 @@ public class KickDude : Enemy
                     }
                 }
             }
-            else
+            else if (agent.enabled)
             {
                 RunState(AnimationState.Idle);
             }
-            fallingVelocity = rb.velocity.y;
         }
     }
     void RunState(AnimationState state)
@@ -67,7 +67,6 @@ public class KickDude : Enemy
             }
             else if (state == AnimationState.Kick)
             {
-                animationLocked = true;
                 Helper.AddDamage(rightFoot, 20, 10, false, true);
                 animator.CrossFade("Kick", 0, 0);
                 animator.speed = 1;
@@ -79,8 +78,11 @@ public class KickDude : Enemy
     }
     IEnumerator WaitUntilKickDone()
     {
+        bool previouslyLocked = animationLocked;
+        animationLocked = true;
+
         yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1f);
-        animationLocked = false;
+        if (!previouslyLocked) animationLocked = false;
         Destroy(rightFoot.GetComponent<Damage>());
         RunState(AnimationState.Walk);
     }
@@ -88,11 +90,7 @@ public class KickDude : Enemy
     {
         canDie = false;
         StartCoroutine(IdleThenDestroy());
-        GameObject loot = Instantiate(Resources.Load<GameObject>("Prefabs/Loot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
-        Outline outline = loot.AddComponent<Outline>();
-        outline.OutlineMode = Outline.Mode.OutlineVisible;
-        outline.OutlineColor = new Color(0, 187, 255);
-        outline.OutlineWidth = 10f;
+        Instantiate(Resources.Load<GameObject>("Prefabs/Loot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
     }
     IEnumerator IdleThenDestroy()
     {
@@ -102,22 +100,14 @@ public class KickDude : Enemy
         rb.constraints = RigidbodyConstraints.None;
         rb.velocity = Vector3.zero;
         rb.mass = ragdollMass;
-        healthText.enabled = false;
+        healthBar.Disable();
         transform.Rotate(0, 0, 90);
         Destroy(animator);
         Destroy(agent);
         Destroy(this);
     }
-    protected override void OnCollisionEnter(Collision collision)
-    {
-        if (fallingVelocity < -10)
-        {
-            Damaged(-fallingVelocity * 2.5f, collision);
-        }
-    }
     public override IEnumerator DisableAgentCoroutine()
     {
-        StartCoroutine(base.DisableAgentCoroutine());
-        yield return null;
+        yield return StartCoroutine(base.DisableAgentCoroutine());
     }
 }
