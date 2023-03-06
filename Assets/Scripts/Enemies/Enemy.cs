@@ -19,21 +19,20 @@ public class Enemy : MonoBehaviour, IDamageable
 
     [Header("Knockback")]
     [SerializeField] protected float ragdollMass;
+    [SerializeField] protected float knockedTime;
+
 
     [Header("Pathfinding")]
-    [SerializeField] protected float walkSpeed;
+    [SerializeField] protected float walkAnimationSpeed;
 
-    protected enum AnimationState
-    {
-        Idle,
-        Punch,
-        Kick,
-        Walk
-    }
+    
     protected NavMeshAgent agent;
     protected GameObject target;
     protected Health health;
     protected Rigidbody rb;
+    protected Animator animator;
+    HealthBar healthBar;
+
     float viewRadius;
     float viewAngle;
     float timeDetected;
@@ -42,12 +41,16 @@ public class Enemy : MonoBehaviour, IDamageable
     protected bool animationLocked = false;
     protected bool canDie = true;
     protected Vector3 lastSeenLocation;
+    protected bool knocked = false;
     protected virtual void Awake()
     {
         target = GameObject.Find("Player");
         rb = GetComponent<Rigidbody>();
         health = GetComponent<Health>();
         agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
+        healthBar = GetComponent<HealthBar>();
+
     }
     protected virtual void Start()
     {
@@ -83,26 +86,40 @@ public class Enemy : MonoBehaviour, IDamageable
             yield return new WaitForSeconds(0.1f);
         }
     }
-    public void Damaged(float amount, object collision)
+    public virtual void Damaged(float amount, object collision)
     {
         if (amount >= 1)
         {
             health.Damage(amount);
-            if (health.alive)
-            {
-                if (collision is Collision)
-                {
-                    Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform).Init(amount, (Collision)collision);
-                }
-                else
-                {
-                    Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform).Init(amount, (Collider)collision);
-                }
-            }
-            else if (canDie) Died();
+            if (!health.alive && canDie) Died();
         }
     }
-    protected virtual void Died() { }
+    protected virtual IEnumerator Knockback(Collision collision)
+    {
+        knocked = true;
+        agent.enabled = false;
+        yield return new WaitForSeconds(knockedTime);
+        knocked = false;
+    }
+
+    protected virtual IEnumerator Knockback()
+    {
+        knocked = true;
+        agent.enabled = false;
+        yield return new WaitForSeconds(knockedTime);
+        knocked = false;
+    }
+    
+
+    protected virtual void Died() {
+        canDie = false;
+        healthBar.Disable();
+        rb.isKinematic = false;
+        rb.constraints = RigidbodyConstraints.None;
+        rb.velocity = Vector3.zero;
+        rb.mass = ragdollMass;
+
+    }
     public virtual IEnumerator DisableAgentCoroutine()
     {
         animationLocked = true;

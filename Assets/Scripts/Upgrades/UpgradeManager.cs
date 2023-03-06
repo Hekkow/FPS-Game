@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ public class UpgradeManager : MonoBehaviour
 {
     public static List<UpgradeInfo> ownedUpgrades;
     public static List<Upgrade> allUpgrades;
-    public GameEvent onUpgrade;
+    public static event Action onUpgrade;
     public class UpgradeInfo
     {
         public Upgrade upgrade;
@@ -56,7 +57,7 @@ public class UpgradeManager : MonoBehaviour
                 if (upgrade.category == Upgrade.Category.Gun) ownedUpgrades.Add(new UpgradeInfo(upgrade, Inventory.guns[0].slot, 1));
                 else ownedUpgrades.Add(new UpgradeInfo(upgrade, -1, 1));
                 Inventory.ResetBulletsAfterUpgrade();
-                Resources.Load<GameEvent>("Events/Upgrade").Raise(null, null);
+                onUpgrade?.Invoke();
                 return true;
             }
             else if (ownedUpgrades[upgradeIndex].amount < upgrade.maxAmount)
@@ -64,7 +65,7 @@ public class UpgradeManager : MonoBehaviour
                 upgrade.Activate(); 
                 ownedUpgrades[upgradeIndex].ChangeAmount(1);
                 Inventory.ResetBulletsAfterUpgrade();
-                Resources.Load<GameEvent>("Events/Upgrade").Raise(null, null);
+                onUpgrade?.Invoke();
                 return true;
             }
         }
@@ -115,7 +116,7 @@ public class UpgradeManager : MonoBehaviour
         int counter = 0;
         while (list.Count < amount && counter < 200)
         {
-            int randomNumber = Random.Range(0, allUpgrades.Count); 
+            int randomNumber = UnityEngine.Random.Range(0, allUpgrades.Count); 
             Upgrade upgrade = allUpgrades[randomNumber];
             if (HasUpgrade(upgrade) == -1 && !list.Contains(upgrade))
             {

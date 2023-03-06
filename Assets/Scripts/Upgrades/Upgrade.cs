@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public abstract class Upgrade
 {
@@ -70,6 +71,7 @@ public class Dash : Upgrade
     {
         upgradeName = "Dash";
         maxAmount = 100;
+        category = Category.Mobility; 
     }
     public override void Activate()
     {
@@ -121,6 +123,9 @@ public class Pellets : Upgrade
     }
     public override void Activate()
     {
+        Inventory.guns[0].pelletLayers += 1;
+        if (Inventory.guns[0].pelletsPerLayer.Count == 0) Inventory.guns[0].pelletsPerLayer.Add(8);
+        Inventory.guns[0].pelletsPerLayer.Add((int)(Inventory.guns[0].pelletsPerLayer[Inventory.guns[0].pelletsPerLayer.Count - 1] * 1.5f));
         Inventory.guns[0].bulletsPerShot += 8;
         Inventory.guns[0].shotsPerMag -= 1;
         if (Inventory.guns[0].shotsPerMag < 3)
@@ -132,8 +137,8 @@ public class Pellets : Upgrade
         {
             Inventory.guns[0].bulletsPerMag += 8 * (Inventory.guns[0].shotsPerMag + 1) - Inventory.guns[0].bulletsPerShot;
         }
-
-        Inventory.guns[0].bulletSpread += 2;
+        if (Inventory.guns[0].bulletSpread <= 0) Inventory.guns[0].bulletSpread = 0.1f;
+        else Inventory.guns[0].bulletSpread *= 0.9f;
         Inventory.guns[0].bulletSize /= 1.5f;
         Inventory.guns[0].reloadSpeed += 0.2f;
         Inventory.guns[0].bulletDamage *= 0.9f;

@@ -10,9 +10,10 @@ public class PlayerOther : MonoBehaviour
     [SerializeField] GameManager gameManager;
     [SerializeField] Transform leftHandLocation;
     [SerializeField] Transform rightHandLocation;
-    [SerializeField] GameEvent onWeaponChange;
     [SerializeField] Transform itemsParent;
     [SerializeField] Transform gunsParent;
+
+    public event Action onGunSwitch;
 
     Player player;
     bool canSwitch = true;
@@ -126,13 +127,18 @@ public class PlayerOther : MonoBehaviour
         Inventory.guns[0].enabled = true;
         item.gameObject.GetComponent<Animator>().enabled = true;
         Destroy(item.GetComponent<Pickup>());
-        onWeaponChange.Raise(null, null);
+        onGunSwitch?.Invoke();
+
     }
     void ThrowItem()
     {
         GameObject item = leftHandLocation.GetChild(0).gameObject;
         DropItem();
         CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
+        if (item.TryGetComponent(out Rigidbody rb))
+        {
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; 
+        }
         Helper.AddDamage(item, player.throwDamage, player.throwKnockback, true, true);
     }
     void ThrowGun()
@@ -140,9 +146,14 @@ public class PlayerOther : MonoBehaviour
         GameObject item = Inventory.guns[0].gameObject;
         DropGun();
         CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
+        if (item.TryGetComponent(out Rigidbody rb))
+        {
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        }
         Helper.AddDamage(item, player.throwDamage, player.throwKnockback, true, true);
         if (Inventory.HasGun()) Inventory.guns[0].gameObject.SetActive(true);
-        onWeaponChange.Raise(null, null);
+        onGunSwitch?.Invoke();
+
     }
     void PickupThing(InputAction.CallbackContext obj)
     {
@@ -156,7 +167,7 @@ public class PlayerOther : MonoBehaviour
     void ThrowThing(InputAction.CallbackContext obj)
     {
         if (holdingItem) ThrowItem();
-        else ThrowGun();
+        else if (Inventory.HasGun()) ThrowGun();
     }
     void Switch(InputAction.CallbackContext obj)
     {
@@ -169,7 +180,7 @@ public class PlayerOther : MonoBehaviour
                 Inventory.guns[0].gameObject.SetActive(true);
             }
             StartCoroutine(RenableSwitch());
-            onWeaponChange.Raise(null, null);
+            onGunSwitch?.Invoke();
 
         }
     }

@@ -6,18 +6,23 @@ public class PunchDude : Enemy
 {
     [Header("Attack")]
     [SerializeField] float attackRange;
+    [SerializeField] float punchDamage;
     [SerializeField] GameObject rightArm;
 
-    
-    AnimationState currentState;
+    [Header("Other")]
+    [SerializeField] float lookAroundSpeed;
 
-    Animator animator;
-    HealthBar healthBar;
+    enum AnimationState
+    {
+        Idle,
+        Walk,
+        Punch,
+        Flinch
+    }
+    AnimationState currentState;
     protected override void Awake()
     {
         base.Awake();
-        animator = GetComponent<Animator>();
-        healthBar = GetComponent<HealthBar>();
     }
     protected override void Start()
     {
@@ -55,23 +60,27 @@ public class PunchDude : Enemy
     {
         if (currentState != state && !animationLocked)
         {
-            if (state == AnimationState.Walk)
+            switch (state)
             {
-                animator.CrossFade("Walk", 0, 0);
-                animator.speed = walkSpeed;
-            }
-            else if (state == AnimationState.Idle)
-            {
-                animator.CrossFade("Idle", 0, 0);
-                agent.SetDestination(lastSeenLocation);
-            }
-            else if (state == AnimationState.Punch)
-            {
-                Helper.AddDamage(rightArm, 20, 10, false, true);
-                animator.CrossFade("Punch", 0, 0);
-                animator.speed = 1;
-                agent.SetDestination(transform.position);
-                StartCoroutine(WaitUntilPunchDone());
+                case AnimationState.Walk:
+                    animator.CrossFade("Walk", 0, 0);
+                    agent.SetDestination(lastSeenLocation);
+                    animator.speed = walkAnimationSpeed;
+                    break;
+                case AnimationState.Idle:
+                    animator.CrossFade("Idle", 0, 0);
+                    agent.SetDestination(transform.position);
+                    break;
+                case AnimationState.Punch:
+                    Helper.AddDamage(rightArm, punchDamage, 10, false, true);
+                    animator.CrossFade("Punch", 0, 0);
+                    animator.speed = 1;
+                    agent.SetDestination(transform.position);
+                    StartCoroutine(WaitUntilPunchDone());
+                    break;
+                case AnimationState.Flinch:
+                    animator.CrossFade("Idle", 0, 0);
+                    break;
             }
             currentState = state;
         }
@@ -86,27 +95,69 @@ public class PunchDude : Enemy
         Destroy(rightArm.GetComponent<Damage>());
         RunState(AnimationState.Walk);
     }
+    public override void Damaged(float amount, object collision)
+    {
+        base.Damaged(amount, collision);
+        if (health.alive && amount >= 1)
+        {
+            if (collision is Collision)
+            {
+                StartCoroutine(Knockback((Collision)collision));
+                Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform).Init(amount, (Collision)collision);
+            }
+            else
+            {
+                StartCoroutine(Knockback());
+                Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform).Init(amount, (Collider)collision);
+            }
+        }
+        if (!playerDetected) StartCoroutine(LookAround());
+    }
+    IEnumerator LookAround()
+    {
+        while (transform.localRotation.y < 360 && !playerDetected)
+        {
+            transform.Rotate(0, lookAroundSpeed * Time.deltaTime, 0);
+            yield return new WaitForEndOfFrame();
+        }
+    }
+    protected override IEnumerator Knockback()
+    {
+        StartCoroutine(base.Knockback());
+        Vector3 direction = new Vector3(Camera.main.transform.forward.x, 0.01f, Camera.main.transform.forward.z).normalized;
+        rb.AddForce(direction * Inventory.guns[0].bulletKnockback / 2, ForceMode.Impulse);
+        yield return new WaitUntil(() => knocked);
+        yield return new WaitUntil(() => Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, agent.height / 2 + 0.3f));
+        agent.enabled = true;
+    }
+    protected override IEnumerator Knockback(Collision collision)
+    {
+        StartCoroutine(base.Knockback(collision));
+        if (collision.gameObject.TryGetComponent(out Damage damage) && damage.thrown)
+        {
+            Vector3 direction = new Vector3(Camera.main.transform.forward.x, 0.01f, Camera.main.transform.forward.z).normalized;
+            rb.AddForce(direction * 1000, ForceMode.Impulse);
+        }
+        yield return new WaitUntil(() => knocked);
+        yield return new WaitUntil(() => Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, agent.height / 2 + 0.3f));
+        agent.enabled = true;
+    }
     protected override void Died()
     {
-        canDie = false;
+        base.Died();
         StartCoroutine(IdleThenDestroy());
         Instantiate(Resources.Load<GameObject>("Prefabs/Loot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
     }
     IEnumerator IdleThenDestroy()
     {
         animator.CrossFade("Idle", 0, 0);
+        gameObject.AddComponent<Pickup>();
         yield return new WaitForEndOfFrame();
-        rb.isKinematic = false;
-        rb.constraints = RigidbodyConstraints.None;
-        rb.velocity = Vector3.zero;
-        rb.mass = ragdollMass;
-        healthBar.Disable();
         transform.Rotate(0, 0, 90);
         Destroy(animator);
         Destroy(agent);
         Destroy(this);
     }
-    
     public override IEnumerator DisableAgentCoroutine()
     {
         yield return StartCoroutine(base.DisableAgentCoroutine());

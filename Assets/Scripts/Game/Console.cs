@@ -163,8 +163,7 @@ public class Console : MonoBehaviour
         }
         else if (words[0] == "hurt")
         {
-            GameObject.Find("Player").GetComponent<Health>().Damage(int.Parse(words[1]));
-            Resources.Load<GameEvent>("Events/PlayerHurt").Raise(null, null);
+            GameObject.Find("Player").GetComponent<PlayerHealth>().Damaged(int.Parse(words[1]), null);
         }
         else
         {

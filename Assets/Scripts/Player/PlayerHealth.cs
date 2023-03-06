@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
-    public GameEvent onPlayerHurt;
+    public static event Action onPlayerHurt;
     Health health;
     bool canHurt = true;
     bool lastChance = true;
@@ -26,7 +27,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             {
                 health.Damage(amount);
             }
-            onPlayerHurt.Raise(null, null);
+            onPlayerHurt?.Invoke();
 
         }
     }

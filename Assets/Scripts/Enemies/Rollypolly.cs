@@ -1,22 +1,52 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
-public class KickDude : Enemy, IDamageable
+public class Rollypolly : Enemy, IDamageable
 {
+    [Header("Colliders")]
+    [SerializeField] SphereCollider sphereCollider;
+    [SerializeField] BoxCollider boxCollider;
+
     [Header("Attack")]
     [SerializeField] float attackRange;
-    [SerializeField] float kickDamage;
-    [SerializeField] GameObject rightFoot;
+    [SerializeField] float rollDamage;
+    [SerializeField] float rollingTime;
+    [SerializeField] float rollCooldown;
+
+    [Header("Roll Stats")]
+    [SerializeField] float rollSpeed;
+    [SerializeField] float rollAngularSpeed;
+    [SerializeField] float rollAcceleration;
+    [SerializeField] float rollRadius;
+    [SerializeField] float rollHeight;
+    [SerializeField] float rollBaseOffset;
+
+    [Header("Walk Stats")]
+    [SerializeField] float walkSpeed;
+    [SerializeField] float walkAngularSpeed;
+    [SerializeField] float walkAcceleration;
+    [SerializeField] float walkRadius;
+    [SerializeField] float walkHeight;
+    [SerializeField] float walkBaseOffset;
 
     [Header("Other")]
     [SerializeField] float lookAroundSpeed;
 
+    int walkingAgentID = -334000983;
+    int rollingAgentID = -1372625422;
+
+
+    bool playerHit = false;
+    bool canRoll = true;
+    bool rolling = false;
     enum AnimationState
     {
         Idle,
         Walk,
-        Kick,
+        Rollypolly,
+        Rolling,
         Flinch
     }
     AnimationState currentState;
@@ -29,17 +59,18 @@ public class KickDude : Enemy, IDamageable
         base.Start();
         currentState = AnimationState.Walk;
         RunState(AnimationState.Idle);
+        PlayerHealth.onPlayerHurt += () => playerHit = true;
     }
     protected override void Update()
     {
         base.Update();
-        if (health.alive)
+        if (health.alive && agent.enabled)
         {
-            if (playerDetected && agent.enabled)
+            if (playerDetected)
             {
-                if (Physics.CheckSphere(transform.position, attackRange, playerMask))
+                if (Physics.CheckSphere(transform.position, attackRange, playerMask) && canRoll)
                 {
-                    RunState(AnimationState.Kick);
+                    RunState(AnimationState.Rollypolly);
                 }
                 else
                 {
@@ -50,7 +81,7 @@ public class KickDude : Enemy, IDamageable
                     }
                 }
             }
-            else if (agent.enabled)
+            else
             {
                 RunState(AnimationState.Idle);
             }
@@ -71,29 +102,82 @@ public class KickDude : Enemy, IDamageable
                     animator.CrossFade("Idle", 0, 0);
                     agent.SetDestination(transform.position);
                     break;
-                case AnimationState.Kick:
-                    Helper.AddDamage(rightFoot, kickDamage, 10, false, true);
-                    animator.CrossFade("Kick", 0, 0);
+                case AnimationState.Rollypolly:
+                    agent.velocity = Vector3.zero;
+                    Helper.AddDamage(gameObject, rollDamage, 10, false, true);
+                    canRoll = false;
+                    animator.CrossFade("Rollypolly", 0, 0);
                     animator.speed = 1;
-                    agent.SetDestination(transform.position);
-                    StartCoroutine(WaitUntilKickDone());
+                    SwitchToRoll();
+                    StartCoroutine(WaitUntilRollypollyDone());
                     break;
                 case AnimationState.Flinch:
                     animator.CrossFade("Idle", 0, 0);
+                    break;
+                case AnimationState.Rolling:
+                    animationLocked = true;
+                    animator.CrossFade("Rolling", 0, 0);
+                    StartCoroutine(Rolling());
                     break;
             }
             currentState = state;
         }
     }
-    IEnumerator WaitUntilKickDone()
+    IEnumerator Rolling()
     {
-        bool previouslyLocked = animationLocked;
-        animationLocked = true;
-
-        yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1f);
-        if (!previouslyLocked) animationLocked = false;
-        Destroy(rightFoot.GetComponent<Damage>());
+        float startTime = Time.time;
+        rolling = true;
+        while (Time.time - startTime <= rollingTime && !playerHit)
+        {
+            if (rolling) agent.SetDestination(target.transform.position);
+            yield return new WaitForEndOfFrame();
+        }
+        animationLocked = false;
+        playerHit = false;
+        rolling = false;
+        Destroy(GetComponent<Damage>());
+        SwitchToWalk();
         RunState(AnimationState.Walk);
+        StartCoroutine(RollyCooldown());
+    }
+    void SwitchToRoll()
+    {
+        agent.agentTypeID = rollingAgentID;
+        boxCollider.enabled = false;
+        sphereCollider.enabled = true;
+        agent.speed = rollSpeed;
+        agent.angularSpeed = rollAngularSpeed;
+        agent.acceleration = rollAcceleration;
+        agent.height = rollHeight;
+        agent.radius = rollRadius;
+        agent.baseOffset = rollBaseOffset;
+        agent.autoTraverseOffMeshLink = false;
+    }
+    void SwitchToWalk()
+    {
+        agent.agentTypeID = walkingAgentID;
+        boxCollider.enabled = true;
+        sphereCollider.enabled = false;
+        agent.speed = walkSpeed;
+        agent.angularSpeed = walkAngularSpeed;
+        agent.acceleration = walkAcceleration;
+        agent.height = walkHeight;
+        agent.radius = walkRadius;
+        agent.baseOffset = walkBaseOffset;
+        agent.autoTraverseOffMeshLink = true;
+    }
+    IEnumerator RollyCooldown()
+    {
+        yield return new WaitForSeconds(rollCooldown);
+        canRoll = true;
+    }
+    IEnumerator WaitUntilRollypollyDone()
+    {
+        animationLocked = true;
+        yield return new WaitForEndOfFrame();
+        yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1f);
+        animationLocked = false;
+        RunState(AnimationState.Rolling);
     }
     public override void Damaged(float amount, object collision)
     {
@@ -110,8 +194,8 @@ public class KickDude : Enemy, IDamageable
                 StartCoroutine(Knockback());
                 Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform).Init(amount, (Collider)collision);
             }
+            if (!playerDetected && !rolling) StartCoroutine(LookAround());
         }
-        if (!playerDetected) StartCoroutine(LookAround());
     }
     IEnumerator LookAround()
     {
@@ -124,15 +208,18 @@ public class KickDude : Enemy, IDamageable
     protected override IEnumerator Knockback()
     {
         StartCoroutine(base.Knockback());
+        rolling = false;
         Vector3 direction = new Vector3(Camera.main.transform.forward.x, 0.01f, Camera.main.transform.forward.z).normalized;
         rb.AddForce(direction * Inventory.guns[0].bulletKnockback / 2, ForceMode.Impulse);
         yield return new WaitUntil(() => knocked);
         yield return new WaitUntil(() => Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, agent.height / 2 + 0.3f));
+        rolling = true;
         agent.enabled = true;
     }
     protected override IEnumerator Knockback(Collision collision)
     {
         StartCoroutine(base.Knockback(collision));
+        rolling = false;
         if (collision.gameObject.TryGetComponent(out Damage damage) && damage.thrown)
         {
             Vector3 direction = new Vector3(Camera.main.transform.forward.x, 0.01f, Camera.main.transform.forward.z).normalized;
@@ -141,13 +228,14 @@ public class KickDude : Enemy, IDamageable
         yield return new WaitUntil(() => knocked);
         yield return new WaitUntil(() => Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, agent.height / 2 + 0.3f));
         agent.enabled = true;
+        rolling = true;
     }
     protected override void Died()
     {
         base.Died();
+        SwitchToWalk();
         StartCoroutine(IdleThenDestroy());
         Instantiate(Resources.Load<GameObject>("Prefabs/Loot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
-        
     }
     IEnumerator IdleThenDestroy()
     {

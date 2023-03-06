@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.AI;
 
 public class Damage : MonoBehaviour
 {
@@ -11,6 +12,9 @@ public class Damage : MonoBehaviour
     public bool oneTime = false;
     public bool environment = true;
     public float velocityMagnitude;
+
+    float backForceMultiplier = 1.3f;
+    float upForce = 5;
     
     bool didDamage = false;
     // for non solid things like animations
@@ -77,12 +81,26 @@ public class Damage : MonoBehaviour
                         damage = velocityMagnitude * rb.mass / 10;
                     }
                 }
-                IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
-                if (damageable != null) damageable.Damaged(damage, collision);
                 if (thrown)
                 {
-                    CustomPhysics.BounceUpAndBack(gameObject);
+                    Rigidbody rb = GetComponent<Rigidbody>();
+                    rb.velocity = Vector3.zero;
+                    Vector3 velocity;
+                    if (collision.gameObject.TryGetComponent(out NavMeshAgent agent))
+                    {
+                        velocity = (Camera.main.transform.position - collision.transform.position).normalized * agent.velocity.magnitude * backForceMultiplier;
+                    }
+                    else
+                    {
+                        velocity = (Camera.main.transform.position - collision.transform.position).normalized * backForceMultiplier;
+                    }
+                    Vector3 direction = new Vector3(velocity.x, upForce, velocity.z);
+                    rb.AddForce(direction, ForceMode.Impulse);
+                    
                 }
+                IDamageable damageable = collision.gameObject.GetComponent<IDamageable>(); 
+                if (damageable != null) damageable.Damaged(damage, collision);
+                
                 if (oneTime)
                 {
                     Destroy(this);
@@ -90,5 +108,6 @@ public class Damage : MonoBehaviour
             }
             
         }
+        if (thrown) rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
     }
 }

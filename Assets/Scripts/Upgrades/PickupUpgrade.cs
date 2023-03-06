@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,18 +11,24 @@ public class PickupUpgrade : MonoBehaviour, IDamageable
     Transform parent;
     bool upgraded = false;
 
+    public event Action onUpgradeShot;
+
     private void Start()
     {
         parent = transform.parent;
         for (int i = 0; i < transform.parent.childCount; i++)
         {
             upgradeBoxes.Add(transform.parent.GetChild(i));
+            upgradeBoxes[i].GetComponent<PickupUpgrade>().onUpgradeShot += () => upgraded = true;
         }
+        
     }
     public void Damaged(float amount, object collision)
     {
         if (!upgraded)
         {
+            Debug.Log("HERE");
+            onUpgradeShot.Invoke();
             upgraded = true;
             UpgradeManager.ActivateUpgrade(upgrade);
             StartCoroutine(Destroys());
