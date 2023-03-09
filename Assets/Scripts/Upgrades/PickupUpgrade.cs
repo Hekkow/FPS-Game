@@ -13,7 +13,7 @@ public class PickupUpgrade : MonoBehaviour, IDamageable
 
     public event Action onUpgradeShot;
 
-    private void Start()
+    void Start()
     {
         parent = transform.parent;
         for (int i = 0; i < transform.parent.childCount; i++)
@@ -21,19 +21,21 @@ public class PickupUpgrade : MonoBehaviour, IDamageable
             upgradeBoxes.Add(transform.parent.GetChild(i));
             upgradeBoxes[i].GetComponent<PickupUpgrade>().onUpgradeShot += () => upgraded = true;
         }
-        
     }
-    public void Damaged(float amount, object collision)
+    public void Damaged(float amount, object collision, object origin)
     {
-        if (!upgraded)
+        if (!upgraded && (origin is Gun || ((origin is Damage damage && damage.thrown || ((Damage)origin).punch) && upgrade.category != Upgrade.Category.Gun)))
         {
-            Debug.Log("HERE");
-            onUpgradeShot.Invoke();
-            upgraded = true;
-            UpgradeManager.ActivateUpgrade(upgrade);
-            StartCoroutine(Destroys());
+            Killed();
         }
         
+    }
+    public void Killed()
+    {
+        onUpgradeShot.Invoke();
+        upgraded = true;
+        UpgradeManager.ActivateUpgrade(upgrade);
+        StartCoroutine(Destroys());
     }
     IEnumerator Destroys()
     {

@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 6080863538659316917}
   - component: {fileID: -501034569324764894}
   m_Layer: 0
-  m_Name: Loot
+  m_Name: AddonLoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -129,6 +129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d79145f02b984c74cb257c76ddefe34b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 1
 --- !u!114 &6080863538659316917
 MonoBehaviour:
   m_ObjectHideFlags: 0

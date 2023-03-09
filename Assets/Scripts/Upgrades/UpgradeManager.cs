@@ -38,11 +38,10 @@ public class UpgradeManager : MonoBehaviour
         {
             new AttackSpeed(),
             new BulletDamage(),
-            new BulletSpeed(),
-            new BulletSize(), 
             new Pellets(),
             new HealthBoost(),
             new ReloadSpeed(),
+            new Minigun(),
             new Dash()
         };
     }

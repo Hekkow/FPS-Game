@@ -47,4 +47,7 @@ public class Player : MonoBehaviour
     public float playerHeight;
     public float maxSlopeAngle;
 
+    [Header("Punch")]
+    public float punchDamage;
+
 }

@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerOther : MonoBehaviour
+public class PlayerItems : MonoBehaviour
 {
     [SerializeField] GameManager gameManager;
     [SerializeField] Transform leftHandLocation;
@@ -133,13 +133,15 @@ public class PlayerOther : MonoBehaviour
     void ThrowItem()
     {
         GameObject item = leftHandLocation.GetChild(0).gameObject;
+        item.SetActive(true);
         DropItem();
         CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
         if (item.TryGetComponent(out Rigidbody rb))
         {
-            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; 
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            rb.constraints = RigidbodyConstraints.None;
         }
-        Helper.AddDamage(item, player.throwDamage, player.throwKnockback, true, true);
+        Helper.AddDamage(item, player.throwDamage, player.throwKnockback, true, true, false);
     }
     void ThrowGun()
     {
@@ -149,8 +151,9 @@ public class PlayerOther : MonoBehaviour
         if (item.TryGetComponent(out Rigidbody rb))
         {
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            rb.constraints = RigidbodyConstraints.None;
         }
-        Helper.AddDamage(item, player.throwDamage, player.throwKnockback, true, true);
+        Helper.AddDamage(item, player.throwDamage, player.throwKnockback, true, true, false);
         if (Inventory.HasGun()) Inventory.guns[0].gameObject.SetActive(true);
         onGunSwitch?.Invoke();
 

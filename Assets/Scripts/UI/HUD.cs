@@ -8,7 +8,7 @@ public class HUD : MonoBehaviour
 {
     [Header("Objects")]
     [SerializeField] GameObject player;
-    [SerializeField] PlayerOther playerOther;
+    [SerializeField] PlayerItems playerOther;
 
 
     [Header("Text Fields")]

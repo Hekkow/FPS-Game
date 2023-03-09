@@ -11,79 +11,64 @@ public class Damage : MonoBehaviour
     public bool thrown = false;
     public bool oneTime = false;
     public bool environment = true;
+    public bool punch = false;
     public float velocityMagnitude;
+
+    bool didDamage = false;
 
     float backForceMultiplier = 1.3f;
     float upForce = 5;
-    
-    bool didDamage = false;
-    // for non solid things like animations
     Rigidbody rb;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        if (environment && rb != null) StartCoroutine(UpdateVelocity());
     }
-
-    void Update()
+    IEnumerator UpdateVelocity()
     {
-        if (rb != null)
+        while (true)
         {
             velocityMagnitude = rb.velocity.magnitude;
+            yield return new WaitForFixedUpdate();
         }
     }
-
     void OnTriggerEnter(Collider collision)
     {
-        Health collisionObjectHealth = collision.gameObject.GetComponent<Health>();
-        if (collisionObjectHealth == null) // if health doesn't exist in current object, check parent object
+        if (!didDamage)
         {
-            Transform collisionObjectHealthParent = collision.gameObject.transform.parent;
-            if (collisionObjectHealthParent != null)
+            if (collision.gameObject.TryGetComponent(out IDamageable damageable))
             {
-                collisionObjectHealth = collision.gameObject.transform.parent.GetComponent<Health>();
+                if (collision.gameObject.transform != transform.root)
+                {
+                    damageable.Damaged(damage, collision, this);
+                }
+                if (oneTime)
+                {
+                    Destroy(this);
+                }
+                didDamage = true;
             }
-        }
-        if (collisionObjectHealth != null)
-        {
-            IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
-            if (collision.gameObject.transform != transform.root && damageable != null) {
-                damageable.Damaged(damage, collision);
-            }
-            if (oneTime)
-            {
-                Destroy(this);
-            }
+            
         }
     }
-
-    // for solid things like bullets
-
     void OnCollisionEnter(Collision collision)
     {
         if (!didDamage)
         {
-            Health collisionObjectHealth = collision.gameObject.GetComponent<Health>();
-            if (collisionObjectHealth == null)
-            {
-                Transform collisionObjectHealthParent = collision.gameObject.transform.parent;
-                if (collisionObjectHealthParent != null)
-                {
-                    collisionObjectHealth = collision.gameObject.transform.parent.GetComponent<Health>();
-                }
-            }
-            if (collisionObjectHealth != null)
+            if (collision.gameObject.TryGetComponent(out IDamageable damageable))
             {
                 if (environment)
                 {
-                    Rigidbody rb = GetComponent<Rigidbody>();
                     if (rb != null)
                     {
                         damage = velocityMagnitude * rb.mass / 10;
                     }
+                    if (collision.gameObject.GetComponent<Player>() != null) return;
                 }
                 if (thrown)
                 {
-                    Rigidbody rb = GetComponent<Rigidbody>();
+                    if (thrown) rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
                     rb.velocity = Vector3.zero;
                     Vector3 velocity;
                     if (collision.gameObject.TryGetComponent(out NavMeshAgent agent))
@@ -96,18 +81,14 @@ public class Damage : MonoBehaviour
                     }
                     Vector3 direction = new Vector3(velocity.x, upForce, velocity.z);
                     rb.AddForce(direction, ForceMode.Impulse);
-                    
                 }
-                IDamageable damageable = collision.gameObject.GetComponent<IDamageable>(); 
-                if (damageable != null) damageable.Damaged(damage, collision);
-                
+                damageable.Damaged(damage, collision, this);
+                didDamage = true;
                 if (oneTime)
                 {
                     Destroy(this);
                 }
             }
-            
         }
-        if (thrown) rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
     }
 }

@@ -82,38 +82,6 @@ public class Dash : Upgrade
         //UpgradeManager.bulletDamageMultiplier /= 2;
     }
 }
-public class BulletSpeed : Upgrade
-{
-    public BulletSpeed(params float[] parameters)
-    {
-        upgradeName = "Bullet Speed";
-        maxAmount = 100;
-    }
-    public override void Activate()
-    {
-        Inventory.guns[0].bulletSpeed *= 2;
-    }
-    public override void Deactivate()
-    {
-        //UpgradeManager.bulletDamageMultiplier /= 2;
-    }
-}
-public class BulletSize : Upgrade
-{
-    public BulletSize(params float[] parameters)
-    {
-        upgradeName = "Bullet Size";
-        maxAmount = 100;
-    }
-    public override void Activate()
-    {
-        Inventory.guns[0].bulletSize *= 1.5f;
-    }
-    public override void Deactivate()
-    {
-        //UpgradeManager.bulletDamageMultiplier /= 2;
-    }
-}
 public class Pellets : Upgrade
 {
     public Pellets(params float[] parameters)
@@ -123,29 +91,47 @@ public class Pellets : Upgrade
     }
     public override void Activate()
     {
-        Inventory.guns[0].pelletLayers += 1;
-        if (Inventory.guns[0].pelletsPerLayer.Count == 0) Inventory.guns[0].pelletsPerLayer.Add(8);
-        Inventory.guns[0].pelletsPerLayer.Add((int)(Inventory.guns[0].pelletsPerLayer[Inventory.guns[0].pelletsPerLayer.Count - 1] * 1.5f));
-        Inventory.guns[0].bulletsPerShot += 8;
-        Inventory.guns[0].shotsPerMag -= 1;
-        if (Inventory.guns[0].shotsPerMag < 3)
-        {
-            Inventory.guns[0].shotsPerMag = 3;
-            Inventory.guns[0].bulletsPerMag += 8 * (Inventory.guns[0].shotsPerMag);
-        }
-        else
-        {
-            Inventory.guns[0].bulletsPerMag += 8 * (Inventory.guns[0].shotsPerMag + 1) - Inventory.guns[0].bulletsPerShot;
-        }
-        if (Inventory.guns[0].bulletSpread <= 0) Inventory.guns[0].bulletSpread = 0.1f;
-        else Inventory.guns[0].bulletSpread *= 0.9f;
-        Inventory.guns[0].bulletSize /= 1.5f;
-        Inventory.guns[0].reloadSpeed += 0.2f;
-        Inventory.guns[0].bulletDamage *= 0.9f;
+        Gun gun = Inventory.guns[0];
+        gun.pelletLayers += 1;
+        if (gun.pelletsPerLayer.Count == 0) gun.pelletsPerLayer.Add(8);
+        else gun.pelletsPerLayer.Add((int)(gun.pelletsPerLayer[gun.pelletsPerLayer.Count - 1] * 1.5f));
+        gun.bulletsPerShot += gun.pelletsPerLayer[gun.pelletsPerLayer.Count - 1];
+        gun.shotsPerMag -= 1;
+        if (gun.shotsPerMag <= 3) gun.shotsPerMag = 3;
+        gun.bulletsPerMag = gun.bulletsPerShot * gun.shotsPerMag;
+        if (gun.pelletSpread <= 0) gun.pelletSpread = 0.1f;
+        else gun.pelletSpread *= 0.9f;
+        gun.bulletSize /= 1.5f;
+        gun.reloadSpeed *= 0.9f;
+        gun.bulletDamage *= 0.9f;
     }
     public override void Deactivate()
     {
-        //UpgradeManager.bulletDamageMultiplier /= 2;
+        
+    }
+}
+public class Minigun : Upgrade
+{
+    public Minigun(params float[] parameters)
+    {
+        upgradeName = "Minigun";
+        maxAmount = 100;
+    }
+    public override void Activate()
+    {
+        Gun gun = Inventory.guns[0];
+        if (gun.bulletSpread <= 0) gun.bulletSpread = 0.5f;
+        else gun.bulletSpread *= 1.3f;
+        gun.attackSpeed *= 3;
+        gun.bulletsPerMag *= 2;
+        gun.shotsPerMag *= 2;
+        gun.bulletSize /= 1.5f;
+        gun.reloadSpeed *= 0.9f;
+        gun.bulletDamage *= 0.9f;
+    }
+    public override void Deactivate()
+    {
+        
     }
 }
 public class HealthBoost : Upgrade

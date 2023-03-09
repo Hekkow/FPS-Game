@@ -72,7 +72,7 @@ public class KickDude : Enemy, IDamageable
                     agent.SetDestination(transform.position);
                     break;
                 case AnimationState.Kick:
-                    Helper.AddDamage(rightFoot, kickDamage, 10, false, true);
+                    Helper.AddDamage(rightFoot, kickDamage, 10, false, true, false);
                     animator.CrossFade("Kick", 0, 0);
                     animator.speed = 1;
                     agent.SetDestination(transform.position);
@@ -95,19 +95,19 @@ public class KickDude : Enemy, IDamageable
         Destroy(rightFoot.GetComponent<Damage>());
         RunState(AnimationState.Walk);
     }
-    public override void Damaged(float amount, object collision)
+    public override void Damaged(float amount, object collision, object origin)
     {
-        base.Damaged(amount, collision);
+        base.Damaged(amount, collision, origin);
         if (health.alive && amount >= 1)
         {
             if (collision is Collision)
             {
-                StartCoroutine(Knockback((Collision)collision));
+                StartCoroutine(KnockbackCoroutine((Collision)collision, origin));
                 Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform).Init(amount, (Collision)collision);
             }
             else
             {
-                StartCoroutine(Knockback());
+                StartCoroutine(KnockbackCoroutine());
                 Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform).Init(amount, (Collider)collision);
             }
         }
@@ -121,19 +121,19 @@ public class KickDude : Enemy, IDamageable
             yield return new WaitForEndOfFrame();
         }
     }
-    protected override IEnumerator Knockback()
+    public override IEnumerator KnockbackCoroutine()
     {
-        StartCoroutine(base.Knockback());
+        StartCoroutine(base.KnockbackCoroutine());
         Vector3 direction = new Vector3(Camera.main.transform.forward.x, 0.01f, Camera.main.transform.forward.z).normalized;
         rb.AddForce(direction * Inventory.guns[0].bulletKnockback / 2, ForceMode.Impulse);
         yield return new WaitUntil(() => knocked);
         yield return new WaitUntil(() => Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, agent.height / 2 + 0.3f));
         agent.enabled = true;
     }
-    protected override IEnumerator Knockback(Collision collision)
+    public override IEnumerator KnockbackCoroutine(Collision collision, object origin)
     {
-        StartCoroutine(base.Knockback(collision));
-        if (collision.gameObject.TryGetComponent(out Damage damage) && damage.thrown)
+        StartCoroutine(base.KnockbackCoroutine(collision, origin));
+        if (origin is Damage damage && damage.thrown)
         {
             Vector3 direction = new Vector3(Camera.main.transform.forward.x, 0.01f, Camera.main.transform.forward.z).normalized;
             rb.AddForce(direction * 1000, ForceMode.Impulse);
@@ -142,11 +142,11 @@ public class KickDude : Enemy, IDamageable
         yield return new WaitUntil(() => Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, agent.height / 2 + 0.3f));
         agent.enabled = true;
     }
-    protected override void Died()
+    public override void Killed()
     {
-        base.Died();
+        base.Killed();
         StartCoroutine(IdleThenDestroy());
-        Instantiate(Resources.Load<GameObject>("Prefabs/Loot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
+        Instantiate(Resources.Load<GameObject>("Prefabs/UpgradeLoot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
         
     }
     IEnumerator IdleThenDestroy()

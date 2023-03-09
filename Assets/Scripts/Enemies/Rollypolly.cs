@@ -59,7 +59,6 @@ public class Rollypolly : Enemy, IDamageable
         base.Start();
         currentState = AnimationState.Walk;
         RunState(AnimationState.Idle);
-        PlayerHealth.onPlayerHurt += () => playerHit = true;
     }
     protected override void Update()
     {
@@ -104,7 +103,6 @@ public class Rollypolly : Enemy, IDamageable
                     break;
                 case AnimationState.Rollypolly:
                     agent.velocity = Vector3.zero;
-                    Helper.AddDamage(gameObject, rollDamage, 10, false, true);
                     canRoll = false;
                     animator.CrossFade("Rollypolly", 0, 0);
                     animator.speed = 1;
@@ -127,6 +125,7 @@ public class Rollypolly : Enemy, IDamageable
     {
         float startTime = Time.time;
         rolling = true;
+        Helper.AddDamage(gameObject, rollDamage, 10, false, true, false);
         while (Time.time - startTime <= rollingTime && !playerHit)
         {
             if (rolling) agent.SetDestination(target.transform.position);
@@ -142,29 +141,36 @@ public class Rollypolly : Enemy, IDamageable
     }
     void SwitchToRoll()
     {
-        agent.agentTypeID = rollingAgentID;
+        if (agent.enabled)
+        {
+            agent.agentTypeID = rollingAgentID;
+            agent.speed = rollSpeed;
+            agent.angularSpeed = rollAngularSpeed;
+            agent.acceleration = rollAcceleration;
+            agent.height = rollHeight;
+            agent.radius = rollRadius;
+            agent.baseOffset = rollBaseOffset;
+            agent.autoTraverseOffMeshLink = false;
+        }
         boxCollider.enabled = false;
         sphereCollider.enabled = true;
-        agent.speed = rollSpeed;
-        agent.angularSpeed = rollAngularSpeed;
-        agent.acceleration = rollAcceleration;
-        agent.height = rollHeight;
-        agent.radius = rollRadius;
-        agent.baseOffset = rollBaseOffset;
-        agent.autoTraverseOffMeshLink = false;
+
     }
     void SwitchToWalk()
     {
-        agent.agentTypeID = walkingAgentID;
-        boxCollider.enabled = true;
+        if (agent.enabled)
+        {
+            agent.agentTypeID = walkingAgentID;
+            agent.speed = walkSpeed;
+            agent.angularSpeed = walkAngularSpeed;
+            agent.acceleration = walkAcceleration;
+            agent.height = walkHeight;
+            agent.radius = walkRadius;
+            agent.baseOffset = walkBaseOffset;
+            agent.autoTraverseOffMeshLink = true;
+        }
         sphereCollider.enabled = false;
-        agent.speed = walkSpeed;
-        agent.angularSpeed = walkAngularSpeed;
-        agent.acceleration = walkAcceleration;
-        agent.height = walkHeight;
-        agent.radius = walkRadius;
-        agent.baseOffset = walkBaseOffset;
-        agent.autoTraverseOffMeshLink = true;
+        boxCollider.enabled = true;
     }
     IEnumerator RollyCooldown()
     {
@@ -179,19 +185,19 @@ public class Rollypolly : Enemy, IDamageable
         animationLocked = false;
         RunState(AnimationState.Rolling);
     }
-    public override void Damaged(float amount, object collision)
+    public override void Damaged(float amount, object collision, object origin)
     {
-        base.Damaged(amount, collision);
+        base.Damaged(amount, collision, origin);
         if (health.alive && amount >= 1)
         {
             if (collision is Collision)
             {
-                StartCoroutine(Knockback((Collision)collision));
+                StartCoroutine(KnockbackCoroutine((Collision)collision, origin));
                 Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform).Init(amount, (Collision)collision);
             }
             else
             {
-                StartCoroutine(Knockback());
+                StartCoroutine(KnockbackCoroutine());
                 Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform).Init(amount, (Collider)collision);
             }
             if (!playerDetected && !rolling) StartCoroutine(LookAround());
@@ -199,28 +205,30 @@ public class Rollypolly : Enemy, IDamageable
     }
     IEnumerator LookAround()
     {
-        while (transform.localRotation.y < 360 && !playerDetected)
+        float rotateAmount = 0;
+        while (rotateAmount <= 360 && !playerDetected)
         {
+            rotateAmount += lookAroundSpeed * Time.deltaTime;
             transform.Rotate(0, lookAroundSpeed * Time.deltaTime, 0);
             yield return new WaitForEndOfFrame();
         }
     }
-    protected override IEnumerator Knockback()
+    public override IEnumerator KnockbackCoroutine()
     {
-        StartCoroutine(base.Knockback());
+        StartCoroutine(base.KnockbackCoroutine());
         rolling = false;
         Vector3 direction = new Vector3(Camera.main.transform.forward.x, 0.01f, Camera.main.transform.forward.z).normalized;
-        rb.AddForce(direction * Inventory.guns[0].bulletKnockback / 2, ForceMode.Impulse);
-        yield return new WaitUntil(() => knocked);
+        if (Inventory.HasGun()) rb.AddForce(direction * Inventory.guns[0].bulletKnockback / 2, ForceMode.Impulse);
+        yield return new WaitUntil(() => knocked); 
         yield return new WaitUntil(() => Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, agent.height / 2 + 0.3f));
         rolling = true;
         agent.enabled = true;
     }
-    protected override IEnumerator Knockback(Collision collision)
+    public override IEnumerator KnockbackCoroutine(Collision collision, object origin)
     {
-        StartCoroutine(base.Knockback(collision));
+        StartCoroutine(base.KnockbackCoroutine(collision, origin));
         rolling = false;
-        if (collision.gameObject.TryGetComponent(out Damage damage) && damage.thrown)
+        if (origin is Damage damage && damage.thrown)
         {
             Vector3 direction = new Vector3(Camera.main.transform.forward.x, 0.01f, Camera.main.transform.forward.z).normalized;
             rb.AddForce(direction * 1000, ForceMode.Impulse);
@@ -230,12 +238,12 @@ public class Rollypolly : Enemy, IDamageable
         agent.enabled = true;
         rolling = true;
     }
-    protected override void Died()
+    public override void Killed()
     {
-        base.Died();
+        base.Killed();
         SwitchToWalk();
         StartCoroutine(IdleThenDestroy());
-        Instantiate(Resources.Load<GameObject>("Prefabs/Loot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
+        Instantiate(Resources.Load<GameObject>("Prefabs/UpgradeLoot"), transform.position + new Vector3(0, 2, 0), Quaternion.identity);
     }
     IEnumerator IdleThenDestroy()
     {
@@ -250,5 +258,12 @@ public class Rollypolly : Enemy, IDamageable
     public override IEnumerator DisableAgentCoroutine()
     {
         yield return StartCoroutine(base.DisableAgentCoroutine());
+    }
+    void OnCollisionEnter(Collision collision)
+    {
+        if (rolling && collision.gameObject.GetComponent<Player>() != null && !playerHit)
+        {
+            playerHit = true;
+        }
     }
 }

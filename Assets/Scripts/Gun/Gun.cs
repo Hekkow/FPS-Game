@@ -12,6 +12,7 @@ public class Gun : MonoBehaviour
     [Header("Objects")]
     [SerializeField] Player player;
     [SerializeField] Transform attackPoint;
+    public Addon addon;
     public int slot = -1;
     public int bulletsPerShot = 1;
     public int bulletsPerTap = 1;
@@ -26,6 +27,7 @@ public class Gun : MonoBehaviour
     public int bulletsLeft = 6;
     public int shotsPerMag = 6;
     public int pelletLayers = 0;
+    public float pelletSpread = 0;
     public List<int> pelletsPerLayer = new List<int>();
 
     bool readyToShoot = true;
@@ -57,7 +59,9 @@ public class Gun : MonoBehaviour
         }
         InputManager.playerInput.Player.Shoot.performed += (obj) => shooting = true;
         InputManager.playerInput.Player.Shoot.canceled += (obj) => shooting = false;
-        InputManager.playerInput.Player.Shoot.Enable(); 
+        InputManager.playerInput.Player.Shoot.Enable();
+        InputManager.playerInput.Player.Attachment.performed += ((obj) => addon.Activate());
+        InputManager.playerInput.Player.Attachment.Enable();
         InputManager.playerInput.Player.Reload.performed += Reload;
         InputManager.playerInput.Player.Reload.Enable();
 
@@ -65,7 +69,8 @@ public class Gun : MonoBehaviour
     void OnDisable()
     {
         InputManager.playerInput.Player.Reload.Disable();
-        InputManager.playerInput.Player.Shoot.Disable(); 
+        InputManager.playerInput.Player.Shoot.Disable();
+        InputManager.playerInput.Player.Attachment.Disable();
         StopCoroutine(reloadCoroutine);
         readyToShoot = true; 
         
@@ -86,30 +91,23 @@ public class Gun : MonoBehaviour
         reloading = false;
         StopCoroutine(reloadCoroutine);
         readyToShoot = false;
+        float multiplier = 0.1f;
 
-        Lazer();
-
+        float originalX = UnityEngine.Random.Range(-bulletSpread * multiplier, bulletSpread * multiplier);
+        float originalY = UnityEngine.Random.Range(-bulletSpread * multiplier, bulletSpread * multiplier);
+        Lazer(originalX, originalY);
         for (int i = 0; i < pelletLayers; i++)
         {
             for (int j = 0; j < pelletsPerLayer[i]; j++)
             {
-                float radius = (i + 1) * bulletSpread;
+                float radius = (i + 1) * pelletSpread;
                 float angle = 360 * Mathf.Deg2Rad / pelletsPerLayer[i];
-                float x = radius * Mathf.Cos(j * angle);
-                float y = radius * Mathf.Sin(j * angle);
+                float x = radius * Mathf.Cos(j * angle) + originalX;
+                float y = radius * Mathf.Sin(j * angle) + originalY;
                 Lazer(x, y);
             }
-
         }
-
-        //for (int i = 0; i < bulletsPerShot - 1; i++)
-        //{
-        //    float radius = 0.1f;
-        //    float angle = 360 * Mathf.Deg2Rad / (bulletsPerShot - 1);
-        //    float x = radius * Mathf.Cos(i * angle);
-        //    float y = radius * Mathf.Sin(i * angle);
-        //    Lazer(x, y);
-        //}
+        
 
         StartCoroutine(ResetShot());
 
@@ -125,24 +123,23 @@ public class Gun : MonoBehaviour
 
         
     }
-    void Lazer(float x = 0, float y = 0)
+    void Lazer(float x, float y)
     {
-        
         bulletsLeft--;
         RaycastHit hit;
         Ray ray = new Ray(Camera.main.transform.position, cameraTransform.forward + cameraTransform.right * x + cameraTransform.up * y);
-        if (Physics.SphereCast(ray, bulletSize, out hit))
+        if (Physics.SphereCast(ray, bulletSize, out hit) && hit.transform.gameObject.GetComponent<Player>() == null) 
         {
             if (hit.transform.TryGetComponent(out IDamageable damage))
             {
-                damage.Damaged(bulletDamage, hit.collider);
+                damage.Damaged(bulletDamage, hit.collider, this);
             }
             if (hit.rigidbody != null)
             {
-                hit.rigidbody.AddForce(Camera.main.transform.forward * bulletKnockback);
+                hit.rigidbody?.AddForce(Camera.main.transform.forward * bulletKnockback);
                 //hit.rigidbody.AddForce(-hit.normal * bulletKnockback);
             }
-            Instantiate(Resources.Load<GameObject>("Prefabs/BulletHole"), hit.point + hit.normal * 0.1f, Quaternion.identity, hit.transform);
+            Instantiate(Resources.Load<GameObject>("Prefabs/BulletHole"), hit.point + hit.normal * 0.01f, Quaternion.identity, hit.transform);
         }
     }
     IEnumerator ResetShot()
@@ -176,7 +173,12 @@ public class Gun : MonoBehaviour
     }
     public void ResetBulletsAfterUpgrade()
     {
-        StartCoroutine(ResetBulletsAfterUpgradeCoroutine());
+        if (gameObject.activeSelf) StartCoroutine(ResetBulletsAfterUpgradeCoroutine());
+        else
+        {
+            bulletsLeft = bulletsPerMag;
+            readyToShoot = true; 
+        }
     }
     IEnumerator ResetBulletsAfterUpgradeCoroutine()
     {

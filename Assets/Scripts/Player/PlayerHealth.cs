@@ -14,7 +14,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         health = GetComponent<Health>();
     }
-    public void Damaged(float amount, object collision)
+    public void Damaged(float amount, object collision, object origin)
     {
         if (canHurt)
         {
@@ -26,10 +26,18 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             else
             {
                 health.Damage(amount);
+                if (health.currentHealth <= 0)
+                {
+                    Killed();
+                }
             }
             onPlayerHurt?.Invoke();
 
         }
+    }
+    public void Killed()
+    {
+        Debug.Log("Died");
     }
     IEnumerator LastChance()
     {

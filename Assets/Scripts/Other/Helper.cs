@@ -31,7 +31,7 @@ public static class Helper
             }
         }
     }
-    public static Damage AddDamage(GameObject thing, float damage, float knockback, bool thrown, bool oneTime)
+    public static Damage AddDamage(GameObject thing, float damage, float knockback, bool thrown, bool oneTime, bool punch)
     {
         Damage dmg = thing.GetComponent<Damage>();
         if (dmg == null)
@@ -43,6 +43,7 @@ public static class Helper
         dmg.knockback = knockback;
         dmg.thrown = thrown;
         dmg.oneTime = oneTime;
+        dmg.punch = punch;
         dmg.environment = false;
         return dmg;
     }

@@ -14,10 +14,11 @@ public class Reticle : MonoBehaviour
     [SerializeField] float reticleBloomAmount = 20;
 
     [Header("Events")]
-    [SerializeField] PlayerOther playerOther;
+    [SerializeField] PlayerItems playerOther;
 
     float reticleHoleSize;
     float defaultReticleHoleSize = 32;
+    float mainReticleSize;
     void Start()
     {
         playerOther.onGunSwitch += RefreshReticle;
@@ -32,7 +33,7 @@ public class Reticle : MonoBehaviour
         float startTime = Time.time;
         while (Inventory.HasGun() && Time.time - startTime < (1 / Inventory.guns[0].attackSpeed))
         {
-            reticleHoleSize = Inventory.guns[0].bulletSize * 10 + defaultReticleHoleSize + (shotCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].attackSpeed) * reticleBloomAmount);
+            reticleHoleSize = mainReticleSize + (shotCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].attackSpeed) * reticleBloomAmount);
             armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
             yield return new WaitForEndOfFrame();
         }
@@ -44,7 +45,7 @@ public class Reticle : MonoBehaviour
             float startTime = Time.time;
             while (Time.time - startTime < (1 / Inventory.guns[0].reloadSpeed))
             {
-                reticleHoleSize = Inventory.guns[0].bulletSize * 10 + defaultReticleHoleSize + (reloadCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].reloadSpeed) * reticleBloomAmount);
+                reticleHoleSize = mainReticleSize + (reloadCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].reloadSpeed) * reticleBloomAmount);
                 armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
                 yield return new WaitForEndOfFrame();
             }
@@ -54,9 +55,10 @@ public class Reticle : MonoBehaviour
     {
         if (Inventory.HasGun())
         {
+            mainReticleSize = Inventory.guns[0].pelletLayers * Inventory.guns[0].pelletSpread * 750 + Inventory.guns[0].bulletSpread * 75 + defaultReticleHoleSize;
             unarmedReticle.SetActive(false);
             armedReticle.gameObject.SetActive(true);
-            reticleHoleSize = Inventory.guns[0].bulletSize * 10 + defaultReticleHoleSize;
+            reticleHoleSize = mainReticleSize;
             armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
         }
         else

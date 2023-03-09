@@ -86,32 +86,16 @@ public class Enemy : MonoBehaviour, IDamageable
             yield return new WaitForSeconds(0.1f);
         }
     }
-    public virtual void Damaged(float amount, object collision)
+    public virtual void Damaged(float amount, object collision, object origin)
     {
         if (amount >= 1)
         {
             health.Damage(amount);
-            if (!health.alive && canDie) Died();
+            if (!health.alive && canDie) Killed();
         }
     }
-    protected virtual IEnumerator Knockback(Collision collision)
+    public virtual void Killed()
     {
-        knocked = true;
-        agent.enabled = false;
-        yield return new WaitForSeconds(knockedTime);
-        knocked = false;
-    }
-
-    protected virtual IEnumerator Knockback()
-    {
-        knocked = true;
-        agent.enabled = false;
-        yield return new WaitForSeconds(knockedTime);
-        knocked = false;
-    }
-    
-
-    protected virtual void Died() {
         canDie = false;
         healthBar.Disable();
         rb.isKinematic = false;
@@ -119,6 +103,20 @@ public class Enemy : MonoBehaviour, IDamageable
         rb.velocity = Vector3.zero;
         rb.mass = ragdollMass;
 
+    }
+    public virtual IEnumerator KnockbackCoroutine(Collision collision, object origin)
+    {
+        knocked = true;
+        agent.enabled = false;
+        yield return new WaitForSeconds(knockedTime);
+        knocked = false;
+    }
+    public virtual IEnumerator KnockbackCoroutine()
+    {
+        knocked = true;
+        agent.enabled = false;
+        yield return new WaitForSeconds(knockedTime);
+        knocked = false;
     }
     public virtual IEnumerator DisableAgentCoroutine()
     {

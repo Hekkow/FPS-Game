@@ -127,9 +127,18 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""RightClick"",
+                    ""name"": ""Attachment"",
                     ""type"": ""Button"",
                     ""id"": ""eb796cea-e709-40a5-b6c8-2fe0a564c5f0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Punch"",
+                    ""type"": ""Button"",
+                    ""id"": ""f78bb555-4841-4cd5-8094-234abb786e82"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -309,7 +318,18 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""RightClick"",
+                    ""action"": ""Attachment"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""633ce459-1450-452d-a16d-37640c60126d"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Punch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -399,7 +419,8 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
         m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
         m_Player_Tab = m_Player.FindAction("Tab", throwIfNotFound: true);
         m_Player_SwitchDown = m_Player.FindAction("SwitchDown", throwIfNotFound: true);
-        m_Player_RightClick = m_Player.FindAction("RightClick", throwIfNotFound: true);
+        m_Player_Attachment = m_Player.FindAction("Attachment", throwIfNotFound: true);
+        m_Player_Punch = m_Player.FindAction("Punch", throwIfNotFound: true);
         // Console
         m_Console = asset.FindActionMap("Console", throwIfNotFound: true);
         m_Console_Execute = m_Console.FindAction("Execute", throwIfNotFound: true);
@@ -475,7 +496,8 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Reload;
     private readonly InputAction m_Player_Tab;
     private readonly InputAction m_Player_SwitchDown;
-    private readonly InputAction m_Player_RightClick;
+    private readonly InputAction m_Player_Attachment;
+    private readonly InputAction m_Player_Punch;
     public struct PlayerActions
     {
         private @PlayerInputAction m_Wrapper;
@@ -491,7 +513,8 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
         public InputAction @Reload => m_Wrapper.m_Player_Reload;
         public InputAction @Tab => m_Wrapper.m_Player_Tab;
         public InputAction @SwitchDown => m_Wrapper.m_Player_SwitchDown;
-        public InputAction @RightClick => m_Wrapper.m_Player_RightClick;
+        public InputAction @Attachment => m_Wrapper.m_Player_Attachment;
+        public InputAction @Punch => m_Wrapper.m_Player_Punch;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -534,9 +557,12 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                 @SwitchDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitchDown;
                 @SwitchDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitchDown;
                 @SwitchDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwitchDown;
-                @RightClick.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRightClick;
-                @RightClick.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRightClick;
-                @RightClick.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnRightClick;
+                @Attachment.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttachment;
+                @Attachment.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttachment;
+                @Attachment.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttachment;
+                @Punch.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPunch;
+                @Punch.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPunch;
+                @Punch.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPunch;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -574,9 +600,12 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
                 @SwitchDown.started += instance.OnSwitchDown;
                 @SwitchDown.performed += instance.OnSwitchDown;
                 @SwitchDown.canceled += instance.OnSwitchDown;
-                @RightClick.started += instance.OnRightClick;
-                @RightClick.performed += instance.OnRightClick;
-                @RightClick.canceled += instance.OnRightClick;
+                @Attachment.started += instance.OnAttachment;
+                @Attachment.performed += instance.OnAttachment;
+                @Attachment.canceled += instance.OnAttachment;
+                @Punch.started += instance.OnPunch;
+                @Punch.performed += instance.OnPunch;
+                @Punch.canceled += instance.OnPunch;
             }
         }
     }
@@ -643,7 +672,8 @@ public partial class @PlayerInputAction : IInputActionCollection2, IDisposable
         void OnReload(InputAction.CallbackContext context);
         void OnTab(InputAction.CallbackContext context);
         void OnSwitchDown(InputAction.CallbackContext context);
-        void OnRightClick(InputAction.CallbackContext context);
+        void OnAttachment(InputAction.CallbackContext context);
+        void OnPunch(InputAction.CallbackContext context);
     }
     public interface IConsoleActions
     {
