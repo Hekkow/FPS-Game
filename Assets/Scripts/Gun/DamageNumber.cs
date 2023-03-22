@@ -37,4 +37,12 @@ public class DamageNumber : MonoBehaviour
         collisionPoint = collision.contacts[collision.contacts.Length - 1].point;
         StartCoroutine(DestroyThis());
     }
+    public void Init(float amount, Transform transform)
+    {
+        damageNumbersText = GetComponent<TMP_Text>();
+        damageNumbersText.text = Mathf.RoundToInt(amount).ToString();
+        randomizedLocation = new Vector3(Random.Range(-20, 20), Random.Range(10, 20), 0);
+        collisionPoint = transform.position + new Vector3(0, 2, 0);
+        StartCoroutine(DestroyThis());
+    }
 }

@@ -8,7 +8,7 @@ public class Movement : MonoBehaviour
     Player player;
     Rigidbody rb;
     Vector3 direction;
-    int jumps = 1;
+    int jumps = 0;
     float gravity;
     bool grounded;
     bool jumping;

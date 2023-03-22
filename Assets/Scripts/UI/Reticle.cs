@@ -7,17 +7,21 @@ public class Reticle : MonoBehaviour
     [Header("Reticles")]
     [SerializeField] GameObject unarmedReticle;
     [SerializeField] RectTransform armedReticle;
+    //[SerializeField] RectTransform shotgunReticle;
 
     [Header("Curves")]
     [SerializeField] AnimationCurve shotCurve;
     [SerializeField] AnimationCurve reloadCurve;
     [SerializeField] float reticleBloomAmount = 20;
 
+    public float test;
+
     [Header("Events")]
     [SerializeField] PlayerItems playerOther;
 
     float reticleHoleSize;
-    float defaultReticleHoleSize = 32;
+    float defaultReticleHoleSize = -50;
+    //float defaultReticleHoleSize = 32;
     float mainReticleSize;
     void Start()
     {
@@ -27,6 +31,11 @@ public class Reticle : MonoBehaviour
         Gun.onBeforeReload += Reload;
 
 
+    }
+    private void Update()
+    {
+        //float test1 = test;
+        //shotgunReticle.sizeDelta = new Vector2(test1, test1);
     }
     IEnumerator ShotBloom()
     {
@@ -55,7 +64,7 @@ public class Reticle : MonoBehaviour
     {
         if (Inventory.HasGun())
         {
-            mainReticleSize = Inventory.guns[0].pelletLayers * Inventory.guns[0].pelletSpread * 750 + Inventory.guns[0].bulletSpread * 75 + defaultReticleHoleSize;
+            mainReticleSize = Inventory.guns[0].pelletLayers * Inventory.guns[0].pelletSpread * 600 + Inventory.guns[0].bulletSpread * 60 + defaultReticleHoleSize;
             unarmedReticle.SetActive(false);
             armedReticle.gameObject.SetActive(true);
             reticleHoleSize = mainReticleSize;

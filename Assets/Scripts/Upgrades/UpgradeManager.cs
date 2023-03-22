@@ -42,7 +42,8 @@ public class UpgradeManager : MonoBehaviour
             new HealthBoost(),
             new ReloadSpeed(),
             new Minigun(),
-            new Dash()
+            new Dash(),
+            new Splitter()
         };
     }
     public static bool ActivateUpgrade(Upgrade upgrade)
@@ -69,22 +70,6 @@ public class UpgradeManager : MonoBehaviour
             }
         }
         return false;
-    }
-    public static void DeactivateUpgrade(Upgrade upgrade)
-    { 
-        if (upgrade != null)
-        {
-            int upgradeIndex = HasUpgrade(upgrade);
-            if (upgradeIndex != -1)
-            {
-                upgrade.Deactivate();
-                if (ownedUpgrades[upgradeIndex].amount > 1)
-                {
-                    ownedUpgrades[upgradeIndex].ChangeAmount(-1);
-                }
-                else ownedUpgrades.RemoveAt(upgradeIndex);
-            }
-        }
     }
     public static int HasUpgrade(Upgrade upgrade)
     {

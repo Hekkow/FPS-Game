@@ -68,4 +68,9 @@ public static class Helper
             thing.GetComponent<Collider>().enabled = false;
         }
     }
+    public static T GetOrAdd<T>(GameObject thing) where T : Component
+    {
+        if (thing.GetComponent<T>() != null) return thing.GetComponent<T>();
+        else return thing.AddComponent<T>();
+    }
 }

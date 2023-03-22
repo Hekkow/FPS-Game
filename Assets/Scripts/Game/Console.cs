@@ -74,28 +74,15 @@ public class Console : MonoBehaviour
             }
             else
             {
-                int spot = 0;
-                if (words[1] == "-r")
-                {
-                    spot = 1;
-                }
-                Upgrade upgrade = UpgradeManager.FindUpgrade(words[1 + spot]);
+                Upgrade upgrade = UpgradeManager.FindUpgrade(words[1]);
                 if (upgrade != null)
                 {
-                    if (words.Length == 2 + spot)
+                    int amount = 1;
+                    if (words.Length > 2) amount = int.Parse(words[2]);
+                    for (int i = 0; i < amount; i++)
                     {
-                        if (spot == 0) UpgradeManager.ActivateUpgrade(upgrade);
-                        else UpgradeManager.DeactivateUpgrade(upgrade);
+                        UpgradeManager.ActivateUpgrade(upgrade);
                     }
-                    else
-                    {
-                        for (int i = 0; i < int.Parse(words[2 + spot]); i++)
-                        {
-                            if (spot == 0) UpgradeManager.ActivateUpgrade(upgrade);
-                            else UpgradeManager.DeactivateUpgrade(upgrade);
-                        }
-                    }
-                    Inventory.ResetBullets();
                 }
                 else
                 {

@@ -15,7 +15,6 @@ public abstract class Upgrade
     public Category category;
     public Gun gun;
     public abstract void Activate();
-    public abstract void Deactivate();
 }
 public class AttackSpeed : Upgrade
 {
@@ -27,10 +26,6 @@ public class AttackSpeed : Upgrade
     public override void Activate()
     {
         Inventory.guns[0].attackSpeed *= 2;
-    }
-    public override void Deactivate()
-    {
-        Inventory.guns[0].attackSpeed /= 2;
     }
 }
 public class BulletDamage : Upgrade
@@ -44,10 +39,6 @@ public class BulletDamage : Upgrade
     {
         Inventory.guns[0].bulletDamage *= 2;
     }
-    public override void Deactivate()
-    {
-        //Inventory.guns[0].bulletDamage /= 2;
-    }
 }
 public class ReloadSpeed : Upgrade
 {
@@ -59,10 +50,6 @@ public class ReloadSpeed : Upgrade
     public override void Activate()
     {
         Inventory.guns[0].reloadSpeed *= 2;
-    }
-    public override void Deactivate()
-    {
-        //UpgradeManager.bulletDamageMultiplier /= 2;
     }
 }
 public class Dash : Upgrade
@@ -76,10 +63,6 @@ public class Dash : Upgrade
     public override void Activate()
     {
         GameObject.Find("Player").GetComponent<Player>().canDash = true;
-    }
-    public override void Deactivate()
-    {
-        //UpgradeManager.bulletDamageMultiplier /= 2;
     }
 }
 public class Pellets : Upgrade
@@ -105,10 +88,6 @@ public class Pellets : Upgrade
         gun.reloadSpeed *= 0.9f;
         gun.bulletDamage *= 0.9f;
     }
-    public override void Deactivate()
-    {
-        
-    }
 }
 public class Minigun : Upgrade
 {
@@ -129,10 +108,6 @@ public class Minigun : Upgrade
         gun.reloadSpeed *= 0.9f;
         gun.bulletDamage *= 0.9f;
     }
-    public override void Deactivate()
-    {
-        
-    }
 }
 public class HealthBoost : Upgrade
 {
@@ -146,9 +121,69 @@ public class HealthBoost : Upgrade
     {
         GameObject.Find("Player").GetComponent<Health>().MultiplyMaxHealth(2);
     }
-    public override void Deactivate()
+}
+public class Splitter : Upgrade
+{
+    public Splitter(params float[] parameters)
     {
-        GameObject.Find("Player").GetComponent<Health>().MultiplyMaxHealth(1f/2f); 
+        upgradeName = "Splitter";
+        maxAmount = 1;
+        category = Category.Gun;
+    }
+    public override void Activate()
+    {
+        Inventory.guns[0].splitter = true;
+    }
+}
+public class Bouncer : Upgrade
+{
+    public Bouncer(params float[] parameters)
+    {
+        upgradeName = "Bouncer";
+        maxAmount = 1;
+        category = Category.Gun;
+    }
+    public override void Activate()
+    {
+        Inventory.guns[0].bouncer = true;
+    }
+}
+public class Burst : Upgrade
+{
+    public Burst(params float[] parameters)
+    {
+        upgradeName = "Burst";
+        maxAmount = 100;
+        category = Category.Gun;
+    }
+    public override void Activate()
+    {
 
+    }
+}
+public class GravityFlip : Upgrade
+{
+    public GravityFlip(params float[] parameters)
+    {
+        upgradeName = "Gravity Flip";
+        maxAmount = 100;
+        category = Category.Gun;
+    }
+    public override void Activate()
+    {
+
+    }
+}
+public class ExplosiveBullets : Upgrade
+{
+    public ExplosiveBullets(params float[] parameters)
+    {
+        upgradeName = "Explosive Bullets";
+        maxAmount = 1;
+        category = Category.Gun;
+    }
+    public override void Activate()
+    {
+        
     }
 }

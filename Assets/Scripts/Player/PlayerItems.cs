@@ -99,7 +99,6 @@ public class PlayerItems : MonoBehaviour
                     for (int j = 0; j < count; j++)
                     {
                         removedUpgrades.Add(UpgradeManager.ownedUpgrades[i].upgrade);
-                        UpgradeManager.DeactivateUpgrade(UpgradeManager.ownedUpgrades[i].upgrade);
                     }
                 }
             }
