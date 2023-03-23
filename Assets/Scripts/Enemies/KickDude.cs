@@ -57,7 +57,7 @@ public class KickDude : Enemy
             {
                 case AnimationState.Walk:
                     animator.CrossFade("Walk", 0, 0);
-                    agent.SetDestination(lastSeenLocation);
+                    if (agent.isOnNavMesh) agent.SetDestination(lastSeenLocation);
                     animator.speed = walkAnimationSpeed;
                     break;
                 case AnimationState.Idle:

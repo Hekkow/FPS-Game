@@ -169,7 +169,7 @@ public class Enemy : MonoBehaviour, IDamageable
         animationLocked = true;
         agent.enabled = false;
         yield return new WaitForSeconds(1);
-        yield return new WaitUntil(() => !health.alive || Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, agent.height/2+0.3f));
+        yield return new WaitUntil(() => !health.alive || Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, agent.height/2+0.1f));
         agentDisabled = false;
         if (health.alive && !knocked)
         {
