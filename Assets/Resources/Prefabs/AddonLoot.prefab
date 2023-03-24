@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 3232259180905599016}
   - component: {fileID: 3232259180905599017}
   - component: {fileID: 3232259180905599022}
-  - component: {fileID: 3232259180905599445}
   - component: {fileID: 6080863538659316917}
   - component: {fileID: -501034569324764894}
+  - component: {fileID: 2742204344533407501}
   m_Layer: 0
   m_Name: AddonLoot
   m_TagString: Untagged
@@ -117,19 +117,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!114 &3232259180905599445
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3232259180905599023}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d79145f02b984c74cb257c76ddefe34b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 1
 --- !u!114 &6080863538659316917
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,3 +147,16 @@ MonoBehaviour:
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!114 &2742204344533407501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3232259180905599023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8863c430f051da94d84ad5072c7b871a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 0

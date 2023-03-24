@@ -166,12 +166,12 @@ public class GravityFlip : Upgrade
     public GravityFlip(params float[] parameters)
     {
         upgradeName = "Gravity Flip";
-        maxAmount = 100;
+        maxAmount = 1;
         category = Category.Gun;
     }
     public override void Activate()
     {
-
+        Inventory.guns[0].gravityFlip = true;
     }
 }
 public class ExplosiveBullets : Upgrade

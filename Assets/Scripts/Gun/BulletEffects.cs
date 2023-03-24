@@ -16,23 +16,23 @@ public class BulletEffects : MonoBehaviour
     }
     IEnumerator GravityFlipCoroutine()
     {
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (!allowGravityFlip) yield break;
+        if (rb == null) yield break;
         StartCoroutine(RenableGravityFlip());
-        if (TryGetComponent(out Rigidbody rb))
+        if (TryGetComponent(out Enemy enemy))
         {
-            if (TryGetComponent(out Enemy enemy))
-            {
-                if (enemyAgentCoroutine != null) StopCoroutine(enemyAgentCoroutine);
-                enemyAgentCoroutine = StartCoroutine(enemy.DisableAgentCoroutine());
-            }
-            float startTime = Time.time;
-            while (Time.time - startTime < gravityFlipTime)
-            {
-                gravityFlip = true;
-                rb.velocity += new Vector3(0, gravityFlipVelocity * Time.deltaTime, 0);
-                yield return new WaitForFixedUpdate();
-            }
-            gravityFlip = false;
+            if (enemyAgentCoroutine != null) StopCoroutine(enemyAgentCoroutine);
+            enemyAgentCoroutine = StartCoroutine(enemy.DisableAgentCoroutine());
         }
+        float startTime = Time.time;
+        while (Time.time - startTime < gravityFlipTime)
+        {
+            gravityFlip = true;
+            rb.velocity += new Vector3(0, gravityFlipVelocity * Time.deltaTime, 0);
+            yield return new WaitForFixedUpdate();
+        }
+        gravityFlip = false;
     }
     IEnumerator RenableGravityFlip()
     {

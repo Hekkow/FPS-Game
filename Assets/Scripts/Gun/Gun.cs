@@ -13,12 +13,11 @@ public class Gun : MonoBehaviour
 
     [Header("Objects")]
     [SerializeField] Player player;
-    [SerializeField] Transform attackPoint;
     [SerializeField] GameObject hitImpact;
     
 
     [Header("Stats")]
-    public Addon addon;
+    public Addon addon = null;
     public int slot = -1;
     public int bulletsPerShot = 1;
     public int bulletsPerTap = 1;
@@ -39,14 +38,19 @@ public class Gun : MonoBehaviour
     public List<int> pelletsPerLayer = new List<int>();
 
     [Header("Splitter")]
-    public bool splitter = false;
     public float splitterDistance = 10;
     public float splitterSpread = 5;
 
     [Header("Upgrades")]
+    public bool splitter = false;
     public bool bouncer = false;
-    public bool gravityFlip = true;
+    public bool gravityFlip = false;
     
+    enum ForceDirection
+    {
+        towardPlayer,
+        hitNormal
+    }
 
     bool readyToShoot = true;
     bool shooting = false;
@@ -76,7 +80,7 @@ public class Gun : MonoBehaviour
         InputManager.playerInput.Player.Shoot.performed += (obj) => shooting = true;
         InputManager.playerInput.Player.Shoot.canceled += (obj) => shooting = false;
         InputManager.playerInput.Player.Shoot.Enable();
-        InputManager.playerInput.Player.Attachment.performed += ((obj) => addon.Activate());
+        InputManager.playerInput.Player.Attachment.performed += ((obj) => ActivateAddon());
         InputManager.playerInput.Player.Attachment.Enable();
         InputManager.playerInput.Player.Reload.performed += Reload;
         InputManager.playerInput.Player.Reload.Enable();
@@ -139,27 +143,38 @@ public class Gun : MonoBehaviour
         Ray ray = new Ray(cameraTransform.position + cameraTransform.forward * startDistance, cameraTransform.forward + cameraTransform.right * x + cameraTransform.up * y);
         if (Physics.SphereCast(ray, bulletSize, out hit) && hit.transform.gameObject.GetComponent<Player>() == null) 
         { 
-            StartCoroutine(Hit(hit, hitDelay));
+            StartCoroutine(Hit(ray, hit, hitDelay, ForceDirection.towardPlayer));
         }
         if (splitter)
         {
             if (hit.collider == null || hit.distance > splitterDistance)
             {
-                SplitterLazer(splitterDistance, splitterSpread, 0, 0.01f, ray);
-                SplitterLazer(splitterDistance, -splitterSpread, 0, 0.01f, ray);
+                LazerFromRay(splitterDistance, splitterSpread, 0, 0.01f, ray);
+                LazerFromRay(splitterDistance, -splitterSpread, 0, 0.01f, ray);
             }
+            else LazerFromRay(hit.distance - 1, 0, 0, 0.01f, ray);
         }
+        
     }
-    void SplitterLazer(float startDistance, float x, float y, float hitDelay, Ray originalRay)
+    void LazerFromRay(float startDistance, float x, float y, float hitDelay, Ray originalRay)
     {
         RaycastHit hit;
-        Ray ray = new Ray(originalRay.origin + originalRay.direction * startDistance, Quaternion.AngleAxis(x, Vector3.up) * originalRay.direction);
+        Ray ray = new Ray(originalRay.origin + originalRay.direction * startDistance, Quaternion.AngleAxis(x, Vector3.up) * Quaternion.AngleAxis(y, Vector3.right) * originalRay.direction);
         if (Physics.SphereCast(ray, bulletSize, out hit) && hit.transform.gameObject.GetComponent<Player>() == null)
         {
-            StartCoroutine(Hit(hit, hitDelay));
+            StartCoroutine(Hit(ray, hit, hitDelay, ForceDirection.towardPlayer));
         }
     }
-    IEnumerator Hit(RaycastHit hit, float hitDelay)
+    void LazerFromPoint(float startDistance, float x, float y, float hitDelay, Ray originalRay, RaycastHit originalHit)
+    {
+        RaycastHit hit;
+        Ray ray = new Ray(originalHit.point, Quaternion.AngleAxis(x, Vector3.up) * Quaternion.AngleAxis(y, Vector3.right) * Vector3.Reflect(originalRay.direction, originalHit.normal));
+        if (Physics.SphereCast(ray, bulletSize, out hit) && hit.transform.gameObject.GetComponent<Player>() == null)
+        {
+            StartCoroutine(Hit(ray, hit, hitDelay, ForceDirection.hitNormal));
+        }
+    }
+    IEnumerator Hit(Ray ray, RaycastHit hit, float hitDelay, ForceDirection mode)
     {
         yield return new WaitForSeconds(hitDelay);
         //yield return new WaitForSeconds(hit.distance/bulletSpeed);
@@ -170,9 +185,13 @@ public class Gun : MonoBehaviour
         }
         if (hit.rigidbody != null)
         {
-            hit.rigidbody.AddForce(Camera.main.transform.forward * bulletKnockback);
-            Helper.GetOrAdd<BulletEffects>(hit.rigidbody.gameObject).FlipGravity(); 
-            //hit.rigidbody.AddForce(-hit.normal * bulletKnockback);
+            if (mode == ForceDirection.towardPlayer) hit.rigidbody.AddForce(Camera.main.transform.forward * bulletKnockback);
+            else if (mode == ForceDirection.hitNormal) hit.rigidbody.AddForce(-hit.normal * bulletKnockback);
+            if (gravityFlip) Helper.GetOrAdd<BulletEffects>(hit.rigidbody.gameObject).FlipGravity();
+        }
+        if (bouncer && hit.collider != null)
+        {
+            LazerFromPoint(0, 0, 0, 0.1f, ray, hit);
         }
         HitImpact(hit);
     }
@@ -226,5 +245,9 @@ public class Gun : MonoBehaviour
 
         bulletsLeft = bulletsPerMag;
         readyToShoot = true;
+    }
+    public void ActivateAddon()
+    {
+        addon?.Activate();
     }
 }

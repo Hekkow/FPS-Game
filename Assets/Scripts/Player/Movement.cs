@@ -12,7 +12,7 @@ public class Movement : MonoBehaviour
     float gravity;
     bool grounded;
     bool jumping;
-    bool applyingGravity = true;
+    public bool applyingGravity = true;
     bool jumpHeld = false;
     bool canJump = true;
     bool dashing = false;

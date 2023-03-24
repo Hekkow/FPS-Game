@@ -43,7 +43,9 @@ public class UpgradeManager : MonoBehaviour
             new ReloadSpeed(),
             new Minigun(),
             new Dash(),
-            new Splitter()
+            new Splitter(),
+            new Bouncer(),
+            new GravityFlip(),
         };
     }
     public static bool ActivateUpgrade(Upgrade upgrade)
