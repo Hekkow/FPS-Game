@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -18,71 +19,58 @@ public class Scope : Addon
 public class Hook : Addon
 {
     float hookRange = 40;
-    bool canActivate = true;
-    float hookSpeed = 1f;
-    Hook()
-    {
-        cooldown = 5f;
-    }
+    float hookSpeed = 20;
+    float overshootYAxis = 10;
+    Vector3 velocityToSet;
+    Vector3 grapplePoint;
+    GameObject player;
+    Movement playerMovement;
+    Rigidbody playerRigidbody;
     public override void Activate()
     {
-        if (!canActivate) return;
-        //canActivate = false;
+        player = GameObject.Find("Player");
+        playerMovement = player.GetComponent<Movement>();
+        playerRigidbody = player.GetComponent<Rigidbody>();
+        playerMovement.applyingGravity = false;
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * hookRange, Color.green, 10);
+        
         
         if (Physics.SphereCast(ray, 0.01f, out RaycastHit hit, hookRange))
         {
             if (hit.rigidbody != null)
             {
-                StartCoroutine(PullIn(hit)); 
+                PullIn(hit); 
             }
-            else
-            {
-                StartCoroutine(MoveTowards(hit));
-            }
+            //else
+            //{
+            //    grapplePoint = hit.point;
+            //    Grapple();
+            //}
         }
     }
-    IEnumerator MoveTowards(RaycastHit hit)
-    {
-        Rigidbody rb = GameObject.Find("Player").GetComponent<Rigidbody>();
-        rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-        float startTime = Time.time;
-        float hookTime = hit.distance / (hookSpeed / (1f / 60f));
-        rb.GetComponent<Movement>().applyingGravity = false;
-        while (Time.time - startTime < hookTime)
-        {
-            Vector3 destination = Vector3.MoveTowards(rb.transform.position, hit.point, hookSpeed);
-            rb.MovePosition(destination);
-            yield return new WaitForFixedUpdate();
-        }
-        //StartCoroutine(RenableHook());
-        rb.GetComponent<Movement>().applyingGravity = true;
+    //void Grapple()
+    //{
+    //    Vector3 direction = (grapplePoint - player.transform.position).normalized; 
+    //}
+    
 
-        //rb.AddForce((hit.point - position)*hookForce, ForceMode.Force);
-    }
-    IEnumerator RenableHook()
-    {
-        yield return new WaitForSeconds(cooldown);
-        canActivate = true;
-    }
-    IEnumerator PullIn(RaycastHit hit)
+
+
+
+
+
+
+
+
+    void PullIn(RaycastHit hit)
     {
         Rigidbody target = hit.rigidbody;
         Transform player = GameObject.Find("Player").transform;
         target.velocity = new Vector3(target.velocity.x, 0, target.velocity.z);
         float startTime = Time.time;
         float hookTime = hit.distance / (hookSpeed / (1f / 60f));
-        if (target.TryGetComponent(out Enemy enemy))
-        {
-            StartCoroutine(enemy.DisableAgentCoroutine());
-        }
-        while (Time.time - startTime < hookTime)
-        {
-            Vector3 destination = Vector3.MoveTowards(target.transform.position, player.transform.position, hookSpeed);
-            target.MovePosition(destination);
-            yield return new WaitForFixedUpdate();
-        } 
+        if (target.TryGetComponent(out Enemy enemy)) StartCoroutine(enemy.DisableAgentCoroutine());
+        target.AddForce((player.transform.position - target.transform.position).normalized * 1000, ForceMode.Acceleration);
     }
 }
 public class GrenadeLauncher : Addon

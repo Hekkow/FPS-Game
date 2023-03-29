@@ -57,7 +57,7 @@ public class Gun : MonoBehaviour
     bool reloading = false;
     Coroutine reloadCoroutine;
     Transform cameraTransform;
-    float particleLength;
+    float particleLength = 0.3f;
 
     public static event Action onShot;
     public static event Action onBeforeReload;
@@ -69,7 +69,6 @@ public class Gun : MonoBehaviour
         reloadCoroutine = StartCoroutine(WaitThenReload(0));
         StopCoroutine(reloadCoroutine);
         cameraTransform = Camera.main.transform;
-        particleLength = 0.3f;
     }
     void OnEnable()
     {
@@ -79,18 +78,19 @@ public class Gun : MonoBehaviour
         }
         InputManager.playerInput.Player.Shoot.performed += (obj) => shooting = true;
         InputManager.playerInput.Player.Shoot.canceled += (obj) => shooting = false;
-        InputManager.playerInput.Player.Shoot.Enable();
-        InputManager.playerInput.Player.Attachment.performed += ((obj) => ActivateAddon());
-        InputManager.playerInput.Player.Attachment.Enable();
+        InputManager.playerInput.Player.Attachment.performed += ActivateAddon;
         InputManager.playerInput.Player.Reload.performed += Reload;
+        InputManager.playerInput.Player.Attachment.Enable();
         InputManager.playerInput.Player.Reload.Enable();
-
+        InputManager.playerInput.Player.Shoot.Enable();
     }
     void OnDisable()
     {
+        InputManager.playerInput.Player.Attachment.performed -= ActivateAddon;
+        InputManager.playerInput.Player.Reload.performed -= Reload;
+        InputManager.playerInput.Player.Attachment.Disable();
         InputManager.playerInput.Player.Reload.Disable();
         InputManager.playerInput.Player.Shoot.Disable();
-        InputManager.playerInput.Player.Attachment.Disable();
         StopCoroutine(reloadCoroutine);
         readyToShoot = true; 
         
@@ -246,7 +246,7 @@ public class Gun : MonoBehaviour
         bulletsLeft = bulletsPerMag;
         readyToShoot = true;
     }
-    public void ActivateAddon()
+    public void ActivateAddon(InputAction.CallbackContext obj)
     {
         addon?.Activate();
     }

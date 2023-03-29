@@ -20,8 +20,8 @@ public class Reticle : MonoBehaviour
     [SerializeField] PlayerItems playerOther;
 
     float reticleHoleSize;
-    float defaultReticleHoleSize = -50;
-    //float defaultReticleHoleSize = 32;
+    //float defaultReticleHoleSize = -50;
+    float defaultReticleHoleSize = 32;
     float mainReticleSize;
     void Start()
     {

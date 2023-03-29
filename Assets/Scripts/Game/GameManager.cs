@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] float timeScale;
 
     Health playerHealth;
-
+    public static float timeStep = 1f / 60f;
     void Awake()
     {
         Time.timeScale = timeScale;

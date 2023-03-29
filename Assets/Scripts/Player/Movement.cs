@@ -9,14 +9,16 @@ public class Movement : MonoBehaviour
     Rigidbody rb;
     Vector3 direction;
     int jumps = 0;
-    float gravity;
+    public float gravity;
     bool grounded;
     bool jumping;
     public bool applyingGravity = true;
     bool jumpHeld = false;
     bool canJump = true;
     bool dashing = false;
-
+    public float controlledVelocity = 0;
+    public Vector3 externalVelocity = Vector3.zero;
+    public bool limitingSpeed = true;
     void Awake()
     {
         player = GetComponent<Player>();
@@ -104,10 +106,12 @@ public class Movement : MonoBehaviour
     }
     void SpeedControl()
     {
+        if (!limitingSpeed) return;
         Vector3 flatVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-        if (flatVelocity.magnitude > player.maxSpeed)
+        if (controlledVelocity > player.maxSpeed)
         {
-            Vector3 newVelocity = flatVelocity.normalized * player.maxSpeed;
+            controlledVelocity = player.maxSpeed;
+            Vector3 newVelocity = (flatVelocity.normalized * player.maxSpeed) + externalVelocity;
             rb.velocity = new Vector3(newVelocity.x, rb.velocity.y, newVelocity.z);
         }
     }
@@ -118,16 +122,18 @@ public class Movement : MonoBehaviour
     }
     void Move()
     {
-
         Vector2 moveInput = movementInput.ReadValue<Vector2>();
-        if (moveInput.y == 0 && moveInput.x == 0 && !grounded)
+        if (moveInput.y == 0 && moveInput.x == 0) controlledVelocity = 0;
+        if (moveInput.y == 0 && moveInput.x == 0 && !grounded && applyingGravity) // replace applyingGravity with hook something something idk
         {
-            rb.velocity = new (0, rb.velocity.y, 0);
+            rb.velocity = new(0, rb.velocity.y, 0);
         }
         else
         {
             direction = transform.forward * moveInput.y + transform.right * moveInput.x;
-            rb.AddForce(direction.normalized * player.speed, ForceMode.Force);
+            Vector3 force = direction.normalized * player.speed;
+            controlledVelocity += (force.magnitude * GameManager.timeStep) / rb.mass;
+            rb.AddForce(force, ForceMode.Force);
         }
     }
     void ApplyGravity()
