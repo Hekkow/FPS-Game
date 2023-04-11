@@ -13,6 +13,11 @@ public static class Extensions
     {
         return new Vector3(v.x, y, v.z);
     }
+    public static float UpTo(this float f, float x)
+    {
+        if (f < x) f = x;
+        return f;
+    }
     public static bool TryGetComponentInParent<T>(this Component self, out T component)
     {
         component = self.GetComponentInParent<T>();
@@ -57,4 +62,5 @@ public static class Extensions
     {
         return list[Random.Range(0, list.Count)];
     }
+    
 }

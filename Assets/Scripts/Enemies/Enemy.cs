@@ -150,7 +150,7 @@ public class Enemy : MonoBehaviour, IDamageable
                 blinkCoroutine = StartCoroutine(Blink());
             }
         }
-        //if (!playerDetected) StartCoroutine(LookAround());
+        if (!playerDetected) StartCoroutine(LookAround());
     }
     public virtual void Killed()
     {

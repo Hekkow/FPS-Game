@@ -17,7 +17,9 @@ public class Movement : MonoBehaviour, ICharacterController
     Vector2 moveInput;
 
     [Header("Move")]
+    [SerializeField] float walkSpeed;
     [SerializeField] float speed;
+    bool decelerating = false;
 
     [Header("Jump")]
     [SerializeField] float jumpForce;
@@ -35,8 +37,6 @@ public class Movement : MonoBehaviour, ICharacterController
     float dashStartTime = 0;
     Vector3 dashDirection;
 
-
-
     [Header("Hook")]
     [SerializeField] float hookSpeed;
     [SerializeField] public float hookRange;
@@ -47,10 +47,13 @@ public class Movement : MonoBehaviour, ICharacterController
     float hookStartTime;
     Vector3 hookDirection;
 
-    [Header("Physics")]
+    [Header("Momentum")]
+    [SerializeField] float speedLossAngle;
+    [SerializeField] float speedLossAmount;
+
+    [Header("Gravity")]
     [SerializeField] float gravityUp;
     [SerializeField] float gravityDown;
-
 
     void Start()
     {
@@ -81,13 +84,17 @@ public class Movement : MonoBehaviour, ICharacterController
     }
     void Move(ref Vector3 currentVelocity)
     {
-        Vector3 direction = transform.forward * moveInput.y + transform.right * moveInput.x;
+        Vector3 direction;
+        if (!MovePressed() && speed > walkSpeed) speed = currentVelocity.magnitude.UpTo(walkSpeed);
+        //if (currentVelocity.magnitude < speed && speed > walkSpeed) speed = currentVelocity.magnitude;
+        direction = transform.forward * moveInput.y + transform.right * moveInput.x;
         Vector3 targetMovementVelocity = direction * speed;
         currentVelocity = targetMovementVelocity.SetY(currentVelocity.y);
     }
     void Jump(ref Vector3 currentVelocity)
     {
         if (!jumpPressed || !canJump || jumpedAmount >= maxJumps) return;
+        //state = State.Jump;
         CancelAll();
         canJump = false;
         jumpedAmount++;
@@ -115,7 +122,11 @@ public class Movement : MonoBehaviour, ICharacterController
         if (dashing)
         {
             if (Time.time - dashStartTime > dashTime) dashing = false;
-            if (dashing) currentVelocity = dashDirection;
+            if (dashing)
+            {
+                currentVelocity = dashDirection;
+                speed = currentVelocity.magnitude;
+            }
         }
     }
     void Dash()
@@ -145,6 +156,7 @@ public class Movement : MonoBehaviour, ICharacterController
         if (hooking)
         {
             currentVelocity = hookDirection;
+            speed = currentVelocity.magnitude;
         }
     }
     public void Hook(RaycastHit hit)
@@ -163,52 +175,49 @@ public class Movement : MonoBehaviour, ICharacterController
     {
         hooking = false;
         dashing = false;
+                //currentMaxSpeed += currentVelocity.magnitude / 2;
+    }
+    void UpToSpeed()
+    {
+        if (speed < walkSpeed) speed = walkSpeed;
     }
     public void AfterCharacterUpdate(float deltaTime)
     {
         
     }
-
     public void BeforeCharacterUpdate(float deltaTime)
     {
         
     }
-
     public bool IsColliderValidForCollisions(Collider coll)
     {
         return true;
     }
-
     public void OnDiscreteCollisionDetected(Collider hitCollider)
     {
-        
-    }
 
+    }
     public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
     {
         canJump = true;
         jumpedAmount = 0;
+        if (!MovePressed() && speed > walkSpeed) speed = walkSpeed;
     }
-
     public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
     {
-        
+        if (Mathf.Abs(hitPoint.y - transform.position.y) < speedLossAngle && speed > walkSpeed) speed -= speedLossAmount;
+        UpToSpeed();
     }
-
     public void PostGroundingUpdate(float deltaTime)
     {
         
     }
-
     public void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, Vector3 atCharacterPosition, Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport)
     {
         
     }
-
     public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
     {
         currentRotation = Quaternion.Euler(0, yRotation, 0);
     }
-
-    
 }
