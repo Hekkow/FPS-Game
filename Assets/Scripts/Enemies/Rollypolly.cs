@@ -69,7 +69,7 @@ public class Rollypolly : Enemy
                     RunState(AnimationState.Walk);
                     if (currentState == AnimationState.Walk)
                     {
-                        agent.SetDestination(target.transform.position);
+                        SetDestinationTarget();
                     }
                 }
             }

@@ -10,7 +10,6 @@ public class AddonLoot : Loot
     {
         if (origin is Gun)
         {
-            health -= amount;
             base.Damaged(amount, collision, origin);
         }
     }

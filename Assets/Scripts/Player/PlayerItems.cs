@@ -1,3 +1,4 @@
+using KinematicCharacterController;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -42,31 +43,31 @@ public class PlayerItems : MonoBehaviour
     {
         if (transform.position.y < -100)
         {
-            transform.position = new Vector3(0, 100, 0);
+            player.GetComponent<KinematicCharacterMotor>().SetPosition(new Vector3(0, 100, 0));
         }
     }
     void DropItem()
     {
         Transform item = leftHandLocation.GetChild(0);
-        Helper.MakePhysical(item.gameObject, true);
+        item.gameObject.MakePhysical(true);
         item.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
         item.localScale *= 2;
         item.parent = itemsParent;
         item.AddComponent<Pickup>();
-        Helper.ApplyLayerToChildren(item.gameObject, "Ground");
+        item.gameObject.ApplyLayerToChildren("Ground");
         holdingItem = false;
     }
     void DropGun()
     {
         Transform item = Inventory.guns[0].transform;
-        Helper.MakePhysical(item.gameObject, true);
+        item.gameObject.MakePhysical(true);
         Inventory.guns[0].shootAnimator.Play("idle", 0, 0);
         Inventory.guns[0].enabled = false;
         item.gameObject.GetComponent<Animator>().enabled = false;
         item.localScale *= 2;
         item.parent = gunsParent;
         item.AddComponent<Pickup>();
-        Helper.ApplyLayerToChildren(item.gameObject, "Ground");
+        item.gameObject.ApplyLayerToChildren("Ground");
         item.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
         Inventory.DropGun();
     }
@@ -77,11 +78,11 @@ public class PlayerItems : MonoBehaviour
             DropItem();
         }
         item.parent = leftHandLocation;
-        Helper.MakePhysical(item.gameObject, false);
+        item.gameObject.MakePhysical(false);
         item.transform.localPosition = Vector3.zero;
         item.transform.localRotation = Quaternion.identity;
         item.transform.localScale /= 2;
-        Helper.ApplyLayerToChildren(item.gameObject, "Weapon");
+        item.gameObject.ApplyLayerToChildren("Weapon");
         item.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.None;
         Destroy(item.GetComponent<Pickup>());
         holdingItem = true;
@@ -117,11 +118,11 @@ public class PlayerItems : MonoBehaviour
         }
 
         item.parent = rightHandLocation;
-        Helper.MakePhysical(item.gameObject, false);
+        item.gameObject.MakePhysical(false);
         item.transform.localPosition = Vector3.zero;
         item.transform.localRotation = Quaternion.identity;
         item.transform.localScale /= 2;
-        Helper.ApplyLayerToChildren(item.gameObject, "Weapon");
+        item.gameObject.ApplyLayerToChildren("Weapon");
         item.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.None;
         Inventory.guns[0].enabled = true;
         item.gameObject.GetComponent<Animator>().enabled = true;

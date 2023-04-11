@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using UnityEngine.VFX;
 
@@ -12,7 +13,6 @@ public class Gun : MonoBehaviour
     [HideInInspector] public Animator shootAnimator;
 
     [Header("Objects")]
-    [SerializeField] Player player;
     [SerializeField] GameObject hitImpact;
     
 
@@ -24,7 +24,7 @@ public class Gun : MonoBehaviour
     public float bulletSize = 0.1f;
     public float bulletSpeed = 200;
     public float bulletDamage = 34;
-    public float bulletKnockback = 2000;
+    public float bulletKnockback = 5000000;
     public float attackSpeed = 1;
     public float bulletSpread = 0;
     public float reloadSpeed = 1f;
@@ -141,7 +141,7 @@ public class Gun : MonoBehaviour
         bulletsLeft--;
         RaycastHit hit;
         Ray ray = new Ray(cameraTransform.position + cameraTransform.forward * startDistance, cameraTransform.forward + cameraTransform.right * x + cameraTransform.up * y);
-        if (Physics.SphereCast(ray, bulletSize, out hit) && hit.transform.gameObject.GetComponent<Player>() == null) 
+        if (Physics.SphereCast(ray, bulletSize, out hit) && !hit.transform.GetComponent<Player>()) 
         { 
             StartCoroutine(Hit(ray, hit, hitDelay, ForceDirection.towardPlayer));
         }
@@ -160,16 +160,16 @@ public class Gun : MonoBehaviour
     {
         RaycastHit hit;
         Ray ray = new Ray(originalRay.origin + originalRay.direction * startDistance, Quaternion.AngleAxis(x, Vector3.up) * Quaternion.AngleAxis(y, Vector3.right) * originalRay.direction);
-        if (Physics.SphereCast(ray, bulletSize, out hit) && hit.transform.gameObject.GetComponent<Player>() == null)
+        if (Physics.SphereCast(ray, bulletSize, out hit) && !hit.transform.GetComponent<Player>())
         {
             StartCoroutine(Hit(ray, hit, hitDelay, ForceDirection.towardPlayer));
         }
     }
-    void LazerFromPoint(float startDistance, float x, float y, float hitDelay, Ray originalRay, RaycastHit originalHit)
+    void LazerFromPoint(float x, float y, float hitDelay, Ray originalRay, RaycastHit originalHit)
     {
         RaycastHit hit;
         Ray ray = new Ray(originalHit.point, Quaternion.AngleAxis(x, Vector3.up) * Quaternion.AngleAxis(y, Vector3.right) * Vector3.Reflect(originalRay.direction, originalHit.normal));
-        if (Physics.SphereCast(ray, bulletSize, out hit) && hit.transform.gameObject.GetComponent<Player>() == null)
+        if (Physics.SphereCast(ray, bulletSize, out hit) && !hit.transform.GetComponent<Player>())
         {
             StartCoroutine(Hit(ray, hit, hitDelay, ForceDirection.hitNormal));
         }
@@ -178,20 +178,23 @@ public class Gun : MonoBehaviour
     {
         yield return new WaitForSeconds(hitDelay);
         //yield return new WaitForSeconds(hit.distance/bulletSpeed);
-
-        if (hit.transform.TryGetComponent(out IDamageable damage))
+        if (hit.transform.TryGetComponentInParent(out IDamageable damage))
         {
-            damage.Damaged(bulletDamage, hit.collider, this);
+            if (hit.collider.TryGetComponent(out WeakPoint wp))
+                damage.Damaged(bulletDamage * wp.multiplier, hit.collider, this);
+            else damage.Damaged(bulletDamage, hit.collider, this);
         }
+        ForceMode forceMode = ForceMode.Force;
+        if (hit.transform.HasComponentInParent<DeadEnemy>()) forceMode = ForceMode.VelocityChange;
         if (hit.rigidbody != null)
         {
-            if (mode == ForceDirection.towardPlayer) hit.rigidbody.AddForce(Camera.main.transform.forward * bulletKnockback);
-            else if (mode == ForceDirection.hitNormal) hit.rigidbody.AddForce(-hit.normal * bulletKnockback);
-            if (gravityFlip) Helper.GetOrAdd<BulletEffects>(hit.rigidbody.gameObject).FlipGravity();
+            if (mode == ForceDirection.towardPlayer) hit.rigidbody.AddForce(Camera.main.transform.forward * bulletKnockback, forceMode);
+            else if (mode == ForceDirection.hitNormal) hit.rigidbody.AddForce(-hit.normal * bulletKnockback, forceMode);
+            if (gravityFlip) hit.rigidbody.gameObject.GetOrAdd<BulletEffects>().FlipGravity();
         }
         if (bouncer && hit.collider != null)
         {
-            LazerFromPoint(0, 0, 0, 0.1f, ray, hit);
+            LazerFromPoint(0, 0, 0.1f, ray, hit);
         }
         HitImpact(hit);
     }

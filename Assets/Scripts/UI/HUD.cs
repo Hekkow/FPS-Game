@@ -7,7 +7,7 @@ using UnityEngine;
 public class HUD : MonoBehaviour
 {
     [Header("Objects")]
-    [SerializeField] GameObject player;
+    [SerializeField] Health health;
     [SerializeField] PlayerItems playerOther;
 
 
@@ -39,17 +39,17 @@ public class HUD : MonoBehaviour
     }
     IEnumerator PrintSpeed()
     {
-        Rigidbody rb = player.GetComponent<Rigidbody>();
+        Movement characterController = playerOther.GetComponent<Movement>();
         while (true)
         {
-            speedText.text = Mathf.RoundToInt(new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude) + " SPEEDS";
+            speedText.text = Mathf.RoundToInt(characterController.Motor.BaseVelocity.SetY(0).magnitude) + " SPEEDS";
             yield return new WaitForSeconds(0.1f);
         }
 
     }
     public void PrintHealth()
     {
-        healthText.text = "Health " + Helper.HealthToHashtags(GameObject.Find("Player").GetComponent<Health>()); 
+        healthText.text = "Health " + health.ToString();
     }
     public void PrintBullets()
     {

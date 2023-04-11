@@ -4,43 +4,23 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
+    public float health;
     public float maxHealth;
-    public float currentHealth;
     public bool alive = true;
-    public void Damage(float damage)
+    public override string ToString()
     {
-        if (currentHealth > 0)
+        string hashtags = "";
+        int curr = Mathf.CeilToInt(health / 10);
+        if (curr < 0) curr = 0;
+        int max = Mathf.CeilToInt(maxHealth / 10) - curr;
+        for (int i = 0; i < curr; i++)
         {
-            currentHealth -= damage;
+            hashtags += "#";
         }
-        if (currentHealth <= 0)
+        for (int i = 0; i < max; i++)
         {
-            alive = false;
+            hashtags += "-";
         }
-    }
-    public void Heal(float health)
-    {
-        currentHealth += health;
-        if (currentHealth > maxHealth)
-        {
-            currentHealth = maxHealth;
-        }
-    }
-    public void MultiplyMaxHealth(float multiplier)
-    {
-        maxHealth *= multiplier;
-        currentHealth *= multiplier;
-    }
-    public bool IsAlive()
-    {
-        return alive;
-    }
-    public float GetHealth()
-    {
-        return currentHealth;
-    }
-    public float GetMaxHealth()
-    {
-        return maxHealth;
+        return hashtags;
     }
 }

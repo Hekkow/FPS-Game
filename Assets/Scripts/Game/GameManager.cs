@@ -11,12 +11,9 @@ public class GameManager : MonoBehaviour
     [Header("Options")]
     [SerializeField] float timeScale;
 
-    Health playerHealth;
     public static float timeStep = 1f / 60f;
     void Awake()
     {
-        Time.timeScale = timeScale;
-        playerHealth = player.GetComponent<Health>();
         SaveData data = SaveSystem.ReadSave();
         if (data != null)
         {
@@ -28,14 +25,18 @@ public class GameManager : MonoBehaviour
             //player.transform.localScale = data.scale;
         }
     }
+    private void Update()
+    {
+        Time.timeScale = timeScale;
+    }
     public void Save()
     {
         SaveData data = new SaveData();
-        data.maxHealth = playerHealth.maxHealth;
-        data.currentHealth = playerHealth.currentHealth;
-        data.position = player.transform.position;
-        data.rotation = player.transform.rotation;
-        data.scale = player.transform.localScale;
+        //data.maxHealth = playerHealth.maxHealth;
+        //data.currentHealth = playerHealth.currentHealth;
+        //data.position = player.transform.position;
+        //data.rotation = player.transform.rotation;
+        //data.scale = player.transform.localScale;
         data.commandHistory = console.commandHistory;
         SaveSystem.WriteSave(JsonUtility.ToJson(data));
     }

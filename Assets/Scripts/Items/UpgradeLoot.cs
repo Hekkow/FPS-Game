@@ -13,7 +13,6 @@ public class UpgradeLoot : Loot
     {
         if (origin is Gun || origin is Damage damage && (damage.thrown || damage.punch))
         {
-            health -= amount;
             base.Damaged(amount, collision, origin);
         }
     }

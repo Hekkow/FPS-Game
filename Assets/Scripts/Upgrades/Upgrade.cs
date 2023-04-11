@@ -119,7 +119,9 @@ public class HealthBoost : Upgrade
     }
     public override void Activate()
     {
-        GameObject.Find("Player").GetComponent<Health>().MultiplyMaxHealth(2);
+        GameObject.Find("Player").GetComponent<Health>().health *= 2;
+        GameObject.Find("Player").GetComponent<Health>().maxHealth *= 2;
+
     }
 }
 public class Splitter : Upgrade

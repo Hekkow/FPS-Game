@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 
 public abstract class Addon : MonoBehaviour
 {
@@ -18,59 +19,64 @@ public class Scope : Addon
 }
 public class Hook : Addon
 {
-    float hookRange = 40;
-    float hookSpeed = 20;
-    float overshootYAxis = 10;
-    Vector3 velocityToSet;
-    Vector3 grapplePoint;
-    GameObject player;
-    Movement playerMovement;
-    Rigidbody playerRigidbody;
+    float baseForce = 1000;
+    float enemyMultiplier = 20;
     public override void Activate()
     {
-        player = GameObject.Find("Player");
-        playerMovement = player.GetComponent<Movement>();
-        playerRigidbody = player.GetComponent<Rigidbody>();
-        playerMovement.applyingGravity = false;
+        Movement player = GameObject.Find("Player").GetComponent<Movement>();
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        
-        
-        if (Physics.SphereCast(ray, 0.01f, out RaycastHit hit, hookRange))
-        {
-            if (hit.rigidbody != null)
+        if (Physics.SphereCast(ray, 0.01f, out RaycastHit hit, player.hookRange))
+        { 
+            if (hit.rigidbody != null && hit.transform.GetComponentInParent<Enemy>())
             {
-                PullIn(hit); 
+                PullIn(hit, ray); 
             }
-            //else
-            //{
-            //    grapplePoint = hit.point;
-            //    Grapple();
-            //}
+            else
+            {
+                player.Hook(hit);
+            }
         }
     }
-    //void Grapple()
-    //{
-    //    Vector3 direction = (grapplePoint - player.transform.position).normalized; 
-    //}
-    
-
-
-
-
-
-
-
-
-
-    void PullIn(RaycastHit hit)
+    void PullIn(RaycastHit hit, Ray ray)
     {
         Rigidbody target = hit.rigidbody;
         Transform player = GameObject.Find("Player").transform;
-        target.velocity = new Vector3(target.velocity.x, 0, target.velocity.z);
+        target.velocity.SetY(0);
+        float pullForce = baseForce; 
+        if (target.TryGetComponentInParent(out Enemy enemy))
+        {
+            enemy.Ragdoll();
+            //StartCoroutine(enemy.DisableAgentCoroutine());
+            pullForce *= enemyMultiplier;
+            //enemyTarget = enemy.transform;
+            target = enemy.pelvis;
+            //enemyTarget.position = player.position;
+
+        }
+        
+        foreach (Rigidbody rb in enemy.GetComponentsInChildren<Rigidbody>())
+        {
+
+            //rb.AddExplosionForce(hit.distance* Mathf.Sqrt(3), hit.point + ray.direction * 2, 5, Mathf.Sqrt(hit.distance/10), ForceMode.Impulse);
+        }
+
+        //Debug.DrawRay(target.position, (player.transform.position - target.position).normalized * pullForce, Color.green, 10);
+        //Vector3 velocity = (player.transform.position - target.position).normalized * pullForce;
+        //if (velocity.y < 5) velocity.SetY(5);
+        //target.AddForce(velocity, ForceMode.Acceleration);
+        
+
+    }
+    IEnumerator EnemyHook(RaycastHit hit, Vector3 startingPosition)
+    {
         float startTime = Time.time;
-        float hookTime = hit.distance / (hookSpeed / (1f / 60f));
-        if (target.TryGetComponent(out Enemy enemy)) StartCoroutine(enemy.DisableAgentCoroutine());
-        target.AddForce((player.transform.position - target.transform.position).normalized * 1000, ForceMode.Acceleration);
+        float hookSpeed = 10;
+        float hookTime = hit.distance / hookSpeed;
+        while (Time.time - startTime < hookTime)
+        {
+            
+            yield return new WaitForFixedUpdate();
+        }
     }
 }
 public class GrenadeLauncher : Addon

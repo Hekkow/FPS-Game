@@ -1,183 +1,214 @@
+using KinematicCharacterController;
 using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Movement : MonoBehaviour
+public class Movement : MonoBehaviour, ICharacterController
 {
-    InputAction movementInput;
-    Player player;
-    Rigidbody rb;
-    Vector3 direction;
-    int jumps = 0;
-    public float gravity;
-    bool grounded;
-    bool jumping;
-    public bool applyingGravity = true;
-    bool jumpHeld = false;
-    bool canJump = true;
-    bool dashing = false;
-    public float controlledVelocity = 0;
-    public Vector3 externalVelocity = Vector3.zero;
-    public bool limitingSpeed = true;
-    void Awake()
-    {
-        player = GetComponent<Player>();
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
-        rb.drag = player.groundDrag;
+    [Header("References")]
+    [SerializeField] Player player;
+    public KinematicCharacterMotor Motor;
 
+    [HideInInspector] public float yRotation;
+    [HideInInspector] public Vector2 mouseInput;
+    InputAction movementInput;
+    Vector2 moveInput;
+
+    [Header("Move")]
+    [SerializeField] float speed;
+
+    [Header("Jump")]
+    [SerializeField] float jumpForce;
+    [SerializeField] int maxJumps;
+    bool jumpPressed = false;
+    bool canJump = true;
+    int jumpedAmount = 0;
+
+    [Header("Dash")]
+    [SerializeField] float dashForce;
+    [SerializeField] float dashTime;
+    [SerializeField] float dashCooldown;
+    bool canDash = true;
+    bool dashing = false;
+    float dashStartTime = 0;
+    Vector3 dashDirection;
+
+
+
+    [Header("Hook")]
+    [SerializeField] float hookSpeed;
+    [SerializeField] public float hookRange;
+    [SerializeField] float hookCooldown;
+    bool canHook = true;
+    bool hooking = false;
+    float hookTime;
+    float hookStartTime;
+    Vector3 hookDirection;
+
+    [Header("Physics")]
+    [SerializeField] float gravityUp;
+    [SerializeField] float gravityDown;
+
+
+    void Start()
+    {
+        Motor.CharacterController = this;
     }
     void OnEnable()
     {
         movementInput = InputManager.playerInput.Player.Move;
         movementInput.Enable();
-
-        InputManager.playerInput.Player.Jump.performed += JumpPressed;
-        InputManager.playerInput.Player.Jump.canceled += NotJumpPressed;
+        InputManager.playerInput.Player.Jump.performed += _ => JumpPressed();
+        InputManager.playerInput.Player.Jump.canceled += _ => JumpReleased();
         InputManager.playerInput.Player.Jump.Enable();
-
-        InputManager.playerInput.Player.Dash.performed += Dash;
+        InputManager.playerInput.Player.Dash.performed += _ => Dash();
         InputManager.playerInput.Player.Dash.Enable();
-    }
-    void OnDisable()
-    {
-        movementInput.Disable();
-        InputManager.playerInput.Player.Jump.Disable();
-        InputManager.playerInput.Player.Dash.Disable();
-    }
-    void FixedUpdate()
-    {
-        Move();
-        if (Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, player.groundDistance + 1)) grounded = true;
-        else grounded = false;
-        if (jumpHeld)
-        {
-            if (canJump)
-            {
-                Jump();
-                canJump = false;
-            }
-        }
+
     }
     void Update()
     {
-        DragControl();
-        SpeedControl();
-        if (applyingGravity)
-        {
-            ApplyGravity();
-        }
+        moveInput = movementInput.ReadValue<Vector2>();
     }
-    void Jump()
+    public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
-        StopCoroutine(ResetJump());
-        StartCoroutine(ResetJump());
+        Move(ref currentVelocity);
+        Gravity(ref currentVelocity, deltaTime);
+        Jump(ref currentVelocity);
+        CheckDash(ref currentVelocity);
+        CheckHook(ref currentVelocity);
     }
-    void JumpPressed(InputAction.CallbackContext obj)
+    void Move(ref Vector3 currentVelocity)
     {
-        jumpHeld = true;
+        Vector3 direction = transform.forward * moveInput.y + transform.right * moveInput.x;
+        Vector3 targetMovementVelocity = direction * speed;
+        currentVelocity = targetMovementVelocity.SetY(currentVelocity.y);
     }
-    void NotJumpPressed(InputAction.CallbackContext obj)
+    void Jump(ref Vector3 currentVelocity)
     {
-        jumpHeld = false;
-
-    }
-    IEnumerator ResetJump()
-    {
-
-        jumping = true;
-        jumps++;
+        if (!jumpPressed || !canJump || jumpedAmount >= maxJumps) return;
+        CancelAll();
         canJump = false;
-        dashing = false;
-        rb.velocity = new Vector3(0, 0, 0);
-        rb.AddForce(transform.up * player.jumpForce, ForceMode.Impulse);
-        yield return new WaitForSeconds(0.1f);
-        while (jumpHeld && !grounded) {
-            yield return new WaitForEndOfFrame();
-        }
-        if (jumps < player.maxJumps)
-        {
-            canJump = true;
-        }
-        yield return new WaitUntil(() => grounded);
+        jumpedAmount++;
+        Motor.ForceUnground();
+        currentVelocity = currentVelocity.SetY(jumpForce);
+    }
+    void JumpPressed() {
+        jumpPressed = true;
         canJump = true;
-        jumps = 0;
-        jumping = false;
+
     }
-    void SpeedControl()
+    void JumpReleased() {
+        jumpPressed = false;
+    }
+
+    void Gravity(ref Vector3 currentVelocity, float deltaTime)
     {
-        if (!limitingSpeed) return;
-        Vector3 flatVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-        if (controlledVelocity > player.maxSpeed)
+        float gravity;
+        if (currentVelocity.y > 0) gravity = gravityUp;
+        else gravity = gravityDown;
+        currentVelocity = currentVelocity.AddY(-gravity * deltaTime);
+    }
+    void CheckDash(ref Vector3 currentVelocity)
+    {
+        if (dashing)
         {
-            controlledVelocity = player.maxSpeed;
-            Vector3 newVelocity = (flatVelocity.normalized * player.maxSpeed) + externalVelocity;
-            rb.velocity = new Vector3(newVelocity.x, rb.velocity.y, newVelocity.z);
+            if (Time.time - dashStartTime > dashTime) dashing = false;
+            if (dashing) currentVelocity = dashDirection;
         }
     }
-    void DragControl()
+    void Dash()
     {
-        if (!grounded || jumping) rb.drag = player.airDrag;
-        else rb.drag = player.groundDrag;
-    }
-    void Move()
-    {
-        Vector2 moveInput = movementInput.ReadValue<Vector2>();
-        if (moveInput.y == 0 && moveInput.x == 0) controlledVelocity = 0;
-        if (moveInput.y == 0 && moveInput.x == 0 && !grounded && applyingGravity) // replace applyingGravity with hook something something idk
-        {
-            rb.velocity = new(0, rb.velocity.y, 0);
-        }
-        else
-        {
-            direction = transform.forward * moveInput.y + transform.right * moveInput.x;
-            Vector3 force = direction.normalized * player.speed;
-            controlledVelocity += (force.magnitude * GameManager.timeStep) / rb.mass;
-            rb.AddForce(force, ForceMode.Force);
-        }
-    }
-    void ApplyGravity()
-    {
-        if (rb.velocity.y > player.gravitySwitchY)
-        {
-            gravity = player.gravityUp;
-        }
-        else
-        {
-            gravity = player.gravityDown;
-        }
-        
-        rb.velocity += new Vector3(0, -1 * (gravity * Time.deltaTime), 0);
-    }
-    void Dash(InputAction.CallbackContext obj)
-    {
-        if (player.canDash)
-        {
-            StartCoroutine(StartDash());
-        }
-    }
-    IEnumerator StartDash()
-    {
-        Vector2 moveInput = movementInput.ReadValue<Vector2>();
+        if (Time.time - dashStartTime > dashCooldown + dashTime) canDash = true;
+        if (!canDash) return;
+        CancelAll();
+        dashStartTime = Time.time;
+        canDash = false;
         dashing = true;
-        applyingGravity = false;
-        rb.useGravity = false;
-        rb.velocity = Vector3.zero;
-        Vector3 dashDirection;
-        if (moveInput.x == 0 && moveInput.y == 0)
-            dashDirection = transform.forward;
-        else
+        if (MovePressed()) dashDirection = (transform.forward * moveInput.y + transform.right * moveInput.x).normalized * dashForce;
+        else dashDirection = Camera.main.transform.forward * dashForce;
+        dashDirection = dashDirection.SetY(0);
+    }
+    bool MovePressed()
+    {
+        return !(moveInput.x == 0 && moveInput.y == 0);
+    }
+    void CheckHook(ref Vector3 currentVelocity)
+    {
+        if (!hooking) return;
+        if (Time.time - hookStartTime > hookTime)
         {
-            dashDirection = transform.forward * moveInput.y + transform.right * moveInput.x;
+            hooking = false;
+            canHook = true;
         }
-        float timeStarted = Time.time;
-        while (Time.time - timeStarted < player.dashTime && dashing)
+        if (hooking)
         {
-            rb.AddForce(dashDirection.normalized * player.dashForce * Time.deltaTime, ForceMode.Force);
-            yield return new WaitForEndOfFrame();
+            currentVelocity = hookDirection;
         }
-        rb.useGravity = true;
-        applyingGravity = true;
+    }
+    public void Hook(RaycastHit hit)
+    {
+        if (Time.time - hookStartTime > hookCooldown + hookTime) canHook = true;
+        if (!canHook) return;
+        CancelAll();
+        Motor.ForceUnground();
+        hookStartTime = Time.time;
+        canHook = false;
+        hooking = true;
+        hookDirection = Camera.main.transform.forward * hookSpeed;
+        hookTime = hit.distance/hookSpeed;
+    }
+    public void CancelAll()
+    {
+        hooking = false;
         dashing = false;
     }
+    public void AfterCharacterUpdate(float deltaTime)
+    {
+        
+    }
+
+    public void BeforeCharacterUpdate(float deltaTime)
+    {
+        
+    }
+
+    public bool IsColliderValidForCollisions(Collider coll)
+    {
+        return true;
+    }
+
+    public void OnDiscreteCollisionDetected(Collider hitCollider)
+    {
+        
+    }
+
+    public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
+    {
+        canJump = true;
+        jumpedAmount = 0;
+    }
+
+    public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
+    {
+        
+    }
+
+    public void PostGroundingUpdate(float deltaTime)
+    {
+        
+    }
+
+    public void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, Vector3 atCharacterPosition, Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport)
+    {
+        
+    }
+
+    public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
+    {
+        currentRotation = Quaternion.Euler(0, yRotation, 0);
+    }
+
+    
 }

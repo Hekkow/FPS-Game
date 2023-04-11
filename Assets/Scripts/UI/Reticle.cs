@@ -14,10 +14,8 @@ public class Reticle : MonoBehaviour
     [SerializeField] AnimationCurve reloadCurve;
     [SerializeField] float reticleBloomAmount = 20;
 
-    public float test;
-
     [Header("Events")]
-    [SerializeField] PlayerItems playerOther;
+    [SerializeField] PlayerItems player;
 
     float reticleHoleSize;
     //float defaultReticleHoleSize = -50;
@@ -25,7 +23,7 @@ public class Reticle : MonoBehaviour
     float mainReticleSize;
     void Start()
     {
-        playerOther.onGunSwitch += RefreshReticle;
+        player.onGunSwitch += RefreshReticle;
         UpgradeManager.onUpgrade += RefreshReticle;
         Gun.onShot += Shot;
         Gun.onBeforeReload += Reload;

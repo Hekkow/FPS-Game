@@ -6,8 +6,7 @@ using UnityEngine.InputSystem;
 public class FPSCamera : MonoBehaviour
 {
     [SerializeField] Player player;
-    [SerializeField] Transform playerBody;
-    [SerializeField] MyCharacterController characterController;
+    [SerializeField] Movement characterController;
     InputAction lookInput;
 
     float xRotation;
@@ -39,9 +38,5 @@ public class FPSCamera : MonoBehaviour
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-    }
-    void FixedUpdate()
-    {
-        playerBody.rotation = Quaternion.Euler(0, yRotation, 0);
     }
 }

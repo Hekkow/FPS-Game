@@ -6,11 +6,12 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
+    [SerializeField] float lastChanceTime;
     public static event Action onPlayerHurt;
     Health health;
     bool canHurt = true;
     bool lastChance = true;
-    void Awake()
+    void Start()
     {
         health = GetComponent<Health>();
     }
@@ -18,15 +19,15 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         if (canHurt)
         {
-            if (lastChance && health.currentHealth - amount <= 0)
+            if (lastChance && health.health - amount <= 0)
             {
-                health.Damage(health.currentHealth - 1);
+                health.health -= health.health - 1;
                 StartCoroutine(LastChance());
             }
             else
             {
-                health.Damage(amount);
-                if (health.currentHealth <= 0)
+                health.health -= amount;
+                if (health.health <= 0)
                 {
                     Killed();
                 }
@@ -37,12 +38,13 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     }
     public void Killed()
     {
+        health.alive = false;
         Debug.Log("Died");
     }
     IEnumerator LastChance()
     {
         canHurt = false;
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(lastChanceTime);
         canHurt = true;
         lastChance = false;
     }

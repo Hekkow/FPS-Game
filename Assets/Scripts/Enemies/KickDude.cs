@@ -7,7 +7,7 @@ public class KickDude : Enemy
     [Header("Attack")]
     [SerializeField] float attackRange;
     [SerializeField] float kickDamage;
-    [SerializeField] GameObject rightFoot;
+    [SerializeField] GameObject kickFoot;
 
     enum AnimationState
     {
@@ -39,7 +39,7 @@ public class KickDude : Enemy
                     RunState(AnimationState.Walk);
                     if (currentState == AnimationState.Walk)
                     {
-                        agent.SetDestination(target.transform.position);
+                        SetDestinationTarget();
                     }
                 }
             }
@@ -65,7 +65,7 @@ public class KickDude : Enemy
                     agent.SetDestination(transform.position);
                     break;
                 case AnimationState.Kick:
-                    Helper.AddDamage(rightFoot, kickDamage, 10, false, true, false);
+                    Helper.AddDamage(kickFoot, kickDamage, 10, false, true, false);
                     animator.CrossFade("Kick", 0, 0);
                     transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
                     animator.speed = 1;
@@ -86,7 +86,7 @@ public class KickDude : Enemy
 
         yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1f);
         if (!previouslyLocked) animationLocked = false;
-        Destroy(rightFoot.GetComponent<Damage>());
+        Destroy(kickFoot.GetComponent<Damage>());
         RunState(AnimationState.Walk);
     }
     

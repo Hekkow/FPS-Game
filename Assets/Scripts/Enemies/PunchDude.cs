@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class PunchDude : Enemy
 {
     [Header("Attack")]
@@ -30,23 +29,14 @@ public class PunchDude : Enemy
         {
             if (playerDetected && agent.enabled)
             {
-                if (Physics.CheckSphere(transform.position, attackRange, playerMask))
-                {
-                    RunState(AnimationState.Punch);
-                }
+                if (Physics.CheckSphere(transform.position, attackRange, playerMask)) RunState(AnimationState.Punch);
                 else
                 {
                     RunState(AnimationState.Walk);
-                    if (currentState == AnimationState.Walk)
-                    {
-                        agent.SetDestination(target.transform.position);
-                    }
+                    if (currentState == AnimationState.Walk) SetDestinationTarget();
                 }
             }
-            else if (agent.enabled)
-            {
-                RunState(AnimationState.Idle);
-            }
+            else if (agent.enabled) RunState(AnimationState.Idle);
         }
     }
     void RunState(AnimationState state)
@@ -56,15 +46,18 @@ public class PunchDude : Enemy
             switch (state)
             {
                 case AnimationState.Walk:
-                    animator.CrossFade("Walk", 0, 0);
+                    rig.weight = 1;
+                    animator.CrossFade("Sprint", 0, 0);
                     if (agent.isOnNavMesh) agent.SetDestination(lastSeenLocation);
                     animator.speed = walkAnimationSpeed;
                     break;
                 case AnimationState.Idle:
+                    rig.weight = 0;
                     animator.CrossFade("Idle", 0, 0);
                     agent.SetDestination(transform.position);
                     break;
                 case AnimationState.Punch:
+                    rig.weight = 0;
                     Helper.AddDamage(rightArm, punchDamage, 10, false, true, false);
                     animator.CrossFade("Punch", 0, 0);
                     transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
@@ -73,6 +66,7 @@ public class PunchDude : Enemy
                     StartCoroutine(WaitUntilPunchDone());
                     break;
                 case AnimationState.Flinch:
+                    rig.weight = 0;
                     animator.CrossFade("Idle", 0, 0);
                     break;
             }

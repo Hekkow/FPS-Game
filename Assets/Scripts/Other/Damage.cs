@@ -39,7 +39,7 @@ public class Damage : MonoBehaviour
         {
             if (collision.gameObject.TryGetComponent(out IDamageable damageable))
             {
-                if (collision.gameObject.transform != transform.root)
+                if (collision.gameObject.transform.root != transform.root)
                 {
                     damageable.Damaged(damage, collision, this);
                 }
@@ -64,7 +64,7 @@ public class Damage : MonoBehaviour
                     {
                         damage = velocityMagnitude * rb.mass / 10;
                     }
-                    if (collision.gameObject.GetComponent<Player>() != null) return;
+                    if (collision.gameObject.GetComponent<Player>()) return;
                 }
                 if (thrown)
                 {
@@ -79,7 +79,7 @@ public class Damage : MonoBehaviour
                     {
                         velocity = (Camera.main.transform.position - collision.transform.position).normalized * backForceMultiplier;
                     }
-                    Vector3 direction = new Vector3(velocity.x, upForce, velocity.z);
+                    Vector3 direction = velocity.SetY(upForce);
                     rb.AddForce(direction, ForceMode.Impulse);
                 }
                 damageable.Damaged(damage, collision, this);
