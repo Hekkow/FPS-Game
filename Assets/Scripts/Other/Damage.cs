@@ -15,9 +15,6 @@ public class Damage : MonoBehaviour
     public float velocityMagnitude;
 
     bool didDamage = false;
-
-    float backForceMultiplier = 1.3f;
-    float upForce = 5;
     Rigidbody rb;
 
     private void Awake()
@@ -65,22 +62,6 @@ public class Damage : MonoBehaviour
                         damage = velocityMagnitude * rb.mass / 10;
                     }
                     if (collision.gameObject.GetComponent<Player>()) return;
-                }
-                if (thrown)
-                {
-                    if (thrown) rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-                    rb.velocity = Vector3.zero;
-                    Vector3 velocity;
-                    if (collision.gameObject.TryGetComponent(out NavMeshAgent agent))
-                    {
-                        velocity = (Camera.main.transform.position - collision.transform.position).normalized * agent.velocity.magnitude * backForceMultiplier;
-                    }
-                    else
-                    {
-                        velocity = (Camera.main.transform.position - collision.transform.position).normalized * backForceMultiplier;
-                    }
-                    Vector3 direction = velocity.SetY(upForce);
-                    rb.AddForce(direction, ForceMode.Impulse);
                 }
                 damageable.Damaged(damage, collision, this);
                 didDamage = true;

@@ -185,12 +185,16 @@ public class Gun : MonoBehaviour
             else damage.Damaged(bulletDamage, hit.collider, this);
         }
         ForceMode forceMode = ForceMode.Force;
-        if (hit.transform.HasComponentInParent<DeadEnemy>()) forceMode = ForceMode.VelocityChange;
+        if (hit.transform.GetComponentInParent<DeadEnemy>()) forceMode = ForceMode.VelocityChange;
         if (hit.rigidbody != null)
         {
             if (mode == ForceDirection.towardPlayer) hit.rigidbody.AddForce(Camera.main.transform.forward * bulletKnockback, forceMode);
             else if (mode == ForceDirection.hitNormal) hit.rigidbody.AddForce(-hit.normal * bulletKnockback, forceMode);
             if (gravityFlip) hit.rigidbody.gameObject.GetOrAdd<BulletEffects>().FlipGravity();
+        }
+        if (hit.transform.TryGetComponent(out MeshDestroy md))
+        {
+            md.DestroyMesh();
         }
         if (bouncer && hit.collider != null)
         {

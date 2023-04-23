@@ -32,7 +32,6 @@ public class PlayerItems : MonoBehaviour
         InputManager.playerInput.Player.Interact.Enable();
         InputManager.playerInput.Player.Throw.Enable();
         InputManager.playerInput.Player.SwitchDown.Enable();
-
     }
     void OnDisable()
     {
@@ -141,7 +140,7 @@ public class PlayerItems : MonoBehaviour
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             rb.constraints = RigidbodyConstraints.None;
         }
-        Helper.AddDamage(item, player.throwDamage, player.throwKnockback, true, true, false);
+        item.AddComponent<ThrowDamage>();
     }
     void ThrowGun()
     {
@@ -153,7 +152,7 @@ public class PlayerItems : MonoBehaviour
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             rb.constraints = RigidbodyConstraints.None;
         }
-        Helper.AddDamage(item, player.throwDamage, player.throwKnockback, true, true, false);
+        item.AddComponent<ThrowDamage>();
         if (Inventory.HasGun()) Inventory.guns[0].gameObject.SetActive(true);
         onGunSwitch?.Invoke();
 

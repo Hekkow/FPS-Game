@@ -13,21 +13,25 @@ public static class Extensions
     {
         return new Vector3(v.x, y, v.z);
     }
+    public static float horizontalMagnitude(this Vector3 v)
+    {
+        return Mathf.Sqrt(Mathf.Pow(v.x, 2) + Mathf.Pow(v.z, 2));
+    }
     public static float UpTo(this float f, float x)
     {
         if (f < x) f = x;
         return f;
     }
-    public static bool TryGetComponentInParent<T>(this Component self, out T component)
+    public static bool TryGetComponentInParent<T>(this GameObject self, out T component)
     {
         component = self.GetComponentInParent<T>();
         if (component == null)
             return false;
         return true;
     }
-    public static bool HasComponentInParent<T>(this Component self)
+    public static bool TryGetComponentInParent<T>(this Component self, out T component)
     {
-        T component = self.GetComponentInParent<T>();
+        component = self.GetComponentInParent<T>();
         if (component == null)
             return false;
         return true;

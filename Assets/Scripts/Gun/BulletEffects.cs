@@ -7,7 +7,7 @@ public class BulletEffects : MonoBehaviour
 {
     Coroutine enemyAgentCoroutine;
     float gravityFlipVelocity = 9.81f * 3f;
-    float gravityFlipTime = 1;
+    float gravityFlipTime = 0.3f;
     bool gravityFlip = false;
     bool allowGravityFlip = true;
     public void FlipGravity()
@@ -22,6 +22,12 @@ public class BulletEffects : MonoBehaviour
         if (rb == null) yield break;
         StartCoroutine(RenableGravityFlip());
         float startTime = Time.time;
+        if (rb.TryGetComponentInParent(out Enemy enemy))
+        {
+            StartCoroutine(enemy.DisableAgent());
+            rb = enemy.GetComponent<Rigidbody>();
+        }
+        if (rb.velocity.y < 0) rb.velocity = Vector3.zero;
         while (Time.time - startTime < gravityFlipTime)
         {
             gravityFlip = true;

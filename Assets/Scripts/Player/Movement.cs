@@ -19,7 +19,6 @@ public class Movement : MonoBehaviour, ICharacterController
     [Header("Move")]
     [SerializeField] float walkSpeed;
     [SerializeField] float speed;
-    bool decelerating = false;
 
     [Header("Jump")]
     [SerializeField] float jumpForce;
@@ -32,8 +31,6 @@ public class Movement : MonoBehaviour, ICharacterController
     [SerializeField] float dashForce;
     [SerializeField] float dashTime;
     [SerializeField] float dashCooldown;
-    bool canDash = true;
-    bool dashing = false;
     float dashStartTime = 0;
     Vector3 dashDirection;
 
@@ -41,8 +38,7 @@ public class Movement : MonoBehaviour, ICharacterController
     [SerializeField] float hookSpeed;
     [SerializeField] public float hookRange;
     [SerializeField] float hookCooldown;
-    bool canHook = true;
-    bool hooking = false;
+    RaycastHit hit;
     float hookTime;
     float hookStartTime;
     Vector3 hookDirection;
@@ -54,6 +50,16 @@ public class Movement : MonoBehaviour, ICharacterController
     [Header("Gravity")]
     [SerializeField] float gravityUp;
     [SerializeField] float gravityDown;
+
+    public enum MovementState
+    {
+        Run,
+        Dash,
+        Hook,
+        WallRun
+    }
+
+    public MovementState currentState = MovementState.Run;
 
     void Start()
     {
@@ -76,17 +82,87 @@ public class Movement : MonoBehaviour, ICharacterController
     }
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
-        Move(ref currentVelocity);
-        Gravity(ref currentVelocity, deltaTime);
+        switch (currentState)
+        {
+            case MovementState.Dash:
+                if (Time.time - dashStartTime > dashTime) currentState = MovementState.Run;
+                break;
+            case MovementState.Hook:
+                if (Time.time - hookStartTime > hookTime) currentState = MovementState.Run;
+                break;
+        }
         Jump(ref currentVelocity);
-        CheckDash(ref currentVelocity);
-        CheckHook(ref currentVelocity);
+        switch (currentState)
+        {
+            case MovementState.Run:
+                Move(ref currentVelocity);
+                Gravity(ref currentVelocity, deltaTime);
+                break;
+            case MovementState.Dash:
+                currentVelocity = dashDirection;
+                break;
+            case MovementState.Hook:
+                currentVelocity = hookDirection;
+                break;
+        }
     }
+
+
+
+    void Transition(MovementState state)
+    {
+        MovementState oldState = currentState;
+        if (EnterState(state))
+        {
+            ExitState(oldState);
+            currentState = state;
+        }
+    }
+    bool EnterState(MovementState state)
+    {
+        switch (state)
+        {
+            case MovementState.Run:
+                return true;
+            case MovementState.Dash:
+                if (Time.time - dashStartTime < dashCooldown + dashTime) return false;
+                dashStartTime = Time.time;
+                if (MovePressed()) dashDirection = (transform.forward * moveInput.y + transform.right * moveInput.x).normalized * (dashForce + Motor.BaseVelocity.horizontalMagnitude() / 2);
+                else dashDirection = Camera.main.transform.forward * dashForce;
+                dashDirection = dashDirection.SetY(0);
+                return true;
+            case MovementState.Hook:
+                if (Time.time - hookStartTime < hookCooldown + hookTime) return false;
+                Motor.ForceUnground();
+                hookStartTime = Time.time;
+                hookDirection = Camera.main.transform.forward * (hookSpeed + Motor.BaseVelocity.horizontalMagnitude() / 2);
+                hookTime = hit.distance / hookSpeed;
+                return true;
+            default:
+                return false;
+        }
+    }
+    void ExitState(MovementState state)
+    {
+        switch (state)
+        {
+            case MovementState.Run:
+                break;
+            case MovementState.Dash:
+                speed += Motor.BaseVelocity.horizontalMagnitude() / 2;
+                break;
+            case MovementState.Hook:
+                speed += Motor.BaseVelocity.horizontalMagnitude() / 2;
+                break;
+        }
+    }
+
+
+
     void Move(ref Vector3 currentVelocity)
     {
         Vector3 direction;
-        if (!MovePressed() && speed > walkSpeed) speed = currentVelocity.magnitude.UpTo(walkSpeed);
-        //if (currentVelocity.magnitude < speed && speed > walkSpeed) speed = currentVelocity.magnitude;
+        if (!MovePressed() && speed > walkSpeed) speed = currentVelocity.horizontalMagnitude().UpTo(walkSpeed);
         direction = transform.forward * moveInput.y + transform.right * moveInput.x;
         Vector3 targetMovementVelocity = direction * speed;
         currentVelocity = targetMovementVelocity.SetY(currentVelocity.y);
@@ -94,22 +170,12 @@ public class Movement : MonoBehaviour, ICharacterController
     void Jump(ref Vector3 currentVelocity)
     {
         if (!jumpPressed || !canJump || jumpedAmount >= maxJumps) return;
-        //state = State.Jump;
-        CancelAll();
+        Transition(MovementState.Run);
         canJump = false;
         jumpedAmount++;
         Motor.ForceUnground();
         currentVelocity = currentVelocity.SetY(jumpForce);
     }
-    void JumpPressed() {
-        jumpPressed = true;
-        canJump = true;
-
-    }
-    void JumpReleased() {
-        jumpPressed = false;
-    }
-
     void Gravity(ref Vector3 currentVelocity, float deltaTime)
     {
         float gravity;
@@ -117,70 +183,34 @@ public class Movement : MonoBehaviour, ICharacterController
         else gravity = gravityDown;
         currentVelocity = currentVelocity.AddY(-gravity * deltaTime);
     }
-    void CheckDash(ref Vector3 currentVelocity)
-    {
-        if (dashing)
-        {
-            if (Time.time - dashStartTime > dashTime) dashing = false;
-            if (dashing)
-            {
-                currentVelocity = dashDirection;
-                speed = currentVelocity.magnitude;
-            }
-        }
-    }
     void Dash()
     {
-        if (Time.time - dashStartTime > dashCooldown + dashTime) canDash = true;
-        if (!canDash) return;
-        CancelAll();
-        dashStartTime = Time.time;
-        canDash = false;
-        dashing = true;
-        if (MovePressed()) dashDirection = (transform.forward * moveInput.y + transform.right * moveInput.x).normalized * dashForce;
-        else dashDirection = Camera.main.transform.forward * dashForce;
-        dashDirection = dashDirection.SetY(0);
+        Transition(MovementState.Dash);
     }
+    public void Hook(RaycastHit raycastHit)
+    {
+        hit = raycastHit;
+        Transition(MovementState.Hook);
+    }
+
+     
+    
     bool MovePressed()
     {
         return !(moveInput.x == 0 && moveInput.y == 0);
     }
-    void CheckHook(ref Vector3 currentVelocity)
+    void JumpPressed()
     {
-        if (!hooking) return;
-        if (Time.time - hookStartTime > hookTime)
-        {
-            hooking = false;
-            canHook = true;
-        }
-        if (hooking)
-        {
-            currentVelocity = hookDirection;
-            speed = currentVelocity.magnitude;
-        }
+        jumpPressed = true;
+        canJump = true;
     }
-    public void Hook(RaycastHit hit)
+    void JumpReleased()
     {
-        if (Time.time - hookStartTime > hookCooldown + hookTime) canHook = true;
-        if (!canHook) return;
-        CancelAll();
-        Motor.ForceUnground();
-        hookStartTime = Time.time;
-        canHook = false;
-        hooking = true;
-        hookDirection = Camera.main.transform.forward * hookSpeed;
-        hookTime = hit.distance/hookSpeed;
+        jumpPressed = false;
     }
-    public void CancelAll()
-    {
-        hooking = false;
-        dashing = false;
-                //currentMaxSpeed += currentVelocity.magnitude / 2;
-    }
-    void UpToSpeed()
-    {
-        if (speed < walkSpeed) speed = walkSpeed;
-    }
+
+
+
     public void AfterCharacterUpdate(float deltaTime)
     {
         
@@ -205,8 +235,8 @@ public class Movement : MonoBehaviour, ICharacterController
     }
     public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
     {
-        if (Mathf.Abs(hitPoint.y - transform.position.y) < speedLossAngle && speed > walkSpeed) speed -= speedLossAmount;
-        UpToSpeed();
+        if (!Motor.GroundingStatus.IsStableOnGround && !hitStabilityReport.IsStable && MovePressed()) { }
+        if (hitPoint.y - transform.position.y > speedLossAngle && speed > walkSpeed) speed = (speed - speedLossAmount).UpTo(walkSpeed);
     }
     public void PostGroundingUpdate(float deltaTime)
     {
