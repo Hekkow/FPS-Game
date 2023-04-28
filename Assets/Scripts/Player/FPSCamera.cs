@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XInput;
+using UnityEngine.Rendering;
 
 public class FPSCamera : MonoBehaviour
 {
@@ -16,22 +19,27 @@ public class FPSCamera : MonoBehaviour
     float mouseX;
     float mouseY;
 
+    public float sensitivity;
+
     void Awake()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        sensitivity = player.sensitivity;
+        
     }
+    
     private void OnEnable()
     {
         lookInput = InputManager.playerInput.Player.Look;
         lookInput.Enable();
-
     }
+
     void LateUpdate()
     {
         mouse = lookInput.ReadValue<Vector2>();
-        mouseX = mouse.x * player.sensitivity * Time.fixedDeltaTime;
-        mouseY = mouse.y * player.sensitivity * Time.fixedDeltaTime;
+        mouseX = mouse.x * sensitivity * Time.fixedDeltaTime;
+        mouseY = mouse.y * sensitivity * Time.fixedDeltaTime;
         characterController.mouseInput = new Vector2(mouseX, mouseY); // maybe change to x/yrotation?
         yRotation += mouseX;
         characterController.yRotation = yRotation;

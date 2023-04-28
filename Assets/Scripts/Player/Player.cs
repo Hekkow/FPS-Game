@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
 {
     [Header("Mouse Sensitivity")]
     public float sensitivity;
+    public float controllerSensitivity;
 
     [Header("Items")]
     public float throwForce;

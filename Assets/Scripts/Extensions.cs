@@ -66,5 +66,29 @@ public static class Extensions
     {
         return list[Random.Range(0, list.Count)];
     }
+    public static RaycastHit? ClosestHit(this Transform transform, out int right, int amount, float startingAngle, float range, float forwardAmount)
+    {
+        right = 0;
+        List<RaycastHit> hits = new List<RaycastHit>();
+        for (float i = startingAngle; i < 360 + startingAngle; i += (360 / amount))
+        {
+            Vector3 direction = Quaternion.Euler(0, i, 0) * transform.right;
+            Debug.DrawRay(transform.position, direction * range, Color.green, 0.1f);
+            if (Physics.Raycast(transform.position, direction, out RaycastHit hit, range)) {
+                hits.Add(hit);
+                right = (int)(i / (360/amount))+1;
+            }
+        }
+        if (hits.Count == 0) return null;
+        RaycastHit closest = hits[0];
+        for (int i = 0; i < hits.Count; i++)
+        {
+            if (hits[i].distance < closest.distance) {
+                closest = hits[i];
+            }
+        }
+        return closest;
+        
+    }
     
 }

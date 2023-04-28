@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class Console : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] TMP_InputField inputField;
-    [SerializeField] GameObject player;
+    [SerializeField] GameObject console;
     [HideInInspector] public List<string> commandHistory;
-
     int current;
-    bool showConsole = false;
     string command;
 
     void Start()
@@ -25,7 +24,7 @@ public class Console : MonoBehaviour
     }
     void OnEnable()
     {
-        InputManager.playerInput.Player.Console.performed += ToggleConsole;
+        InputManager.playerInput.Player.Console.performed += OpenConsole;
         InputManager.playerInput.Console.Execute.performed += ExecuteCommand;
         InputManager.playerInput.Console.Previous.performed += PreviousCommand;
         InputManager.playerInput.Console.Next.performed += NextCommand;
@@ -43,24 +42,19 @@ public class Console : MonoBehaviour
         InputManager.playerInput.Console.Previous.Disable();
         InputManager.playerInput.Console.Next.Disable();
     }
-    void ToggleConsole(InputAction.CallbackContext obj)
+    void OpenConsole(InputAction.CallbackContext obj)
     {
         InputManager.SwitchActionMap(InputManager.playerInput.Console);
         current = commandHistory.Count;
-        showConsole = !showConsole;
+        console.SetActive(true);
+        inputField.ActivateInputField();
+        inputField.Select();
         command = "";
-    }
-    void OnGUI()
-    {
-        if (!showConsole) return;
-        float y = Screen.height - 100;
-        GUI.Box(new Rect(5, y, Screen.width/3, 30), "");
-        GUI.SetNextControlName("console");
-        command = GUI.TextField(new Rect(10, y + 5, Screen.width / 3 - 20, 20), command);
-        GUI.FocusControl("console");
     }
     void ExecuteCommand(InputAction.CallbackContext obj)
     {
+        command = inputField.text;
+        inputField.text = "";
         string[] words = command.Split(' ');
         if (words[0] == "upgrade")
         {
@@ -160,8 +154,7 @@ public class Console : MonoBehaviour
         if (command != "" && command != commandHistory[commandHistory.Count-1]) commandHistory.Add(command);
 
         InputManager.SwitchActionMap(InputManager.playerInput.Player);
-
-        showConsole = !showConsole;
+        console.SetActive(false);
         command = "";
     }
     void PreviousCommand(InputAction.CallbackContext obj)

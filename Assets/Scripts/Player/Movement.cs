@@ -1,7 +1,4 @@
 using KinematicCharacterController;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -43,6 +40,15 @@ public class Movement : MonoBehaviour, ICharacterController
     float hookStartTime;
     Vector3 hookDirection;
 
+    [Header("Wallrun")]
+    [SerializeField] float wallRunSpeed;
+    [SerializeField, Rename("Amount of Rays")] int wallRunRaysAmount;
+    [SerializeField, Rename("Starting Angle")] float wallRunRaysStartingAngle;
+    [SerializeField, Rename("Ray Length")] float wallRunRaysLength;
+    float lookDirection;
+    public int forward = 1;
+    Vector3 wallNormal;
+
     [Header("Momentum")]
     [SerializeField] float speedLossAngle;
     [SerializeField] float speedLossAmount;
@@ -51,15 +57,17 @@ public class Movement : MonoBehaviour, ICharacterController
     [SerializeField] float gravityUp;
     [SerializeField] float gravityDown;
 
+
     public enum MovementState
     {
-        Run,
+        Default,
         Dash,
         Hook,
-        WallRun
+        WallRun,
+        WallJump
     }
 
-    public MovementState currentState = MovementState.Run;
+    public MovementState currentState = MovementState.Default;
 
     void Start()
     {
@@ -82,19 +90,24 @@ public class Movement : MonoBehaviour, ICharacterController
     }
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
+        // checks if anything is done and switches to base state if done
         switch (currentState)
         {
             case MovementState.Dash:
-                if (Time.time - dashStartTime > dashTime) currentState = MovementState.Run;
+                if (Time.time - dashStartTime > dashTime) currentState = MovementState.Default;
                 break;
             case MovementState.Hook:
-                if (Time.time - hookStartTime > hookTime) currentState = MovementState.Run;
+                if (Time.time - hookStartTime > hookTime) currentState = MovementState.Default;
+                break;
+            case MovementState.WallJump:
+                if (MovePressed()) currentState = MovementState.Default;
                 break;
         }
+        // jump is so anything can get cancelled. doesn't have its own state
         Jump(ref currentVelocity);
         switch (currentState)
         {
-            case MovementState.Run:
+            case MovementState.Default:
                 Move(ref currentVelocity);
                 Gravity(ref currentVelocity, deltaTime);
                 break;
@@ -104,6 +117,12 @@ public class Movement : MonoBehaviour, ICharacterController
             case MovementState.Hook:
                 currentVelocity = hookDirection;
                 break;
+            case MovementState.WallRun:
+                WallRun(ref currentVelocity);
+                break;
+            case MovementState.WallJump:
+                Gravity(ref currentVelocity, deltaTime);
+                break;
         }
     }
 
@@ -111,6 +130,7 @@ public class Movement : MonoBehaviour, ICharacterController
 
     void Transition(MovementState state)
     {
+        if (currentState == state) return;
         MovementState oldState = currentState;
         if (EnterState(state))
         {
@@ -122,12 +142,10 @@ public class Movement : MonoBehaviour, ICharacterController
     {
         switch (state)
         {
-            case MovementState.Run:
-                return true;
             case MovementState.Dash:
                 if (Time.time - dashStartTime < dashCooldown + dashTime) return false;
                 dashStartTime = Time.time;
-                if (MovePressed()) dashDirection = (transform.forward * moveInput.y + transform.right * moveInput.x).normalized * (dashForce + Motor.BaseVelocity.horizontalMagnitude() / 2);
+                if (MovePressed()) dashDirection = (Camera.main.transform.forward * moveInput.y + Camera.main.transform.right * moveInput.x).normalized * (dashForce + Motor.BaseVelocity.horizontalMagnitude() / 2);
                 else dashDirection = Camera.main.transform.forward * dashForce;
                 dashDirection = dashDirection.SetY(0);
                 return true;
@@ -138,21 +156,31 @@ public class Movement : MonoBehaviour, ICharacterController
                 hookDirection = Camera.main.transform.forward * (hookSpeed + Motor.BaseVelocity.horizontalMagnitude() / 2);
                 hookTime = hit.distance / hookSpeed;
                 return true;
+            case MovementState.WallRun:
+                RaycastHit? closestHit = transform.ClosestHit(out int connected, wallRunRaysAmount, wallRunRaysStartingAngle, wallRunRaysLength, 0);
+                if (closestHit == null) return false;
+                Vector3 wallForward = Vector3.Cross(closestHit.Value.normal, transform.up);
+                float dotProduct = Vector3.Dot(Camera.main.transform.forward, wallForward);
+                if (dotProduct < 0) forward = -1;
+                else forward = 1;
+                if (jumpedAmount == maxJumps) jumpedAmount--;
+                return true;
             default:
-                return false;
+                return true;
         }
     }
     void ExitState(MovementState state)
     {
         switch (state)
         {
-            case MovementState.Run:
-                break;
             case MovementState.Dash:
                 speed += Motor.BaseVelocity.horizontalMagnitude() / 2;
                 break;
             case MovementState.Hook:
                 speed += Motor.BaseVelocity.horizontalMagnitude() / 2;
+                break;
+            case MovementState.WallRun:
+                //speed = Motor.BaseVelocity.horizontalMagnitude();
                 break;
         }
     }
@@ -161,20 +189,52 @@ public class Movement : MonoBehaviour, ICharacterController
 
     void Move(ref Vector3 currentVelocity)
     {
-        Vector3 direction;
         if (!MovePressed() && speed > walkSpeed) speed = currentVelocity.horizontalMagnitude().UpTo(walkSpeed);
-        direction = transform.forward * moveInput.y + transform.right * moveInput.x;
+        Vector3 direction = transform.forward * moveInput.y + transform.right * moveInput.x;
         Vector3 targetMovementVelocity = direction * speed;
         currentVelocity = targetMovementVelocity.SetY(currentVelocity.y);
+    }
+    void WallRun(ref Vector3 currentVelocity)
+    {
+        RaycastHit? hit = transform.ClosestHit(out int connected, wallRunRaysAmount, wallRunRaysStartingAngle, wallRunRaysLength, 0);
+        if (connected == 0) Transition(MovementState.WallJump); // if no ray hits
+        else if (hit != null)
+        {
+            wallNormal = hit.Value.normal;
+            Vector3 wallForward = Vector3.Cross(hit.Value.normal, transform.up) * forward;
+            Vector3 move = Camera.main.transform.forward * moveInput.y + Camera.main.transform.right * moveInput.x;
+            float dotProduct = Vector3.Dot(move, wallForward); // gets how close desired movement is to wall forward
+            if (Mathf.Abs(dotProduct) < 0.5f) { }
+            else if (dotProduct < 0)
+            {
+                if (forward == 1) forward = -1;
+                else if (forward == -1) forward = 1;
+            }
+            Quaternion rotation = Quaternion.LookRotation(wallForward);
+            lookDirection = rotation.eulerAngles.y;
+            speed = currentVelocity.horizontalMagnitude().UpTo(wallRunSpeed);
+            currentVelocity = wallForward * speed;
+            currentVelocity += -hit.Value.normal * 100; 
+        }
+
+
     }
     void Jump(ref Vector3 currentVelocity)
     {
         if (!jumpPressed || !canJump || jumpedAmount >= maxJumps) return;
-        Transition(MovementState.Run);
         canJump = false;
         jumpedAmount++;
         Motor.ForceUnground();
-        currentVelocity = currentVelocity.SetY(jumpForce);
+        if (currentState == MovementState.WallRun)
+        {
+            Transition(MovementState.WallJump);
+            currentVelocity = ((wallNormal.normalized + currentVelocity.normalized).normalized * speed).SetY(jumpForce);
+        }
+        else {
+            Transition(MovementState.Default);
+            currentVelocity = currentVelocity.SetY(jumpForce);
+        }
+        
     }
     void Gravity(ref Vector3 currentVelocity, float deltaTime)
     {
@@ -229,13 +289,16 @@ public class Movement : MonoBehaviour, ICharacterController
     }
     public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
     {
+        if (currentState == MovementState.WallJump) Transition(MovementState.Default);
         canJump = true;
         jumpedAmount = 0;
         if (!MovePressed() && speed > walkSpeed) speed = walkSpeed;
     }
     public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
     {
-        if (!Motor.GroundingStatus.IsStableOnGround && !hitStabilityReport.IsStable && MovePressed()) { }
+        if (!Motor.GroundingStatus.IsStableOnGround && !hitStabilityReport.IsStable && (MovePressed() || currentState == MovementState.WallJump)) {
+            Transition(MovementState.WallRun);
+        }
         if (hitPoint.y - transform.position.y > speedLossAngle && speed > walkSpeed) speed = (speed - speedLossAmount).UpTo(walkSpeed);
     }
     public void PostGroundingUpdate(float deltaTime)
@@ -248,6 +311,15 @@ public class Movement : MonoBehaviour, ICharacterController
     }
     public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
     {
-        currentRotation = Quaternion.Euler(0, yRotation, 0);
+        switch (currentState)
+        {
+            case MovementState.WallRun:
+                currentRotation = Quaternion.Euler(0, lookDirection, 0);
+                break;
+            default:
+                currentRotation = Quaternion.Euler(0, yRotation, 0);
+                break;
+        }
+        
     }
 }
