@@ -26,7 +26,6 @@ public class FPSCamera : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         sensitivity = player.sensitivity;
-        
     }
     
     private void OnEnable()

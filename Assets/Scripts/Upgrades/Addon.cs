@@ -17,6 +17,35 @@ public class Scope : Addon
         Debug.Log("TEST");
     }
 }
+public class RocketLauncher : Addon
+{
+    float radius = 10;
+    float force = 50;
+    float upForce = 0.3f;
+    public override void Activate()
+    {
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit))
+        {
+            Collider[] colliders = Physics.OverlapSphere(hit.point, radius);
+            foreach (Collider collider in colliders)
+            {
+                if (collider.TryGetComponent(out Rigidbody rb))
+                {
+                    if (collider.TryGetComponentInParent(out Enemy enemy))
+                    {
+                        StartCoroutine(enemy.DisableAgent());
+                    }
+                    rb.AddExplosionNoFalloff(hit.point, force, radius, ForceMode.Impulse); 
+                }
+                else if (collider.TryGetComponent(out Movement movement))
+                {
+                    movement.AddExtraForce(movement.transform.position.ExplosionVector(hit.point, force, radius));
+                }
+            }
+        }
+        //Debug.Log("ROCKET");
+    }
+}
 public class Hook : Addon
 {
     float baseForce = 1000;
@@ -92,6 +121,7 @@ public static class AddonManager
     {
         Scope,
         Hook,
+        RocketLauncher,
     }
     public static void AddAddon(AddonName name)
     {
@@ -102,6 +132,9 @@ public static class AddonManager
                 break;
             case AddonName.Hook:
                 Inventory.guns[0].addon = Inventory.guns[0].gameObject.AddComponent<Hook>();
+                break;
+            case AddonName.RocketLauncher:
+                Inventory.guns[0].addon = Inventory.guns[0].gameObject.AddComponent<RocketLauncher>();
                 break;
         }
     }

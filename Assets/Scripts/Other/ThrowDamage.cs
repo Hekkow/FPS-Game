@@ -4,13 +4,11 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class ThrowDamage : MonoBehaviour
+public class ThrowDamage : Damage
 {
-    float damage = 34;
     Rigidbody rb;
     float backForceMultiplier = 1.3f;
     float upForce = 5;
-    bool didDamage = false;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -37,6 +35,6 @@ public class ThrowDamage : MonoBehaviour
             damageable.Damaged(damage, collision, this);
             Destroy(this);
         }
-
     }
+    public void Init(float damage) { this.damage = damage; }
 }

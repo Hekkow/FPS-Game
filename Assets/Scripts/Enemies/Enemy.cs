@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System.Collections;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -14,8 +15,6 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] protected Transform target;
     [SerializeField] protected Rig rig;
     [SerializeField] public Rigidbody pelvis;
-    [SerializeField] protected Transform leftFoot;
-    [SerializeField] protected Transform rightFoot;
     protected NavMeshAgent agent;
     protected SkinnedMeshRenderer skin;
     protected Rigidbody rb;
@@ -46,7 +45,8 @@ public class Enemy : MonoBehaviour, IDamageable
 
     [Header("Disable Agent")]
     [SerializeField] float disableTime;
-    [SerializeField] float height;
+    public bool inAir = false;
+    public bool canSwitchInAir = false;
 
     [Header("Flinch")]
     [SerializeField] protected Color blinkColor;
@@ -192,15 +192,21 @@ public class Enemy : MonoBehaviour, IDamageable
         animationLocked = true;
         agent.enabled = false;
         rb.isKinematic = false;
+        Ragdoll();
         RaycastHit hit = default;
+        inAir = true;
+        canSwitchInAir = false;
         yield return new WaitForSeconds(disableTime);
-        yield return new WaitUntil(() => !health.alive || Physics.Raycast(transform.position, -transform.up, out hit, height));
+        canSwitchInAir = true;
+        yield return new WaitUntil(() => !inAir);
         if (health.alive && !knocked)
         {
+            transform.position = pelvis.position;
+            inAir = false;
             agent.enabled = true;
             animationLocked = false;
             animator.enabled = true;
-            
+            UnRagdoll();
             if (rb.velocity.y < -10)
             { 
                 if (hit.collider != null) Damaged(rb.velocity.y * -2.5f, null, hit.collider);

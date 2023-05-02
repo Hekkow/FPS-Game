@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Reticle : MonoBehaviour
@@ -54,6 +55,7 @@ public class Reticle : MonoBehaviour
             {
                 reticleHoleSize = mainReticleSize + (reloadCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].reloadSpeed) * reticleBloomAmount);
                 armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
+                if (!Inventory.HasGun()) yield break;
                 yield return new WaitForEndOfFrame();
             }
         }

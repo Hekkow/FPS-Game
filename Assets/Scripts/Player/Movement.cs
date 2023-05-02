@@ -1,4 +1,5 @@
 using KinematicCharacterController;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,48 +15,46 @@ public class Movement : MonoBehaviour, ICharacterController
     Vector2 moveInput;
 
     [Header("Move")]
-    [SerializeField] float walkSpeed;
-    [SerializeField] float speed;
+    [SerializeField, Rename("Walk Speed")] float walkSpeed;
+    [SerializeField, Rename("Current Max Speed")] float speed;
 
     [Header("Jump")]
-    [SerializeField] float jumpForce;
-    [SerializeField] int maxJumps;
+    [SerializeField, Rename("Speed")] float jumpSpeed;
+    [SerializeField, Rename("Max Jumps")] int maxJumps;
     bool jumpPressed = false;
     bool canJump = true;
     int jumpedAmount = 0;
 
     [Header("Dash")]
-    [SerializeField] float dashForce;
-    [SerializeField] float dashTime;
-    [SerializeField] float dashCooldown;
+    [SerializeField, Rename("Speed Multiplier")] float dashSpeedMultiplier;
+    [SerializeField, Rename("Time (s)")] float dashTime;
+    [SerializeField, Rename("Cooldown")] float dashCooldown;
+    [SerializeField, Rename("Minimum Speed")] float minimumDashSpeed;
     float dashStartTime = 0;
-    Vector3 dashDirection;
+    Vector3 dashVelocity;
 
     [Header("Hook")]
-    [SerializeField] float hookSpeed;
-    [SerializeField] public float hookRange;
-    [SerializeField] float hookCooldown;
+    [SerializeField, Rename("Speed")] float hookSpeed;
+    [SerializeField, Rename("Max Range")] public float hookRange;
+    [SerializeField, Rename("Cooldown")] float hookCooldown;
     RaycastHit hit;
     float hookTime;
     float hookStartTime;
-    Vector3 hookDirection;
+    Vector3 hookVelocity;
 
-    [Header("Wallrun")]
-    [SerializeField] float wallRunSpeed;
-    [SerializeField, Rename("Amount of Rays")] int wallRunRaysAmount;
-    [SerializeField, Rename("Starting Angle")] float wallRunRaysStartingAngle;
-    [SerializeField, Rename("Ray Length")] float wallRunRaysLength;
-    float lookDirection;
-    public int forward = 1;
-    Vector3 wallNormal;
+    [Header("Explosion")]
+    [SerializeField, Rename("Against Velocity")] float explosionAgainstVelocity;
+    [SerializeField, Rename("With Velocity")] float explosionWithVelocity;
+    Vector3 explosionVelocity;
+    List<Vector3> extraForces = new List<Vector3>();
 
     [Header("Momentum")]
     [SerializeField] float speedLossAngle;
     [SerializeField] float speedLossAmount;
 
     [Header("Gravity")]
-    [SerializeField] float gravityUp;
-    [SerializeField] float gravityDown;
+    [SerializeField, Rename("Up")] float gravityUp;
+    [SerializeField, Rename("Down")] float gravityDown;
 
 
     public enum MovementState
@@ -63,8 +62,7 @@ public class Movement : MonoBehaviour, ICharacterController
         Default,
         Dash,
         Hook,
-        WallRun,
-        WallJump
+        Explosion
     }
 
     public MovementState currentState = MovementState.Default;
@@ -94,13 +92,10 @@ public class Movement : MonoBehaviour, ICharacterController
         switch (currentState)
         {
             case MovementState.Dash:
-                if (Time.time - dashStartTime > dashTime) currentState = MovementState.Default;
+                if (Time.time - dashStartTime > dashTime) Transition(MovementState.Default);
                 break;
             case MovementState.Hook:
-                if (Time.time - hookStartTime > hookTime) currentState = MovementState.Default;
-                break;
-            case MovementState.WallJump:
-                if (MovePressed()) currentState = MovementState.Default;
+                if (Time.time - hookStartTime > hookTime) Transition(MovementState.Default);
                 break;
         }
         // jump is so anything can get cancelled. doesn't have its own state
@@ -112,23 +107,46 @@ public class Movement : MonoBehaviour, ICharacterController
                 Gravity(ref currentVelocity, deltaTime);
                 break;
             case MovementState.Dash:
-                currentVelocity = dashDirection;
+                currentVelocity = dashVelocity;
                 break;
             case MovementState.Hook:
-                currentVelocity = hookDirection;
+                currentVelocity = hookVelocity;
                 break;
-            case MovementState.WallRun:
-                WallRun(ref currentVelocity);
-                break;
-            case MovementState.WallJump:
+            case MovementState.Explosion:
+                ExplosionMove(ref currentVelocity, deltaTime);
                 Gravity(ref currentVelocity, deltaTime);
                 break;
+
         }
+        ExtraForces(ref currentVelocity);
     }
 
+    public void AddExtraForce(Vector3 force)
+    {
+        extraForces.Add(force);
+    }
+    void ExtraForces(ref Vector3 currentVelocity)
+    {
+        if (extraForces.Count > 0) currentVelocity = Vector3.zero;
+        else return;
+        bool grounded = Motor.GroundingStatus.FoundAnyGround;
+        for (int i = 0; i < extraForces.Count; i++)
+        {
+            if (extraForces[i].y > 0 && grounded)
+            {
+                Motor.ForceUnground();
+                grounded = false;
 
+            }
+            currentVelocity += extraForces[i];
+        }
+        if (!grounded) Transition(MovementState.Explosion);
+        explosionVelocity = currentVelocity;
+        //if (extraForces.Count > 0) speed = currentVelocity.horizontalMagnitude().MakeMin(speed);
+        extraForces.Clear();
+    }
 
-    void Transition(MovementState state)
+    public void Transition(MovementState state)
     {
         if (currentState == state) return;
         MovementState oldState = currentState;
@@ -145,25 +163,21 @@ public class Movement : MonoBehaviour, ICharacterController
             case MovementState.Dash:
                 if (Time.time - dashStartTime < dashCooldown + dashTime) return false;
                 dashStartTime = Time.time;
-                if (MovePressed()) dashDirection = (Camera.main.transform.forward * moveInput.y + Camera.main.transform.right * moveInput.x).normalized * (dashForce + Motor.BaseVelocity.horizontalMagnitude() / 2);
-                else dashDirection = Camera.main.transform.forward * dashForce;
-                dashDirection = dashDirection.SetY(0);
+                Vector3 direction;
+                float dashSpeed = (dashSpeedMultiplier * Motor.BaseVelocity.HorizontalMagnitude()).MakeMin(minimumDashSpeed);
+                if (MovePressed()) direction = transform.forward * moveInput.y + transform.right * moveInput.x;
+                else direction = transform.forward;
+                dashVelocity = direction.normalized.SetY(0) * dashSpeed;
                 return true;
             case MovementState.Hook:
                 if (Time.time - hookStartTime < hookCooldown + hookTime) return false;
                 Motor.ForceUnground();
                 hookStartTime = Time.time;
-                hookDirection = Camera.main.transform.forward * (hookSpeed + Motor.BaseVelocity.horizontalMagnitude() / 2);
+                hookVelocity = Camera.main.transform.forward * (hookSpeed + Motor.BaseVelocity.HorizontalMagnitude());
                 hookTime = hit.distance / hookSpeed;
                 return true;
-            case MovementState.WallRun:
-                RaycastHit? closestHit = transform.ClosestHit(out int connected, wallRunRaysAmount, wallRunRaysStartingAngle, wallRunRaysLength, 0);
-                if (closestHit == null) return false;
-                Vector3 wallForward = Vector3.Cross(closestHit.Value.normal, transform.up);
-                float dotProduct = Vector3.Dot(Camera.main.transform.forward, wallForward);
-                if (dotProduct < 0) forward = -1;
-                else forward = 1;
-                if (jumpedAmount == maxJumps) jumpedAmount--;
+            case MovementState.Explosion:
+                //speed = walkSpeed;
                 return true;
             default:
                 return true;
@@ -173,14 +187,7 @@ public class Movement : MonoBehaviour, ICharacterController
     {
         switch (state)
         {
-            case MovementState.Dash:
-                speed += Motor.BaseVelocity.horizontalMagnitude() / 2;
-                break;
-            case MovementState.Hook:
-                speed += Motor.BaseVelocity.horizontalMagnitude() / 2;
-                break;
-            case MovementState.WallRun:
-                //speed = Motor.BaseVelocity.horizontalMagnitude();
+            default:
                 break;
         }
     }
@@ -189,51 +196,43 @@ public class Movement : MonoBehaviour, ICharacterController
 
     void Move(ref Vector3 currentVelocity)
     {
-        if (!MovePressed() && speed > walkSpeed) speed = currentVelocity.horizontalMagnitude().UpTo(walkSpeed);
+        if (!MovePressed() && speed > walkSpeed) speed = currentVelocity.HorizontalMagnitude().MakeMin(walkSpeed);
         Vector3 direction = transform.forward * moveInput.y + transform.right * moveInput.x;
         Vector3 targetMovementVelocity = direction * speed;
         currentVelocity = targetMovementVelocity.SetY(currentVelocity.y);
     }
-    void WallRun(ref Vector3 currentVelocity)
+    void ExplosionMove(ref Vector3 currentVelocity, float deltaTime)
     {
-        RaycastHit? hit = transform.ClosestHit(out int connected, wallRunRaysAmount, wallRunRaysStartingAngle, wallRunRaysLength, 0);
-        if (connected == 0) Transition(MovementState.WallJump); // if no ray hits
-        else if (hit != null)
+        Vector3 direction = transform.forward * moveInput.y + transform.right * moveInput.x;
+        Vector3 targetMovementVelocity = direction * speed;
+        float playerVelocity;
+        float sameDirectionCurrent = Vector3.Dot(currentVelocity, explosionVelocity);
+        float sameDirectionTarget = Vector3.Dot(targetMovementVelocity, explosionVelocity);
+
+        if (sameDirectionTarget < 0) { playerVelocity = explosionAgainstVelocity; }
+        else { playerVelocity = explosionWithVelocity; }
+        currentVelocity += (playerVelocity * deltaTime * targetMovementVelocity).SetY(0);
+        Debug.Log((sameDirectionCurrent > 0) + " " + (sameDirectionTarget > 0) + " " + currentVelocity.HorizontalMagnitude() + " " +speed); 
+        if (sameDirectionCurrent < 0 && sameDirectionTarget < 0 && currentVelocity.HorizontalMagnitude() >= speed && MovePressed())
         {
-            wallNormal = hit.Value.normal;
-            Vector3 wallForward = Vector3.Cross(hit.Value.normal, transform.up) * forward;
-            Vector3 move = Camera.main.transform.forward * moveInput.y + Camera.main.transform.right * moveInput.x;
-            float dotProduct = Vector3.Dot(move, wallForward); // gets how close desired movement is to wall forward
-            if (Mathf.Abs(dotProduct) < 0.5f) { }
-            else if (dotProduct < 0)
-            {
-                if (forward == 1) forward = -1;
-                else if (forward == -1) forward = 1;
-            }
-            Quaternion rotation = Quaternion.LookRotation(wallForward);
-            lookDirection = rotation.eulerAngles.y;
-            speed = currentVelocity.horizontalMagnitude().UpTo(wallRunSpeed);
-            currentVelocity = wallForward * speed;
-            currentVelocity += -hit.Value.normal * 100; 
+            //Debug.Log($"{currentVelocity.HorizontalMagnitude()} >= {speed}");
+            Transition(MovementState.Default);
         }
-
-
     }
     void Jump(ref Vector3 currentVelocity)
     {
         if (!jumpPressed || !canJump || jumpedAmount >= maxJumps) return;
+        MovementState previousState = currentState;
         canJump = false;
         jumpedAmount++;
         Motor.ForceUnground();
-        if (currentState == MovementState.WallRun)
+        if (previousState == MovementState.Dash || previousState == MovementState.Hook || previousState == MovementState.Explosion)
         {
-            Transition(MovementState.WallJump);
-            currentVelocity = ((wallNormal.normalized + currentVelocity.normalized).normalized * speed).SetY(jumpForce);
+            speed = Motor.BaseVelocity.HorizontalMagnitude().MakeMin(speed);
         }
-        else {
-            Transition(MovementState.Default);
-            currentVelocity = currentVelocity.SetY(jumpForce);
-        }
+        Transition(MovementState.Default);
+
+        currentVelocity = currentVelocity.SetY(jumpSpeed);
         
     }
     void Gravity(ref Vector3 currentVelocity, float deltaTime)
@@ -289,17 +288,14 @@ public class Movement : MonoBehaviour, ICharacterController
     }
     public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
     {
-        if (currentState == MovementState.WallJump) Transition(MovementState.Default);
         canJump = true;
         jumpedAmount = 0;
         if (!MovePressed() && speed > walkSpeed) speed = walkSpeed;
+        if (currentState == MovementState.Explosion) Transition(MovementState.Default);
     }
     public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
     {
-        if (!Motor.GroundingStatus.IsStableOnGround && !hitStabilityReport.IsStable && (MovePressed() || currentState == MovementState.WallJump)) {
-            Transition(MovementState.WallRun);
-        }
-        if (hitPoint.y - transform.position.y > speedLossAngle && speed > walkSpeed) speed = (speed - speedLossAmount).UpTo(walkSpeed);
+        if (hitPoint.y - transform.position.y > speedLossAngle && speed > walkSpeed) speed = (speed - speedLossAmount).MakeMin(walkSpeed);
     }
     public void PostGroundingUpdate(float deltaTime)
     {
@@ -311,15 +307,6 @@ public class Movement : MonoBehaviour, ICharacterController
     }
     public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
     {
-        switch (currentState)
-        {
-            case MovementState.WallRun:
-                currentRotation = Quaternion.Euler(0, lookDirection, 0);
-                break;
-            default:
-                currentRotation = Quaternion.Euler(0, yRotation, 0);
-                break;
-        }
-        
+        currentRotation = Quaternion.Euler(0, yRotation, 0);
     }
 }

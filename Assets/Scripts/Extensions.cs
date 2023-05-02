@@ -13,13 +13,18 @@ public static class Extensions
     {
         return new Vector3(v.x, y, v.z);
     }
-    public static float horizontalMagnitude(this Vector3 v)
+    public static float HorizontalMagnitude(this Vector3 v)
     {
         return Mathf.Sqrt(Mathf.Pow(v.x, 2) + Mathf.Pow(v.z, 2));
     }
-    public static float UpTo(this float f, float x)
+    public static float MakeMin(this float f, float x)
     {
         if (f < x) f = x;
+        return f;
+    }
+    public static float MakeMax(this float f, float x)
+    {
+        if (f > x) f = x;
         return f;
     }
     public static bool TryGetComponentInParent<T>(this GameObject self, out T component)
@@ -90,5 +95,14 @@ public static class Extensions
         return closest;
         
     }
-    
+    public static void AddExplosionNoFalloff(this Rigidbody rb, Vector3 hitPoint, float force, float radius, ForceMode forceMode)
+    {
+        Vector3 direction = rb.position - hitPoint;
+        rb.AddForce(direction.normalized * force, forceMode); 
+    }
+    public static Vector3 ExplosionVector(this Vector3 position, Vector3 hitPoint, float force, float radius)
+    {
+        Vector3 direction = position - hitPoint;
+        return direction.normalized * force;
+    }
 }

@@ -58,7 +58,7 @@ public class PunchDude : Enemy
                     break;
                 case AnimationState.Punch:
                     rig.weight = 0;
-                    Helper.AddDamage(rightArm, punchDamage, 10, false, true, false);
+                    rightArm.GetOrAdd<Hitbox>().Init(punchDamage);
                     animator.CrossFade("Punch", 0, 0);
                     transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
                     animator.speed = 1;

@@ -140,7 +140,7 @@ public class PlayerItems : MonoBehaviour
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             rb.constraints = RigidbodyConstraints.None;
         }
-        item.AddComponent<ThrowDamage>();
+        item.AddComponent<ThrowDamage>().Init(player.throwDamage);
     }
     void ThrowGun()
     {
@@ -152,7 +152,7 @@ public class PlayerItems : MonoBehaviour
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             rb.constraints = RigidbodyConstraints.None;
         }
-        item.AddComponent<ThrowDamage>();
+        item.AddComponent<ThrowDamage>().Init(player.throwDamage);
         if (Inventory.HasGun()) Inventory.guns[0].gameObject.SetActive(true);
         onGunSwitch?.Invoke();
 

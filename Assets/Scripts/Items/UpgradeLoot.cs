@@ -11,10 +11,11 @@ public class UpgradeLoot : Loot
     }
     public override void Damaged(float amount, object collision, object origin)
     {
-        if (origin is Gun || origin is Damage damage && (damage.thrown || damage.punch))
-        {
-            base.Damaged(amount, collision, origin);
-        }
+        base.Damaged(amount, collision, origin);
+        //if (origin is Gun || origin is Damage damage && (damage.thrown || damage.punch))
+        //{
+        //    base.Damaged(amount, collision, origin);
+        //}
     }
     public override void Killed()
     {

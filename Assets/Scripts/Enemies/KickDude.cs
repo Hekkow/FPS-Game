@@ -65,7 +65,7 @@ public class KickDude : Enemy
                     agent.SetDestination(transform.position);
                     break;
                 case AnimationState.Kick:
-                    Helper.AddDamage(kickFoot, kickDamage, 10, false, true, false);
+                    kickFoot.AddComponent<Hitbox>().Init(kickDamage);
                     animator.CrossFade("Kick", 0, 0);
                     transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
                     animator.speed = 1;
@@ -86,7 +86,7 @@ public class KickDude : Enemy
 
         yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1f);
         if (!previouslyLocked) animationLocked = false;
-        Destroy(kickFoot.GetComponent<Damage>());
+        Destroy(kickFoot.GetComponent<Hitbox>());
         RunState(AnimationState.Walk);
     }
     

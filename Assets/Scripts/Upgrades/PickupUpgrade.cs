@@ -24,10 +24,12 @@ public class PickupUpgrade : MonoBehaviour, IDamageable
     }
     public void Damaged(float amount, object collision, object origin)
     {
-        if (!upgraded && (origin is Gun || ((origin is Damage damage && damage.thrown || ((Damage)origin).punch) && upgrade.category != Upgrade.Category.Gun)))
-        {
-            Killed();
-        }
+        if (upgraded) return;
+        Killed();
+        //if (!upgraded && (origin is Gun || ((origin is Damage damage && damage.thrown || ((Damage)origin).punch) && upgrade.category != Upgrade.Category.Gun)))
+        //{
+        //    Killed();
+        //}
         
     }
     public void Killed()

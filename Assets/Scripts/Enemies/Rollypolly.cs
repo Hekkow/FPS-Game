@@ -118,7 +118,7 @@ public class Rollypolly : Enemy
     {
         float startTime = Time.time;
         rolling = true;
-        Helper.AddDamage(gameObject, rollDamage, 10, false, true, false);
+        gameObject.GetOrAdd<Hitbox>().Init(rollDamage);
         while (Time.time - startTime <= rollingTime && !playerHit) 
         {
             if (rolling && agent.isOnNavMesh) agent.SetDestination(target.transform.position);

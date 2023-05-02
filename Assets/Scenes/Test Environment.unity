@@ -263,13 +263,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &6426252
 GameObject:
   m_ObjectHideFlags: 0
@@ -585,13 +580,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &15148567
 GameObject:
   m_ObjectHideFlags: 0
@@ -1075,13 +1065,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &56382781
 GameObject:
   m_ObjectHideFlags: 0
@@ -1917,8 +1902,6 @@ MonoBehaviour:
   target: {fileID: 1965521386}
   rig: {fileID: 1736808388}
   pelvis: {fileID: 1630414809}
-  leftFoot: {fileID: 44077473}
-  rightFoot: {fileID: 1137160974}
   viewRadiusBeforeDetected: 20
   viewRadiusAfterDetected: 200
   viewAngleBeforeDetected: 170
@@ -1928,8 +1911,9 @@ MonoBehaviour:
   ragdollMass: 5
   knockedTime: 0.1
   walkAnimationSpeed: 0.17
-  disableTime: 0.1
-  height: 0.875
+  disableTime: 1
+  inAir: 0
+  canSwitchInAir: 0
   blinkColor: {r: 0.5943396, g: 0.1485849, b: 0.1485849, a: 0}
   blinkEmissionColor: {r: 1, g: 0.25943398, b: 0.25943398, a: 0}
   blinkEmissionIntensity: 1
@@ -2622,13 +2606,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &187179242
 GameObject:
   m_ObjectHideFlags: 0
@@ -2769,13 +2748,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &198570457
 GameObject:
   m_ObjectHideFlags: 0
@@ -2889,7 +2863,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: -39.74, y: 134.396, z: 21.46}
 --- !u!1 &220513812
 GameObject:
@@ -3227,13 +3201,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &241929176
 GameObject:
   m_ObjectHideFlags: 0
@@ -3481,13 +3450,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &272139519
 GameObject:
   m_ObjectHideFlags: 0
@@ -3628,13 +3592,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &282736295
 GameObject:
   m_ObjectHideFlags: 0
@@ -3775,13 +3734,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &288692043
 GameObject:
   m_ObjectHideFlags: 0
@@ -3922,13 +3876,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &315560931
 GameObject:
   m_ObjectHideFlags: 0
@@ -4069,13 +4018,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &325207002
 GameObject:
   m_ObjectHideFlags: 0
@@ -4216,13 +4160,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &330345111
 GameObject:
   m_ObjectHideFlags: 0
@@ -4363,13 +4302,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &334776593
 GameObject:
   m_ObjectHideFlags: 0
@@ -4510,13 +4444,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &335479466
 GameObject:
   m_ObjectHideFlags: 0
@@ -5129,13 +5058,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &365119475
 GameObject:
   m_ObjectHideFlags: 0
@@ -5730,13 +5654,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &415437229
 GameObject:
   m_ObjectHideFlags: 0
@@ -6469,13 +6388,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &453683075
 GameObject:
   m_ObjectHideFlags: 0
@@ -6806,13 +6720,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &485209839
 GameObject:
   m_ObjectHideFlags: 0
@@ -7125,13 +7034,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &502349630
 GameObject:
   m_ObjectHideFlags: 0
@@ -7175,6 +7079,7 @@ GameObject:
   - component: {fileID: 507033603}
   - component: {fileID: 507033602}
   - component: {fileID: 507033601}
+  - component: {fileID: 507033604}
   m_Layer: 0
   m_Name: Left Leg
   m_TagString: Untagged
@@ -7273,6 +7178,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &507033604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 507033599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1acc5987468006141a48521ceb52e761, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!54 &508535596
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7488,13 +7405,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &517865782
 GameObject:
   m_ObjectHideFlags: 0
@@ -7527,7 +7439,7 @@ Transform:
   - {fileID: 543450652957759914}
   - {fileID: 6118722893093674862}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &524423682
 GameObject:
@@ -7786,13 +7698,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &565328076
 GameObject:
   m_ObjectHideFlags: 0
@@ -8223,13 +8130,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &612164030
 GameObject:
   m_ObjectHideFlags: 0
@@ -8415,13 +8317,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &625731529
 GameObject:
   m_ObjectHideFlags: 0
@@ -8599,13 +8496,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!54 &647013639
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8935,13 +8827,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &689716657
 GameObject:
   m_ObjectHideFlags: 0
@@ -9295,13 +9182,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -9763,13 +9645,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &746619290
 GameObject:
   m_ObjectHideFlags: 0
@@ -9986,13 +9863,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &753814757
 GameObject:
   m_ObjectHideFlags: 0
@@ -10240,13 +10112,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &757331500
 GameObject:
   m_ObjectHideFlags: 0
@@ -10387,13 +10254,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &770295736
 GameObject:
   m_ObjectHideFlags: 0
@@ -10741,13 +10603,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &784729599
 GameObject:
   m_ObjectHideFlags: 0
@@ -10783,7 +10640,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &784729601
 MonoBehaviour:
@@ -11017,13 +10874,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &803681834
 GameObject:
   m_ObjectHideFlags: 0
@@ -11216,13 +11068,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &822032655
 GameObject:
   m_ObjectHideFlags: 0
@@ -12584,13 +12431,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &842684459
 GameObject:
   m_ObjectHideFlags: 0
@@ -12866,13 +12708,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!54 &858329874
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -13185,13 +13022,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &874883891
 GameObject:
   m_ObjectHideFlags: 0
@@ -13332,13 +13164,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &876562425
 GameObject:
   m_ObjectHideFlags: 0
@@ -13782,13 +13609,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &954003597
 GameObject:
   m_ObjectHideFlags: 0
@@ -14798,13 +14620,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1019141438
 GameObject:
   m_ObjectHideFlags: 0
@@ -14935,8 +14752,6 @@ MonoBehaviour:
   target: {fileID: 1965521386}
   rig: {fileID: 1142866482}
   pelvis: {fileID: 1439190418}
-  leftFoot: {fileID: 433132251}
-  rightFoot: {fileID: 1764363671}
   viewRadiusBeforeDetected: 20
   viewRadiusAfterDetected: 200
   viewAngleBeforeDetected: 170
@@ -14946,8 +14761,9 @@ MonoBehaviour:
   ragdollMass: 5
   knockedTime: 0.1
   walkAnimationSpeed: 0.17
-  disableTime: 0.1
-  height: 0.8
+  disableTime: 1
+  inAir: 0
+  canSwitchInAir: 0
   blinkColor: {r: 0.5943396, g: 0.1485849, b: 0.1485849, a: 0}
   blinkEmissionColor: {r: 1, g: 0.25943398, b: 0.25943398, a: 0}
   blinkEmissionIntensity: 1
@@ -15134,13 +14950,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1039934446
 GameObject:
   m_ObjectHideFlags: 0
@@ -15281,13 +15092,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1043169478
 GameObject:
   m_ObjectHideFlags: 0
@@ -15609,13 +15415,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1056489402
 GameObject:
   m_ObjectHideFlags: 0
@@ -15756,13 +15557,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1091341292
 GameObject:
   m_ObjectHideFlags: 0
@@ -15993,13 +15789,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1112888848
 GameObject:
   m_ObjectHideFlags: 0
@@ -16917,7 +16708,7 @@ Transform:
   m_GameObject: {fileID: 1211239830}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 100, y: 2, z: 100}
+  m_LocalScale: {x: 1000, y: 2, z: 1000}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1138807528}
@@ -17126,13 +16917,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1225240598
 GameObject:
   m_ObjectHideFlags: 0
@@ -25641,13 +25427,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1253410298
 GameObject:
   m_ObjectHideFlags: 0
@@ -25992,13 +25773,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!144 &1293233392
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -26286,13 +26062,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1331973974
 GameObject:
   m_ObjectHideFlags: 0
@@ -26530,13 +26301,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1332961057
 GameObject:
   m_ObjectHideFlags: 0
@@ -27450,13 +27216,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1364432122
 GameObject:
   m_ObjectHideFlags: 0
@@ -28447,13 +28208,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1547695788
 GameObject:
   m_ObjectHideFlags: 0
@@ -28976,13 +28732,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1599208806
 GameObject:
   m_ObjectHideFlags: 0
@@ -29197,6 +28948,7 @@ GameObject:
   - component: {fileID: 1617752155}
   - component: {fileID: 1617752154}
   - component: {fileID: 1617752153}
+  - component: {fileID: 1617752156}
   m_Layer: 0
   m_Name: Right Leg
   m_TagString: Untagged
@@ -29295,6 +29047,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1617752156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617752151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1acc5987468006141a48521ceb52e761, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1624630903
 GameObject:
   m_ObjectHideFlags: 0
@@ -29629,8 +29393,6 @@ MonoBehaviour:
   target: {fileID: 0}
   rig: {fileID: 0}
   pelvis: {fileID: 0}
-  leftFoot: {fileID: 0}
-  rightFoot: {fileID: 3304520679536935576}
   viewRadiusBeforeDetected: 20
   viewRadiusAfterDetected: 200
   viewAngleBeforeDetected: 170
@@ -29641,7 +29403,8 @@ MonoBehaviour:
   knockedTime: 0.2
   walkAnimationSpeed: 0.17
   disableTime: 0
-  height: 0
+  inAir: 0
+  canSwitchInAir: 0
   blinkColor: {r: 0, g: 0, b: 0, a: 0}
   blinkEmissionColor: {r: 0, g: 0, b: 0, a: 0}
   blinkEmissionIntensity: 0
@@ -29742,7 +29505,7 @@ Transform:
   - {fileID: 1045150953}
   - {fileID: 1421142499}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1673341095
 GameObject:
@@ -29916,13 +29679,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1692506027
 GameObject:
   m_ObjectHideFlags: 0
@@ -30597,13 +30355,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1764363670
 GameObject:
   m_ObjectHideFlags: 0
@@ -31052,13 +30805,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1792375359
 GameObject:
   m_ObjectHideFlags: 0
@@ -31365,8 +31113,6 @@ MonoBehaviour:
   target: {fileID: 1965521386}
   rig: {fileID: 6426253}
   pelvis: {fileID: 1562078921}
-  leftFoot: {fileID: 916285240}
-  rightFoot: {fileID: 426136636}
   viewRadiusBeforeDetected: 20
   viewRadiusAfterDetected: 200
   viewAngleBeforeDetected: 170
@@ -31376,8 +31122,9 @@ MonoBehaviour:
   ragdollMass: 5
   knockedTime: 0.1
   walkAnimationSpeed: 0.17
-  disableTime: 0.1
-  height: 0.875
+  disableTime: 1
+  inAir: 0
+  canSwitchInAir: 0
   blinkColor: {r: 0.5943396, g: 0.1485849, b: 0.1485849, a: 0}
   blinkEmissionColor: {r: 1, g: 0.25943398, b: 0.25943398, a: 0}
   blinkEmissionIntensity: 1
@@ -31740,13 +31487,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1826705718
 GameObject:
   m_ObjectHideFlags: 0
@@ -31853,11 +31595,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2742204344533407501, guid: 2e7febade3b9bdf42ba60a283995ed49, type: 3}
       propertyPath: addon
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3232259180905599018, guid: 2e7febade3b9bdf42ba60a283995ed49, type: 3}
       propertyPath: m_RootOrder
-      value: 21
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 3232259180905599018, guid: 2e7febade3b9bdf42ba60a283995ed49, type: 3}
       propertyPath: m_LocalPosition.x
@@ -32046,13 +31788,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1867499191
 GameObject:
   m_ObjectHideFlags: 0
@@ -32807,13 +32544,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1930014462
 GameObject:
   m_ObjectHideFlags: 0
@@ -33030,13 +32762,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1965521382
 GameObject:
   m_ObjectHideFlags: 0
@@ -33080,21 +32807,18 @@ MonoBehaviour:
   speed: 20
   jumpForce: 25
   maxJumps: 2
-  dashForce: 70
+  dashSpeedMultiplier: 2
   dashTime: 0.2
   dashCooldown: 0.5
+  minimumDashSpeed: 70
   hookSpeed: 70
   hookRange: 40
   hookCooldown: 1
-  wallRunSpeed: 30
-  wallRunRaysAmount: 4
-  wallRunRaysStartingAngle: 0
-  wallRunRaysLength: 1
-  forward: 1
   speedLossAngle: -0.2
   speedLossAmount: 1.5
   gravityUp: 60
   gravityDown: 80
+  extraForces: []
   currentState: 0
 --- !u!114 &1965521384
 MonoBehaviour:
@@ -33160,7 +32884,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1965521382}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -25.2, y: 3.42, z: 23.4}
+  m_LocalPosition: {x: 8.6, y: 3.42, z: 2.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -33392,13 +33116,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &1971177376
 GameObject:
   m_ObjectHideFlags: 0
@@ -34553,13 +34272,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!144 &2044637963
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -35150,13 +34864,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!54 &2100251795
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -35207,8 +34916,6 @@ MonoBehaviour:
   target: {fileID: 0}
   rig: {fileID: 0}
   pelvis: {fileID: 0}
-  leftFoot: {fileID: 0}
-  rightFoot: {fileID: 0}
   viewRadiusBeforeDetected: 20
   viewRadiusAfterDetected: 200
   viewAngleBeforeDetected: 170
@@ -35219,7 +34926,8 @@ MonoBehaviour:
   knockedTime: 0.1
   walkAnimationSpeed: 0.17
   disableTime: 0
-  height: 0
+  inAir: 0
+  canSwitchInAir: 0
   blinkColor: {r: 0, g: 0, b: 0, a: 0}
   blinkEmissionColor: {r: 0, g: 0, b: 0, a: 0}
   blinkEmissionIntensity: 0
@@ -35426,13 +35134,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &2107637722
 GameObject:
   m_ObjectHideFlags: 0
@@ -35697,13 +35400,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e033089b6b064564fa1f19f20cec181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockback: 0
   damage: 0
-  thrown: 0
-  oneTime: 0
-  environment: 1
-  punch: 0
-  velocityMagnitude: 0
+  didDamage: 0
 --- !u!1 &2121916233
 GameObject:
   m_ObjectHideFlags: 0
@@ -36342,7 +36040,7 @@ Transform:
   - {fileID: 1977568587}
   - {fileID: 1573098518}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &543450652957759914
 Transform:
@@ -36748,8 +36446,6 @@ MonoBehaviour:
   target: {fileID: 1965521386}
   rig: {fileID: 1573098519}
   pelvis: {fileID: 138275185}
-  leftFoot: {fileID: 2275077757288372501}
-  rightFoot: {fileID: 6596312428656925972}
   viewRadiusBeforeDetected: 20
   viewRadiusAfterDetected: 200
   viewAngleBeforeDetected: 170
@@ -36759,8 +36455,9 @@ MonoBehaviour:
   ragdollMass: 5
   knockedTime: 0.1
   walkAnimationSpeed: 0.17
-  disableTime: 0.1
-  height: 0.875
+  disableTime: 1
+  inAir: 0
+  canSwitchInAir: 0
   blinkColor: {r: 0.5943396, g: 0.1485849, b: 0.1485849, a: 0}
   blinkEmissionColor: {r: 1, g: 0.25943398, b: 0.25943398, a: 0}
   blinkEmissionIntensity: 1
@@ -42508,8 +42205,6 @@ MonoBehaviour:
   target: {fileID: 0}
   rig: {fileID: 0}
   pelvis: {fileID: 0}
-  leftFoot: {fileID: 0}
-  rightFoot: {fileID: 0}
   viewRadiusBeforeDetected: 20
   viewRadiusAfterDetected: 200
   viewAngleBeforeDetected: 150
@@ -42520,7 +42215,8 @@ MonoBehaviour:
   knockedTime: 0.2
   walkAnimationSpeed: 0.17
   disableTime: 0
-  height: 0
+  inAir: 0
+  canSwitchInAir: 0
   blinkColor: {r: 0, g: 0, b: 0, a: 0}
   blinkEmissionColor: {r: 0, g: 0, b: 0, a: 0}
   blinkEmissionIntensity: 0
