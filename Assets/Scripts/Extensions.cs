@@ -95,14 +95,14 @@ public static class Extensions
         return closest;
         
     }
-    public static void AddExplosionNoFalloff(this Rigidbody rb, Vector3 hitPoint, float force, float radius, ForceMode forceMode)
+    public static void AddExplosionNoFalloff(this Rigidbody rb, Vector3 hitPoint, float force, float upForce, ForceMode forceMode)
     {
         Vector3 direction = rb.position - hitPoint;
-        rb.AddForce(direction.normalized * force, forceMode); 
+        rb.AddForce((direction.normalized * force).AddY(upForce), forceMode); 
     }
-    public static Vector3 ExplosionVector(this Vector3 position, Vector3 hitPoint, float force, float radius)
+    public static Vector3 ExplosionVector(this Vector3 position, Vector3 hitPoint, float force, float upForce)
     {
         Vector3 direction = position - hitPoint;
-        return direction.normalized * force;
+        return (direction.normalized * force).AddY(upForce);
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Animations.Rigging;
 
-public class Enemy : MonoBehaviour, IDamageable
+public class Enemy : MonoBehaviour, IDamageable, IGravityFlippable, ILaunchable
 {
     [Header("Objects")]
     [SerializeField] protected LayerMask playerMask;
@@ -36,9 +36,11 @@ public class Enemy : MonoBehaviour, IDamageable
     bool detectedOnce = false;
     protected Vector3 lastSeenLocation;
 
+
     [Header("Knockback")]
     [SerializeField] protected float ragdollMass;
     [SerializeField] protected float knockedTime;
+    Coroutine disableAgentCoroutine = null;
 
     [Header("Pathfinding")]
     [SerializeField] protected float walkAnimationSpeed;
@@ -49,13 +51,18 @@ public class Enemy : MonoBehaviour, IDamageable
     public bool canSwitchInAir = false;
 
     [Header("Flinch")]
-    [SerializeField] protected Color blinkColor;
-    [SerializeField] protected Color blinkEmissionColor;
-    [SerializeField] protected float blinkEmissionIntensity;
-    [SerializeField] protected float blinkDuration;
+    [SerializeField, Rename("Color")] protected Color blinkColor;
+    [SerializeField, Rename("Emission Color")] protected Color blinkEmissionColor;
+    [SerializeField, Rename("Emission Intensity")] protected float blinkEmissionIntensity;
+    [SerializeField, Rename("Duration")] protected float blinkDuration;
     protected float blinkTimer;
     protected bool knocked = false;
     Coroutine blinkCoroutine;
+
+    [Header("Launch")]
+    [SerializeField] float launchFactor;
+    [SerializeField] float upForceFactor;
+
 
     [Header("Death")]
     [SerializeField] protected float deathForce;
@@ -78,12 +85,12 @@ public class Enemy : MonoBehaviour, IDamageable
         healthBar = GetComponent<HealthBar>();
         health = GetComponent<Health>();
         skin = GetComponentInChildren<SkinnedMeshRenderer>();
-    }
-    protected virtual void Start()
-    {
         viewRadius = viewRadiusBeforeDetected;
         viewAngle = viewAngleBeforeDetected;
         lastSeenLocation = transform.position;
+    }
+    protected virtual void Start()
+    {
         StartCoroutine(Vision());
     }
     protected virtual void Update() { }
@@ -112,20 +119,20 @@ public class Enemy : MonoBehaviour, IDamageable
             if (!playerDetected && Time.time - timeDetected <= detectionTime && detectedOnce) playerDetected = true;
             yield return new WaitForSeconds(visionInterval);
         }
-    } 
+    }
     public virtual void Damaged(float amount, object collision, object origin)
     {
         DamageNumber dn = Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform);
         if (collision == null) dn.Init(amount, transform);
         else if (collision is Collider) dn.Init(amount, (Collider)collision);
-        else if (collision is Collision) dn.Init(amount, (Collision)collision); 
+        else if (collision is Collision) dn.Init(amount, (Collision)collision);
 
         if (health.alive && amount >= 1)
         {
             health.health -= amount;
 
             if (health.health <= 0 && canDie)
-            { 
+            {
                 deathDirection = (transform.position - ((Component)origin).gameObject.transform.position).normalized * deathForce;
                 if (deathDirection.y < 50) deathDirection.y = 50;
                 if (collision != null)
@@ -156,7 +163,7 @@ public class Enemy : MonoBehaviour, IDamageable
         Instantiate(Resources.Load<GameObject>("Prefabs/UpgradeLoot"), transform.position.AddY(lootSpawnOffset), Quaternion.identity);
         healthBar.Disable();
         Destroy(GetComponent<RigBuilder>());
-        Destroy(animator); 
+        Destroy(animator);
         Destroy(agent);
         StartCoroutine(AddDeadEnemy());
         Destroy(this);
@@ -168,7 +175,7 @@ public class Enemy : MonoBehaviour, IDamageable
         foreach (Rigidbody rb in GetComponentsInChildren<Rigidbody>())
         {
             rb.isKinematic = false;
-            rb.AddComponent<Pickup>();
+            //rb.AddComponent<Pickup>();
         }
         foreach (Collider collider in GetComponentsInChildren<Collider>())
         {
@@ -208,7 +215,7 @@ public class Enemy : MonoBehaviour, IDamageable
             animator.enabled = true;
             UnRagdoll();
             if (rb.velocity.y < -10)
-            { 
+            {
                 if (hit.collider != null) Damaged(rb.velocity.y * -2.5f, null, hit.collider);
             }
             rb.isKinematic = true;
@@ -245,5 +252,19 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         yield return new WaitForEndOfFrame();
         gameObject.AddComponent<DeadEnemy>();
+    }
+    public virtual void Flip()
+    {
+
+    }
+    public void Launch(Vector3 hitPoint, float force, float upForce)
+    {
+        StartDisableAgent();
+        pelvis.AddExplosionNoFalloff(hitPoint, force * launchFactor, upForce * upForceFactor, ForceMode.VelocityChange);
+    }
+    public void StartDisableAgent()
+    {
+        if (disableAgentCoroutine != null) StopCoroutine(disableAgentCoroutine);
+        StartCoroutine(DisableAgent());
     }
 }

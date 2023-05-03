@@ -5,7 +5,6 @@ using UnityEngine.AI;
 
 public class BulletEffects : MonoBehaviour
 {
-    Coroutine enemyAgentCoroutine;
     float gravityFlipVelocity = 9.81f * 3f;
     float gravityFlipTime = 0.3f;
     bool gravityFlip = false;
@@ -13,7 +12,6 @@ public class BulletEffects : MonoBehaviour
     public void FlipGravity()
     {
         if (allowGravityFlip) StartCoroutine(GravityFlipCoroutine());
-        
     }
     IEnumerator GravityFlipCoroutine()
     {
@@ -24,7 +22,7 @@ public class BulletEffects : MonoBehaviour
         float startTime = Time.time;
         if (rb.TryGetComponentInParent(out Enemy enemy))
         {
-            StartCoroutine(enemy.DisableAgent());
+            enemy.StartDisableAgent();
             rb = enemy.GetComponent<Rigidbody>();
         }
         if (rb.velocity.y < 0) rb.velocity = Vector3.zero;

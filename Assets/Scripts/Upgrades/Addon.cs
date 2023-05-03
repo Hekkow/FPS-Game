@@ -20,8 +20,8 @@ public class Scope : Addon
 public class RocketLauncher : Addon
 {
     float radius = 10;
-    float force = 50;
-    float upForce = 0.3f;
+    float force = 30;
+    float upForce = 1f;
     public override void Activate()
     {
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit))
@@ -29,21 +29,10 @@ public class RocketLauncher : Addon
             Collider[] colliders = Physics.OverlapSphere(hit.point, radius);
             foreach (Collider collider in colliders)
             {
-                if (collider.TryGetComponent(out Rigidbody rb))
-                {
-                    if (collider.TryGetComponentInParent(out Enemy enemy))
-                    {
-                        StartCoroutine(enemy.DisableAgent());
-                    }
-                    rb.AddExplosionNoFalloff(hit.point, force, radius, ForceMode.Impulse); 
-                }
-                else if (collider.TryGetComponent(out Movement movement))
-                {
-                    movement.AddExtraForce(movement.transform.position.ExplosionVector(hit.point, force, radius));
-                }
+                if (collider.TryGetComponentInParent(out ILaunchable launchable)) launchable.Launch(hit.point, force, upForce);
+                else if (collider.TryGetComponent(out Rigidbody rb)) rb.AddExplosionNoFalloff(hit.point, force, upForce, ForceMode.Impulse);
             }
         }
-        //Debug.Log("ROCKET");
     }
 }
 public class Hook : Addon

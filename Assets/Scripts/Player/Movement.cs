@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Movement : MonoBehaviour, ICharacterController
+public class Movement : MonoBehaviour, ICharacterController, ILaunchable
 {
     [Header("References")]
     [SerializeField] Player player;
@@ -177,7 +177,6 @@ public class Movement : MonoBehaviour, ICharacterController
                 hookTime = hit.distance / hookSpeed;
                 return true;
             case MovementState.Explosion:
-                //speed = walkSpeed;
                 return true;
             default:
                 return true;
@@ -209,13 +208,11 @@ public class Movement : MonoBehaviour, ICharacterController
         float sameDirectionCurrent = Vector3.Dot(currentVelocity, explosionVelocity);
         float sameDirectionTarget = Vector3.Dot(targetMovementVelocity, explosionVelocity);
 
-        if (sameDirectionTarget < 0) { playerVelocity = explosionAgainstVelocity; }
-        else { playerVelocity = explosionWithVelocity; }
+        if (sameDirectionTarget < 0) playerVelocity = explosionAgainstVelocity;
+        else playerVelocity = explosionWithVelocity;
         currentVelocity += (playerVelocity * deltaTime * targetMovementVelocity).SetY(0);
-        Debug.Log((sameDirectionCurrent > 0) + " " + (sameDirectionTarget > 0) + " " + currentVelocity.HorizontalMagnitude() + " " +speed); 
         if (sameDirectionCurrent < 0 && sameDirectionTarget < 0 && currentVelocity.HorizontalMagnitude() >= speed && MovePressed())
         {
-            //Debug.Log($"{currentVelocity.HorizontalMagnitude()} >= {speed}");
             Transition(MovementState.Default);
         }
     }
@@ -252,7 +249,14 @@ public class Movement : MonoBehaviour, ICharacterController
         Transition(MovementState.Hook);
     }
 
-     
+    public void Launch(Vector3 hitPoint, float force, float upForce)
+    {
+        Vector3 launchVector = transform.position.ExplosionVector(hitPoint, force, upForce);
+        float dotProduct = Vector3.Dot(Motor.Velocity, launchVector);
+        if (dotProduct < 0) speed = (speed * 0.9f).MakeMin(walkSpeed);
+        else speed = (speed * 1.1f).MakeMin(walkSpeed);
+        AddExtraForce(launchVector);
+    }
     
     bool MovePressed()
     {
