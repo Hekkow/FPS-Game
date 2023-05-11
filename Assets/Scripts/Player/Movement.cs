@@ -205,13 +205,12 @@ public class Movement : MonoBehaviour, ICharacterController, ILaunchable
         Vector3 direction = transform.forward * moveInput.y + transform.right * moveInput.x;
         Vector3 targetMovementVelocity = direction * speed;
         float playerVelocity;
-        float sameDirectionCurrent = Vector3.Dot(currentVelocity, explosionVelocity);
+        //float sameDirectionCurrent = Vector3.Dot(currentVelocity, explosionVelocity);
         float sameDirectionTarget = Vector3.Dot(targetMovementVelocity, explosionVelocity);
-
-        if (sameDirectionTarget < 0) playerVelocity = explosionAgainstVelocity;
+        if (sameDirectionTarget <= 0) playerVelocity = explosionAgainstVelocity;
         else playerVelocity = explosionWithVelocity;
         currentVelocity += (playerVelocity * deltaTime * targetMovementVelocity).SetY(0);
-        if (sameDirectionCurrent < 0 && sameDirectionTarget < 0 && currentVelocity.HorizontalMagnitude() >= speed && MovePressed())
+        if (sameDirectionTarget < 0 && currentVelocity.HorizontalMagnitude() >= speed && MovePressed())
         {
             Transition(MovementState.Default);
         }

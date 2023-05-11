@@ -17,16 +17,18 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     }
     public void Damaged(float amount, object collision, object origin)
     {
+        float realAmount = amount;
+        if (origin is Rocket) realAmount = 0;
         if (canHurt)
         {
-            if (lastChance && health.health - amount <= 0)
+            if (lastChance && health.health - realAmount <= 0)
             {
                 health.health -= health.health - 1;
                 StartCoroutine(LastChance());
             }
             else
             {
-                health.health -= amount;
+                health.health -= realAmount;
                 if (health.health <= 0)
                 {
                     Killed();

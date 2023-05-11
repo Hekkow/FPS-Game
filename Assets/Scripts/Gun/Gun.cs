@@ -52,9 +52,9 @@ public class Gun : MonoBehaviour
         hitNormal
     }
 
-    bool readyToShoot = true;
-    bool shooting = false;
-    bool reloading = false;
+    public bool readyToShoot = true;
+    public bool shooting = false;
+    public bool reloading = false;
     Coroutine reloadCoroutine;
     Transform cameraTransform;
     float particleLength = 0.3f;

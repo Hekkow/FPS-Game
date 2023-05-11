@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Console : MonoBehaviour
 {
@@ -162,7 +163,7 @@ public class Console : MonoBehaviour
         if (current > 0)
         {
             current--;
-
+            inputField.text = commandHistory[current];
             command = commandHistory[current];
         }
     }
@@ -176,6 +177,7 @@ public class Console : MonoBehaviour
         else if (current < commandHistory.Count)
         {
             current++;
+            inputField.text = commandHistory[current];
             command = commandHistory[current];
         }
     }

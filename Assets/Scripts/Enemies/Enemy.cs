@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Animations.Rigging;
 
-public class Enemy : MonoBehaviour, IDamageable, IGravityFlippable, ILaunchable
+public class Enemy : MonoBehaviour, IDamageable, ILaunchable
 {
     [Header("Objects")]
     [SerializeField] protected LayerMask playerMask;
@@ -133,6 +133,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGravityFlippable, ILaunchable
 
             if (health.health <= 0 && canDie)
             {
+                Debug.Log("AEGOAEGA");
                 deathDirection = (transform.position - ((Component)origin).gameObject.transform.position).normalized * deathForce;
                 if (deathDirection.y < 50) deathDirection.y = 50;
                 if (collision != null)
@@ -162,11 +163,11 @@ public class Enemy : MonoBehaviour, IDamageable, IGravityFlippable, ILaunchable
 
         Instantiate(Resources.Load<GameObject>("Prefabs/UpgradeLoot"), transform.position.AddY(lootSpawnOffset), Quaternion.identity);
         healthBar.Disable();
+        Destroy(rb);
         Destroy(GetComponent<RigBuilder>());
         Destroy(animator);
         Destroy(agent);
         StartCoroutine(AddDeadEnemy());
-        Destroy(this);
     }
     public virtual void Ragdoll()
     {
@@ -250,12 +251,10 @@ public class Enemy : MonoBehaviour, IDamageable, IGravityFlippable, ILaunchable
     }
     protected virtual IEnumerator AddDeadEnemy()
     {
+        
         yield return new WaitForEndOfFrame();
-        gameObject.AddComponent<DeadEnemy>();
-    }
-    public virtual void Flip()
-    {
-
+        gameObject.AddComponent<DeadEnemy>().Init(pelvis);
+        Destroy(this);
     }
     public void Launch(Vector3 hitPoint, float force, float upForce)
     {

@@ -9,7 +9,10 @@ public class GroundHit : MonoBehaviour
         
         if (collision.gameObject.transform.root == transform.root) return;
         if (collision.gameObject.layer != LayerMask.NameToLayer("Ground")) return;
-        Enemy enemy = GetComponentInParent<Enemy>();
-        if (enemy.canSwitchInAir) enemy.inAir = false;
+        if (this.TryGetComponentInParent(out Enemy enemy))
+        {
+            if (enemy.canSwitchInAir) enemy.inAir = false;
+        }
+        else Destroy(this); 
     }
 }
