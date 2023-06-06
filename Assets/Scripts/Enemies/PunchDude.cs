@@ -46,18 +46,15 @@ public class PunchDude : Enemy
             switch (state)
             {
                 case AnimationState.Walk:
-                    rig.weight = 1;
                     animator.CrossFade("Sprint", 0, 0);
                     if (agent.isOnNavMesh) agent.SetDestination(lastSeenLocation);
                     animator.speed = walkAnimationSpeed;
                     break;
                 case AnimationState.Idle:
-                    rig.weight = 0;
                     animator.CrossFade("Idle", 0, 0);
                     agent.SetDestination(transform.position);
                     break;
                 case AnimationState.Punch:
-                    rig.weight = 0;
                     rightArm.GetOrAdd<Hitbox>().Init(punchDamage);
                     animator.CrossFade("Punch", 0, 0);
                     transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
@@ -66,7 +63,6 @@ public class PunchDude : Enemy
                     StartCoroutine(WaitUntilPunchDone());
                     break;
                 case AnimationState.Flinch:
-                    rig.weight = 0;
                     animator.CrossFade("Idle", 0, 0);
                     break;
             }

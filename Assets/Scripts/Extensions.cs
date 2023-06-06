@@ -105,4 +105,25 @@ public static class Extensions
         Vector3 direction = position - hitPoint;
         return (direction.normalized * force).AddY(upForce);
     }
+    public static void Explode(this Vector3 position, float explosionRadius, float force, float upForce, float damage)
+    {
+        Collider[] colliders = Physics.OverlapSphere(position, explosionRadius, ~LayerMask.GetMask("Bullet"));
+        List<ILaunchable> launchables = new List<ILaunchable>();
+        List<IDamageable> damageables = new List<IDamageable>();
+
+        foreach (Collider collider in colliders)
+        {
+            if (collider.TryGetComponentInParent(out ILaunchable launchable) && !launchables.Contains(launchable))
+            {
+                launchables.Add(launchable);
+                launchable.Launch(position, force, upForce);
+
+            }
+            if (collider.TryGetComponentInParent(out IDamageable damageable) && !damageables.Contains(damageable))
+            {
+                damageables.Add(damageable);
+                damageable.Damaged(damage, collider, null);
+            }
+        }
+    }
 }

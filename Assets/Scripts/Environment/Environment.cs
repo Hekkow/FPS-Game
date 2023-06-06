@@ -15,7 +15,6 @@ public class Environment : MonoBehaviour, ILaunchable
     {
         rb = gameObject.AddComponent<Rigidbody>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
-        gameObject.AddComponent<EnvironmentDamage>();
         gameObject.AddComponent<Pickup>();
     }
     

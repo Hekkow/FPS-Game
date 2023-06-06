@@ -1,12 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.InputSystem;
-using UnityEngine.VFX;
 
 public class Gun : MonoBehaviour
 {
@@ -33,16 +29,17 @@ public class Gun : MonoBehaviour
     public int shotsPerMag = 6;
     
     [Header("Pellets")]
-    public int pelletLayers = 0;
-    public float pelletSpread = 0;
-    public List<int> pelletsPerLayer = new List<int>();
+    [HideInInspector] public int pelletLayers = 0;
+    [HideInInspector] public float pelletSpread = 0;
+    [HideInInspector] public List<int> pelletsPerLayer = new List<int>();
 
-    [Header("Splitter")]
-    public float splitterDistance = 10;
-    public float splitterSpread = 5;
+    [Header("Explosive Bullets")]
+    [Rename("Radius")] public float explosionRadius = 5;
+    [Rename("Force")] public float explosionForce = 30;
+    [Rename("Up Force")] public float explosionUpForce = 1;
+    [Rename("Damage")] public float explosionDamage = 15;
 
     [Header("Upgrades")]
-    public bool splitter = false;
     public bool bouncer = false;
     public bool gravityFlip = false;
     
@@ -76,18 +73,18 @@ public class Gun : MonoBehaviour
         {
             reloadCoroutine = StartCoroutine(WaitThenReload(0));
         }
-        InputManager.playerInput.Player.Shoot.performed += (obj) => shooting = true;
-        InputManager.playerInput.Player.Shoot.canceled += (obj) => shooting = false;
-        InputManager.playerInput.Player.Attachment.performed += ActivateAddon;
-        InputManager.playerInput.Player.Reload.performed += Reload;
+        InputManager.playerInput.Player.Shoot.performed += _ => shooting = true;
+        InputManager.playerInput.Player.Shoot.canceled += _ => shooting = false;
+        InputManager.playerInput.Player.Attachment.performed += _ => ActivateAddon();
+        InputManager.playerInput.Player.Reload.performed += _ => Reload();
         InputManager.playerInput.Player.Attachment.Enable();
         InputManager.playerInput.Player.Reload.Enable();
         InputManager.playerInput.Player.Shoot.Enable();
     }
     void OnDisable()
     {
-        InputManager.playerInput.Player.Attachment.performed -= ActivateAddon;
-        InputManager.playerInput.Player.Reload.performed -= Reload;
+        InputManager.playerInput.Player.Attachment.performed -= _ => ActivateAddon();
+        InputManager.playerInput.Player.Reload.performed -= _ => Reload();
         InputManager.playerInput.Player.Attachment.Disable();
         InputManager.playerInput.Player.Reload.Disable();
         InputManager.playerInput.Player.Shoot.Disable();
@@ -109,7 +106,7 @@ public class Gun : MonoBehaviour
 
         float originalX = UnityEngine.Random.Range(-bulletSpread * multiplier, bulletSpread * multiplier);
         float originalY = UnityEngine.Random.Range(-bulletSpread * multiplier, bulletSpread * multiplier);
-        Lazer(1, originalX, originalY, 0f);
+        Lazer(originalX, originalY, 0f);
         for (int i = 0; i < pelletLayers; i++)
         {
             for (int j = 0; j < pelletsPerLayer[i]; j++)
@@ -118,7 +115,7 @@ public class Gun : MonoBehaviour
                 float angle = 360 * Mathf.Deg2Rad / pelletsPerLayer[i];
                 float x = radius * Mathf.Cos(j * angle) + originalX;
                 float y = radius * Mathf.Sin(j * angle) + originalY;
-                Lazer(1, x, y, 0f);
+                Lazer(x, y, 0f);
             }
         }
         
@@ -136,32 +133,13 @@ public class Gun : MonoBehaviour
 
         
     }
-    void Lazer(float startDistance, float x, float y, float hitDelay)
+    void Lazer(float x, float y, float hitDelay)
     {
         bulletsLeft--;
         RaycastHit hit;
-        Ray ray = new Ray(cameraTransform.position + cameraTransform.forward * startDistance, cameraTransform.forward + cameraTransform.right * x + cameraTransform.up * y);
+        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward + cameraTransform.right * x + cameraTransform.up * y);
         if (Physics.SphereCast(ray, bulletSize, out hit) && !hit.transform.GetComponent<Player>()) 
         { 
-            StartCoroutine(Hit(ray, hit, hitDelay, ForceDirection.towardPlayer));
-        }
-        if (splitter)
-        {
-            if (hit.collider == null || hit.distance > splitterDistance)
-            {
-                LazerFromRay(splitterDistance, splitterSpread, 0, 0.01f, ray);
-                LazerFromRay(splitterDistance, -splitterSpread, 0, 0.01f, ray);
-            }
-            else LazerFromRay(hit.distance - 1, 0, 0, 0.01f, ray);
-        }
-        
-    }
-    void LazerFromRay(float startDistance, float x, float y, float hitDelay, Ray originalRay)
-    {
-        RaycastHit hit;
-        Ray ray = new Ray(originalRay.origin + originalRay.direction * startDistance, Quaternion.AngleAxis(x, Vector3.up) * Quaternion.AngleAxis(y, Vector3.right) * originalRay.direction);
-        if (Physics.SphereCast(ray, bulletSize, out hit) && !hit.transform.GetComponent<Player>())
-        {
             StartCoroutine(Hit(ray, hit, hitDelay, ForceDirection.towardPlayer));
         }
     }
@@ -180,21 +158,13 @@ public class Gun : MonoBehaviour
         //yield return new WaitForSeconds(hit.distance/bulletSpeed);
         if (hit.transform.TryGetComponentInParent(out IDamageable damage))
         {
-            if (hit.collider.TryGetComponent(out WeakPoint wp))
-                damage.Damaged(bulletDamage * wp.multiplier, hit.collider, this);
-            else damage.Damaged(bulletDamage, hit.collider, this);
+            damage.Damaged(bulletDamage, hit.collider, this);
         }
         ForceMode forceMode = ForceMode.Force;
-        if (hit.transform.GetComponentInParent<DeadEnemy>()) forceMode = ForceMode.VelocityChange;
         if (hit.rigidbody != null)
         {
             if (mode == ForceDirection.towardPlayer) hit.rigidbody.AddForce(Camera.main.transform.forward * bulletKnockback, forceMode);
             else if (mode == ForceDirection.hitNormal) hit.rigidbody.AddForce(-hit.normal * bulletKnockback, forceMode);
-            if (gravityFlip) hit.rigidbody.gameObject.GetOrAdd<BulletEffects>().FlipGravity();
-        }
-        if (hit.transform.TryGetComponent(out MeshDestroy md))
-        {
-            md.DestroyMesh();
         }
         if (bouncer && hit.collider != null)
         {
@@ -207,7 +177,7 @@ public class Gun : MonoBehaviour
         yield return new WaitForSeconds(1 / (attackSpeed));
         readyToShoot = true;
     }
-    void Reload(InputAction.CallbackContext obj)
+    void Reload()
     {
         if (!reloading && bulletsPerMag > bulletsLeft && gameObject.activeSelf)
         {
@@ -216,7 +186,6 @@ public class Gun : MonoBehaviour
     }
     void HitImpact(RaycastHit hit)
     {
-        Instantiate(Resources.Load<GameObject>("Prefabs/BulletHole"), hit.point + hit.normal * 0.01f, Quaternion.identity, hit.transform);
         GameObject particle = Instantiate(hitImpact, hit.point, Quaternion.identity);
         Destroy(particle, particleLength);
     }
@@ -253,7 +222,7 @@ public class Gun : MonoBehaviour
         bulletsLeft = bulletsPerMag;
         readyToShoot = true;
     }
-    public void ActivateAddon(InputAction.CallbackContext obj)
+    public void ActivateAddon()
     {
         addon?.Activate();
     }

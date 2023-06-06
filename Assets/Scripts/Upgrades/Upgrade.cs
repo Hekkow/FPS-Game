@@ -124,19 +124,6 @@ public class HealthBoost : Upgrade
 
     }
 }
-public class Splitter : Upgrade
-{
-    public Splitter(params float[] parameters)
-    {
-        upgradeName = "Splitter";
-        maxAmount = 1;
-        category = Category.Gun;
-    }
-    public override void Activate()
-    {
-        Inventory.guns[0].splitter = true;
-    }
-}
 public class Bouncer : Upgrade
 {
     public Bouncer(params float[] parameters)
@@ -148,44 +135,5 @@ public class Bouncer : Upgrade
     public override void Activate()
     {
         Inventory.guns[0].bouncer = true;
-    }
-}
-public class Burst : Upgrade
-{
-    public Burst(params float[] parameters)
-    {
-        upgradeName = "Burst";
-        maxAmount = 100;
-        category = Category.Gun;
-    }
-    public override void Activate()
-    {
-
-    }
-}
-public class GravityFlip : Upgrade
-{
-    public GravityFlip(params float[] parameters)
-    {
-        upgradeName = "Gravity Flip";
-        maxAmount = 1;
-        category = Category.Gun;
-    }
-    public override void Activate()
-    {
-        Inventory.guns[0].gravityFlip = true;
-    }
-}
-public class ExplosiveBullets : Upgrade
-{
-    public ExplosiveBullets(params float[] parameters)
-    {
-        upgradeName = "Explosive Bullets";
-        maxAmount = 1;
-        category = Category.Gun;
-    }
-    public override void Activate()
-    {
-        
     }
 }

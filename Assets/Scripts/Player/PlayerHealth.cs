@@ -18,7 +18,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public void Damaged(float amount, object collision, object origin)
     {
         float realAmount = amount;
-        if (origin is Rocket) realAmount = 0;
         if (canHurt)
         {
             if (lastChance && health.health - realAmount <= 0)

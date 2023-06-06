@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -61,19 +62,13 @@ class EditorScripts
             }
         }
     }
-    static void RemoveComponent<T>() where T : Component
+    [MenuItem("Mine/Remove Missing Scripts")]
+    static void Clean()
     {
         foreach (GameObject obj in Selection.gameObjects)
         {
-            if (obj.TryGetComponent(out T dc))
-            {
-                Object.DestroyImmediate(dc);
-            }
+            GameObjectUtility.RemoveMonoBehavioursWithMissingScript(obj);
+            Debug.Log($"Removed from {obj.name}");
         }
-    }
-    [MenuItem("Mine/Remove Component/Decapitate")]
-    static void RemoveDecapitate()
-    {
-        RemoveComponent<Decapitate>();
     }
 }

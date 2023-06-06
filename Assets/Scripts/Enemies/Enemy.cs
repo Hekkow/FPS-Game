@@ -7,16 +7,13 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Animations.Rigging;
 
-public class Enemy : MonoBehaviour, IDamageable, ILaunchable
+public class Enemy : MonoBehaviour, IDamageable
 {
     [Header("Objects")]
     [SerializeField] protected LayerMask playerMask;
     [SerializeField] protected LayerMask obstacles;
     [SerializeField] protected Transform target;
-    [SerializeField] protected Rig rig;
-    [SerializeField] public Rigidbody pelvis;
     protected NavMeshAgent agent;
-    protected SkinnedMeshRenderer skin;
     protected Rigidbody rb;
     protected Animator animator;
     protected Health health;
@@ -37,45 +34,16 @@ public class Enemy : MonoBehaviour, IDamageable, ILaunchable
     protected Vector3 lastSeenLocation;
 
 
-    [Header("Knockback")]
-    [SerializeField] protected float ragdollMass;
-    [SerializeField] protected float knockedTime;
-    Coroutine disableAgentCoroutine = null;
-
-    [Header("Pathfinding")]
-    [SerializeField] protected float walkAnimationSpeed;
-
-    [Header("Disable Agent")]
-    [SerializeField] float disableTime;
-    public bool inAir = false;
-    public bool canSwitchInAir = false;
-
-    [Header("Flinch")]
-    [SerializeField, Rename("Color")] protected Color blinkColor;
-    [SerializeField, Rename("Emission Color")] protected Color blinkEmissionColor;
-    [SerializeField, Rename("Emission Intensity")] protected float blinkEmissionIntensity;
-    [SerializeField, Rename("Duration")] protected float blinkDuration;
-    protected float blinkTimer;
-    protected bool knocked = false;
-    Coroutine blinkCoroutine;
-
-    [Header("Launch")]
-    [SerializeField] float launchFactor;
-    [SerializeField] float upForceFactor;
-
-
     [Header("Death")]
-    [SerializeField] protected float deathForce;
     [SerializeField] protected float lootSpawnOffset;
     protected bool canDie = true;
-    Collider deathCollider;
-    Vector3 deathDirection;
 
     [Header("States")]
     public bool animationLocked = false;
 
     [Header("Other")]
     [SerializeField] float lookAroundSpeed;
+    [SerializeField] protected float walkAnimationSpeed;
 
     protected virtual void Awake()
     {
@@ -84,7 +52,6 @@ public class Enemy : MonoBehaviour, IDamageable, ILaunchable
         animator = GetComponent<Animator>();
         healthBar = GetComponent<HealthBar>();
         health = GetComponent<Health>();
-        skin = GetComponentInChildren<SkinnedMeshRenderer>();
         viewRadius = viewRadiusBeforeDetected;
         viewAngle = viewAngleBeforeDetected;
         lastSeenLocation = transform.position;
@@ -122,31 +89,13 @@ public class Enemy : MonoBehaviour, IDamageable, ILaunchable
     }
     public virtual void Damaged(float amount, object collision, object origin)
     {
-        DamageNumber dn = Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), Vector3.zero, Quaternion.identity, GameObject.Find("HUD").transform);
-        if (collision == null) dn.Init(amount, transform);
-        else if (collision is Collider) dn.Init(amount, (Collider)collision);
-        else if (collision is Collision) dn.Init(amount, (Collision)collision);
-
+        
         if (health.alive && amount >= 1)
         {
             health.health -= amount;
-
             if (health.health <= 0 && canDie)
             {
-                Debug.Log("AEGOAEGA");
-                deathDirection = (transform.position - ((Component)origin).gameObject.transform.position).normalized * deathForce;
-                if (deathDirection.y < 50) deathDirection.y = 50;
-                if (collision != null)
-                {
-                    if (collision is Collider) deathCollider = (Collider)collision;
-                    else if (collision is Collision) deathCollider = ((Collision)collision).collider;
-                }
                 Killed();
-            }
-            else
-            {
-                if (blinkCoroutine != null) StopCoroutine(blinkCoroutine);
-                blinkCoroutine = StartCoroutine(Blink());
             }
         }
         if (!playerDetected) StartCoroutine(LookAround());
@@ -157,70 +106,10 @@ public class Enemy : MonoBehaviour, IDamageable, ILaunchable
         canDie = false;
         agent.enabled = false;
         rb.isKinematic = true;
-        Ragdoll();
-        if (deathCollider == null) rb.AddForce(deathDirection, ForceMode.VelocityChange);
-        else deathCollider.GetComponentInParent<Rigidbody>().AddForce(deathDirection, ForceMode.VelocityChange);
-
-        Instantiate(Resources.Load<GameObject>("Prefabs/UpgradeLoot"), transform.position.AddY(lootSpawnOffset), Quaternion.identity);
         healthBar.Disable();
         Destroy(rb);
-        Destroy(GetComponent<RigBuilder>());
         Destroy(animator);
         Destroy(agent);
-        StartCoroutine(AddDeadEnemy());
-    }
-    public virtual void Ragdoll()
-    {
-        animator.enabled = false;
-        agent.enabled = false;
-        foreach (Rigidbody rb in GetComponentsInChildren<Rigidbody>())
-        {
-            rb.isKinematic = false;
-            //rb.AddComponent<Pickup>();
-        }
-        foreach (Collider collider in GetComponentsInChildren<Collider>())
-        {
-            collider.isTrigger = false;
-        }
-    }
-    public virtual void UnRagdoll()
-    {
-        foreach (Rigidbody rb in GetComponentsInChildren<Rigidbody>())
-        {
-            rb.isKinematic = true;
-        }
-        foreach (Collider collider in GetComponentsInChildren<Collider>())
-        {
-            collider.isTrigger = true;
-        }
-    }
-    public virtual IEnumerator DisableAgent()
-    {
-        animator.enabled = false;
-        animationLocked = true;
-        agent.enabled = false;
-        rb.isKinematic = false;
-        Ragdoll();
-        RaycastHit hit = default;
-        inAir = true;
-        canSwitchInAir = false;
-        yield return new WaitForSeconds(disableTime);
-        canSwitchInAir = true;
-        yield return new WaitUntil(() => !inAir);
-        if (health.alive && !knocked)
-        {
-            transform.position = pelvis.position;
-            inAir = false;
-            agent.enabled = true;
-            animationLocked = false;
-            animator.enabled = true;
-            UnRagdoll();
-            if (rb.velocity.y < -10)
-            {
-                if (hit.collider != null) Damaged(rb.velocity.y * -2.5f, null, hit.collider);
-            }
-            rb.isKinematic = true;
-        }
     }
     public virtual IEnumerator LookAround()
     {
@@ -239,31 +128,5 @@ public class Enemy : MonoBehaviour, IDamageable, ILaunchable
                 agent.SetDestination(hit.point);
             }
         }
-    }
-    protected virtual IEnumerator Blink()
-    {
-        skin.material.EnableKeyword("_EMISSION");
-        skin.material.SetColor("_BaseColor", blinkColor);
-        skin.material.SetColor("_EmissionColor", blinkEmissionColor * blinkEmissionIntensity);
-        yield return new WaitForSeconds(blinkDuration / 2);
-        skin.material.SetColor("_BaseColor", Color.white);
-        skin.material.SetColor("_EmissionColor", Color.black);
-    }
-    protected virtual IEnumerator AddDeadEnemy()
-    {
-        
-        yield return new WaitForEndOfFrame();
-        gameObject.AddComponent<DeadEnemy>().Init(pelvis);
-        Destroy(this);
-    }
-    public void Launch(Vector3 hitPoint, float force, float upForce)
-    {
-        StartDisableAgent();
-        pelvis.AddExplosionNoFalloff(hitPoint, force * launchFactor, upForce * upForceFactor, ForceMode.VelocityChange);
-    }
-    public void StartDisableAgent()
-    {
-        if (disableAgentCoroutine != null) StopCoroutine(disableAgentCoroutine);
-        StartCoroutine(DisableAgent());
     }
 }
