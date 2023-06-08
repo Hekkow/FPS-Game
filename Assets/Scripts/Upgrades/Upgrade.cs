@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public abstract class Upgrade
 {
@@ -15,6 +12,7 @@ public abstract class Upgrade
     public Category category;
     public Gun gun;
     public abstract void Activate();
+    public abstract void Deactivate(UpgradeSlot slot);
 }
 public class AttackSpeed : Upgrade
 {
@@ -25,7 +23,11 @@ public class AttackSpeed : Upgrade
     }
     public override void Activate()
     {
-        Inventory.guns[0].attackSpeed *= 2;
+        Inventory.guns[0].upgradeSlot.attackSpeed *= 2;
+    }
+    public override void Deactivate(UpgradeSlot slot)
+    {
+        Inventory.guns[0].upgradeSlot.attackSpeed /= 2;
     }
 }
 public class BulletDamage : Upgrade
@@ -39,6 +41,7 @@ public class BulletDamage : Upgrade
     {
         Inventory.guns[0].bulletDamage *= 2;
     }
+    public override void Deactivate(UpgradeSlot slot) { }
 }
 public class ReloadSpeed : Upgrade
 {
@@ -51,6 +54,7 @@ public class ReloadSpeed : Upgrade
     {
         Inventory.guns[0].reloadSpeed *= 2;
     }
+    public override void Deactivate(UpgradeSlot slot) { }
 }
 public class Dash : Upgrade
 {
@@ -64,6 +68,7 @@ public class Dash : Upgrade
     {
         GameObject.Find("Player").GetComponent<Player>().canDash = true;
     }
+    public override void Deactivate(UpgradeSlot slot) { }
 }
 public class Pellets : Upgrade
 {
@@ -88,6 +93,7 @@ public class Pellets : Upgrade
         gun.reloadSpeed *= 0.9f;
         gun.bulletDamage *= 0.9f;
     }
+    public override void Deactivate(UpgradeSlot slot) { }
 }
 public class Minigun : Upgrade
 {
@@ -108,6 +114,7 @@ public class Minigun : Upgrade
         gun.reloadSpeed *= 0.9f;
         gun.bulletDamage *= 0.9f;
     }
+    public override void Deactivate(UpgradeSlot slot) { }
 }
 public class HealthBoost : Upgrade
 {
@@ -119,9 +126,14 @@ public class HealthBoost : Upgrade
     }
     public override void Activate()
     {
-        GameObject.Find("Player").GetComponent<Health>().health *= 2;
-        GameObject.Find("Player").GetComponent<Health>().maxHealth *= 2;
-
+        Health health = GameObject.Find("Player").GetComponent<Health>();
+        health.maxHealth *= 2;
+        health.health *= 2;
+    }
+    public override void Deactivate(UpgradeSlot slot) {
+        Health health = GameObject.Find("Player").GetComponent<Health>();
+        health.maxHealth /= 2;
+        if (health.maxHealth < health.health) health.health = health.maxHealth;
     }
 }
 public class Bouncer : Upgrade
@@ -136,4 +148,5 @@ public class Bouncer : Upgrade
     {
         Inventory.guns[0].bouncer = true;
     }
+    public override void Deactivate(UpgradeSlot slot) { }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public static PlayerSlot slot = new PlayerSlot();
     [Header("Mouse Sensitivity")]
     public float sensitivity;
     public float controllerSensitivity;

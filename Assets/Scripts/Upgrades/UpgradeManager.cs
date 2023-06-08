@@ -1,36 +1,30 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
-using Unity.VisualScripting;
 using UnityEngine;
+
+public class UpgradeInfo
+{
+    public Upgrade upgrade;
+    public UpgradeSlot upgradeSlot;
+    public int amount = 0;
+    public void ChangeAmount(int changeBy)
+    {
+        this.amount += changeBy;
+    }
+    public UpgradeInfo(Upgrade upgrade, int amount, UpgradeSlot upgradeSlot)
+    {
+        this.upgrade = upgrade;
+        this.amount = amount;
+        this.upgradeSlot = upgradeSlot;
+    }
+}
 
 public class UpgradeManager : MonoBehaviour
 {
     public static List<UpgradeInfo> ownedUpgrades;
     public static List<Upgrade> allUpgrades;
     public static event Action onUpgrade;
-    public class UpgradeInfo
-    {
-        public Upgrade upgrade;
-        public int slot;
-        public int amount = 0; 
-        public void SetSlot(int slot)
-        {
-            this.slot = slot;
-        }
-        public void ChangeAmount(int changeBy)
-        {
-            this.amount += changeBy;
-        }
-        public UpgradeInfo(Upgrade upgrade, int slot, int amount)
-        {
-            this.upgrade = upgrade;
-            this.slot = slot;
-            this.amount = amount;
-        }
-    }
+    
     void Start()
     {
         ownedUpgrades = new List<UpgradeInfo>();
@@ -50,32 +44,63 @@ public class UpgradeManager : MonoBehaviour
     {
         if (upgrade != null)
         {
-            int upgradeIndex = HasUpgrade(upgrade);
+            UpgradeSlot upgradeSlot;
+            if (upgrade.category == Upgrade.Category.Gun) upgradeSlot = Inventory.guns[0].upgradeSlot;
+            else upgradeSlot = Player.slot;
+            int upgradeIndex = HasUpgrade(upgrade, upgradeSlot);
             if (upgradeIndex == -1)
             {
                 upgrade.Activate();
-                if (upgrade.category == Upgrade.Category.Gun) ownedUpgrades.Add(new UpgradeInfo(upgrade, Inventory.guns[0].slot, 1));
-                else ownedUpgrades.Add(new UpgradeInfo(upgrade, -1, 1));
-                Inventory.ResetBulletsAfterUpgrade();
-                onUpgrade?.Invoke();
-                return true;
+                ownedUpgrades.Add(new UpgradeInfo(upgrade, 1, upgradeSlot));
             }
             else if (ownedUpgrades[upgradeIndex].amount < upgrade.maxAmount)
             {
-                upgrade.Activate(); 
+                upgrade.Activate();
                 ownedUpgrades[upgradeIndex].ChangeAmount(1);
-                Inventory.ResetBulletsAfterUpgrade();
-                onUpgrade?.Invoke();
-                return true;
+                if (ownedUpgrades[upgradeIndex].amount <= 0) ownedUpgrades.RemoveAt(upgradeIndex);
             }
+            else return false;
+            Inventory.ResetBulletsAfterUpgrade();
+            onUpgrade?.Invoke();
+            return true;
         }
         return false;
+    }
+    public static void DeactivateUpgrade(Upgrade upgrade)
+    {
+        if (upgrade != null)
+        {
+            UpgradeSlot upgradeSlot;
+            if (upgrade.category == Upgrade.Category.Gun) upgradeSlot = Inventory.guns[0].upgradeSlot;
+            else upgradeSlot = Player.slot;
+            int upgradeIndex = HasUpgrade(upgrade, upgradeSlot);
+            if (upgradeIndex == -1)
+            {
+                return;
+            }
+            upgrade.Deactivate(upgradeSlot);
+            ownedUpgrades[upgradeIndex].ChangeAmount(-1);
+            if (ownedUpgrades[upgradeIndex].amount <= 0) ownedUpgrades.RemoveAt(upgradeIndex);
+            Inventory.ResetBulletsAfterUpgrade();
+            onUpgrade?.Invoke();
+        }
+    }
+    public static int HasUpgrade(Upgrade upgrade, UpgradeSlot upgradeSlot)
+    {
+        for (int i = 0; i < ownedUpgrades.Count; i++)
+        {
+            if (ownedUpgrades[i].upgrade == upgrade && ownedUpgrades[i].upgradeSlot == upgradeSlot)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
     public static int HasUpgrade(Upgrade upgrade)
     {
         for (int i = 0; i < ownedUpgrades.Count; i++)
         {
-            if (ownedUpgrades[i].upgrade == upgrade)
+            if (ownedUpgrades[i].upgrade == upgrade && ownedUpgrades[i].upgradeSlot == Inventory.guns[0].upgradeSlot || ownedUpgrades[i].upgradeSlot == Player.slot)
             {
                 return i;
             }
@@ -122,14 +147,8 @@ public class UpgradeManager : MonoBehaviour
     {
         for (int i = 0; i < ownedUpgrades.Count; i++)
         {
-            if (ownedUpgrades[i].upgrade.category == Upgrade.Category.Gun)
-            {
-                Debug.Log(ownedUpgrades[i].upgrade.upgradeName + " at slot " + ownedUpgrades[i].slot + " x " + ownedUpgrades[i].amount);
-            }
-            else
-            {
-                Debug.Log(ownedUpgrades[i].upgrade.upgradeName + " x " + ownedUpgrades[i].amount);
-            }
+            Debug.Log(ownedUpgrades[i].upgrade.upgradeName + " x " + ownedUpgrades[i].amount + " " + ownedUpgrades[i].upgradeSlot);
         }
     }
 }
+

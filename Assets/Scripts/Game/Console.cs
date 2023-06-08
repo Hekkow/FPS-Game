@@ -85,6 +85,23 @@ public class Console : MonoBehaviour
                 }
             }
         }
+        else if (words[0] == "remove")
+        {
+            Upgrade upgrade = UpgradeManager.FindUpgrade(words[1]);
+            if (upgrade != null)
+            {
+                int amount = 1;
+                if (words.Length > 2) amount = int.Parse(words[2]);
+                for (int i = 0; i < amount; i++)
+                {
+                    UpgradeManager.DeactivateUpgrade(upgrade);
+                }
+            }
+            else
+            {
+                Debug.Log("Upgrade not found");
+            }
+        }
         else if (words[0] == "print")
         {
             if (words[1] == "upgrades")
@@ -112,10 +129,6 @@ public class Console : MonoBehaviour
                         Debug.Log(upgrades[i]);
                     }
                 }
-            }
-            else if (words[1] == "slot")
-            {
-                Debug.Log(Inventory.guns[0].slot);
             }
 
         }

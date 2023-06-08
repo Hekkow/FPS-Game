@@ -5,27 +5,22 @@ using UnityEngine;
 public static class Inventory
 {
     public static Gun[] guns = new Gun[3];
-    public static int slotCount = 0;
-
     public static void PickupGun(Gun gun)
     {
         if (guns[0] == null)
         {
             guns[0] = gun;
-            slotCount++;
         }
         else if (guns[1] == null)
         {
             guns[1] = guns[0];
             guns[0] = gun;
-            slotCount++;
         }
         else if (guns[2] == null)
         {
             guns[2] = guns[1];
             guns[1] = guns[0];
             guns[0] = gun;
-            slotCount++;
         }
         else
         {
@@ -69,20 +64,17 @@ public static class Inventory
         else if (guns[1] == null)
         {
             guns[0] = null;
-            slotCount--;
         }
         else if (guns[2] == null)
         {
             guns[0] = guns[1];
             guns[1] = null;
-            slotCount--;
         }
         else
         {
             guns[0] = guns[1];
             guns[1] = guns[2];
             guns[2] = null;
-            slotCount--;
         }
     }
     public static int HasGuns()

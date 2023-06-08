@@ -14,7 +14,7 @@ public class Gun : MonoBehaviour
 
     [Header("Stats")]
     public Addon addon = null;
-    public int slot = -1;
+    public GunSlot upgradeSlot = new GunSlot();
     public int bulletsPerShot = 1;
     public int bulletsPerTap = 1;
     public float bulletSize = 0.1f;
@@ -41,7 +41,6 @@ public class Gun : MonoBehaviour
 
     [Header("Upgrades")]
     public bool bouncer = false;
-    public bool gravityFlip = false;
     
     enum ForceDirection
     {
@@ -122,11 +121,11 @@ public class Gun : MonoBehaviour
         StartCoroutine(ResetShot());
 
         shootAnimator.Play("shoot", 0, 0f);
-        shootAnimator.speed = attackSpeed;
+        shootAnimator.speed = upgradeSlot.attackSpeed;
 
         if (bulletsLeft <= 0)
         {
-            reloadCoroutine = StartCoroutine(WaitThenReload(1 / attackSpeed));
+            reloadCoroutine = StartCoroutine(WaitThenReload(1 / upgradeSlot.attackSpeed));
         }
 
         onShot?.Invoke();
@@ -174,7 +173,7 @@ public class Gun : MonoBehaviour
     }
     IEnumerator ResetShot()
     {
-        yield return new WaitForSeconds(1 / (attackSpeed));
+        yield return new WaitForSeconds(1 / (upgradeSlot.attackSpeed));
         readyToShoot = true;
     }
     void Reload()

@@ -88,34 +88,17 @@ public class PlayerItems : MonoBehaviour
     }
     void PickupGun(Transform item)
     {
-        List<Upgrade> removedUpgrades = new List<Upgrade>();
-        if (Inventory.HasGuns() == 3)
+        if (Inventory.HasGuns() >= 3)
         {
-            for (int i = 0; i < UpgradeManager.ownedUpgrades.Count; i++)
-            {
-                if (UpgradeManager.ownedUpgrades[i].slot == Inventory.guns[0].slot)
-                {
-                    int count = UpgradeManager.ownedUpgrades[i].amount;
-                    for (int j = 0; j < count; j++)
-                    {
-                        removedUpgrades.Add(UpgradeManager.ownedUpgrades[i].upgrade);
-                    }
-                }
-            }
-            item.GetComponent<Gun>().slot = -1;
+            GunSlotManager.SwitchGuns(Inventory.guns[0], item.gameObject.GetComponent<Gun>());
             DropGun();
         }
-        item.gameObject.GetComponent<Gun>().slot = Inventory.slotCount;
+        else GunSlotManager.GetFirstOpenSlot(item.gameObject.GetComponent<Gun>());
         Inventory.PickupGun(item.gameObject.GetComponent<Gun>());
-        for (int i = 0; i < removedUpgrades.Count; i++)
-        {
-            UpgradeManager.ActivateUpgrade(removedUpgrades[i]);
-        }
         if (Inventory.HasGuns() > 1)
         {
             Inventory.guns[1].gameObject.SetActive(false);
         }
-
         item.parent = rightHandLocation;
         item.gameObject.MakePhysical(false);
         item.transform.localPosition = Vector3.zero;
