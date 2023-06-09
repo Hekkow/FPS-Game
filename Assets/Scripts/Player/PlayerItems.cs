@@ -90,10 +90,10 @@ public class PlayerItems : MonoBehaviour
     {
         if (Inventory.HasGuns() >= 3)
         {
-            GunSlotManager.SwitchGuns(Inventory.guns[0], item.gameObject.GetComponent<Gun>());
+            UpgradeManager.SwitchGuns(Inventory.guns[0], item.gameObject.GetComponent<Gun>());
             DropGun();
         }
-        else GunSlotManager.GetFirstOpenSlot(item.gameObject.GetComponent<Gun>());
+        else UpgradeManager.GetFirstOpenSlot(item.gameObject.GetComponent<Gun>());
         Inventory.PickupGun(item.gameObject.GetComponent<Gun>());
         if (Inventory.HasGuns() > 1)
         {
@@ -127,6 +127,7 @@ public class PlayerItems : MonoBehaviour
     void ThrowGun()
     {
         GameObject item = Inventory.guns[0].gameObject;
+        UpgradeManager.DropGun(Inventory.guns[0]);
         DropGun();
         CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
         if (item.TryGetComponent(out Rigidbody rb))

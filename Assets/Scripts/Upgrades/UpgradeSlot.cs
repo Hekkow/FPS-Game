@@ -6,5 +6,5 @@ using UnityEngine;
 [Serializable]
 public class UpgradeSlot
 {
-    public List<UpgradeInfo> Upgrades = new List<UpgradeInfo>();
+    public List<UpgradeInfo> upgrades = new List<UpgradeInfo>();
 }

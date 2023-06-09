@@ -31,11 +31,6 @@ public class Reticle : MonoBehaviour
 
 
     }
-    private void Update()
-    {
-        //float test1 = test;
-        //shotgunReticle.sizeDelta = new Vector2(test1, test1);
-    }
     IEnumerator ShotBloom()
     {
         float startTime = Time.time;
@@ -48,16 +43,12 @@ public class Reticle : MonoBehaviour
     }
     IEnumerator ReloadBloom()
     {
-        if (Inventory.HasGun())
+        float startTime = Time.time;
+        while (Inventory.HasGun() && Time.time - startTime < (1 / Inventory.guns[0].reloadSpeed))
         {
-            float startTime = Time.time;
-            while (Time.time - startTime < (1 / Inventory.guns[0].reloadSpeed))
-            {
-                reticleHoleSize = mainReticleSize + (reloadCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].reloadSpeed) * reticleBloomAmount);
-                armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
-                if (!Inventory.HasGun()) yield break;
-                yield return new WaitForEndOfFrame();
-            }
+            reticleHoleSize = mainReticleSize + (reloadCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].reloadSpeed) * reticleBloomAmount);
+            armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
+            yield return new WaitForEndOfFrame(); 
         }
     }
     public void RefreshReticle()

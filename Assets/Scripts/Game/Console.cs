@@ -59,16 +59,16 @@ public class Console : MonoBehaviour
         string[] words = command.Split(' ');
         if (words[0] == "upgrade")
         {
-            if (words[1] == "random")
-            {
-                for (int i = 0; i < int.Parse(words[2]); i++)
-                {
-                    List<Upgrade> upgrade = UpgradeManager.RandomUpgrades(1);
-                    UpgradeManager.ActivateUpgrade(upgrade[0]);
-                }
-            }
-            else
-            {
+            //if (words[1] == "random")
+            //{
+            //    for (int i = 0; i < int.Parse(words[2]); i++)
+            //    {
+            //        List<Upgrade> upgrade = UpgradeManager.RandomUpgrades(1);
+            //        UpgradeManager.ActivateUpgrade(upgrade[0]);
+            //    }
+            //}
+            //else
+            //{
                 Upgrade upgrade = UpgradeManager.FindUpgrade(words[1]);
                 if (upgrade != null)
                 {
@@ -83,7 +83,7 @@ public class Console : MonoBehaviour
                 {
                     Debug.Log("Upgrade not found");
                 }
-            }
+            //}
         }
         else if (words[0] == "remove")
         {
@@ -107,10 +107,6 @@ public class Console : MonoBehaviour
             if (words[1] == "upgrades")
             {
                 UpgradeManager.PrintOwnedUpgrades();
-                if (words.Length == 3 && words[2] == "amount") 
-                {
-                    Debug.Log(UpgradeManager.ownedUpgrades.Count); 
-                }
             }
             else if (words[1] == "all")
             {
@@ -119,17 +115,17 @@ public class Console : MonoBehaviour
                     UpgradeManager.PrintAllUpgrades();
                 }
             }
-            else if (words[1] == "random")
-            {
-                if (words[2] == "upgrades")
-                {
-                    List<Upgrade> upgrades = UpgradeManager.RandomUpgrades(int.Parse(words[3]));
-                    for (int i = 0; i < int.Parse(words[3]); i++)
-                    {
-                        Debug.Log(upgrades[i]);
-                    }
-                }
-            }
+            //else if (words[1] == "random")
+            //{
+            //    if (words[2] == "upgrades")
+            //    {
+            //        List<Upgrade> upgrades = UpgradeManager.RandomUpgrades(int.Parse(words[3]));
+            //        for (int i = 0; i < int.Parse(words[3]); i++)
+            //        {
+            //            Debug.Log(upgrades[i]);
+            //        }
+            //    }
+            //}
 
         }
         else if (words[0] == "spawn")
