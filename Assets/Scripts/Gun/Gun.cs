@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,7 +11,6 @@ public class Gun : MonoBehaviour
 
     [Header("Objects")]
     [SerializeField] GameObject hitImpact;
-    
 
     [Header("Stats")]
     public Addon addon = null;
@@ -59,6 +59,7 @@ public class Gun : MonoBehaviour
     public static event Action onBeforeReload;
     public static event Action onAfterReload;
 
+
     void Awake()
     {
         shootAnimator = GetComponent<Animator>();
@@ -74,22 +75,21 @@ public class Gun : MonoBehaviour
         }
         InputManager.playerInput.Player.Shoot.performed += _ => shooting = true;
         InputManager.playerInput.Player.Shoot.canceled += _ => shooting = false;
-        InputManager.playerInput.Player.Attachment.performed += _ => ActivateAddon();
-        InputManager.playerInput.Player.Reload.performed += _ => Reload();
+        InputManager.playerInput.Player.Attachment.performed += ActivateAddon;
+        InputManager.playerInput.Player.Reload.performed += Reload;
         InputManager.playerInput.Player.Attachment.Enable();
         InputManager.playerInput.Player.Reload.Enable();
         InputManager.playerInput.Player.Shoot.Enable();
     }
     void OnDisable()
     {
-        InputManager.playerInput.Player.Attachment.performed -= _ => ActivateAddon();
-        InputManager.playerInput.Player.Reload.performed -= _ => Reload();
+        InputManager.playerInput.Player.Attachment.performed -= ActivateAddon;
+        InputManager.playerInput.Player.Reload.performed -= Reload;
         InputManager.playerInput.Player.Attachment.Disable();
         InputManager.playerInput.Player.Reload.Disable();
         InputManager.playerInput.Player.Shoot.Disable();
         StopCoroutine(reloadCoroutine);
-        readyToShoot = true; 
-        
+        readyToShoot = true;
     }
     void Update()
     {
@@ -176,7 +176,7 @@ public class Gun : MonoBehaviour
         yield return new WaitForSeconds(1 / (upgradeSlot.attackSpeed));
         readyToShoot = true;
     }
-    void Reload()
+    void Reload(InputAction.CallbackContext obj)
     {
         if (!reloading && bulletsPerMag > bulletsLeft && gameObject.activeSelf)
         {
@@ -221,7 +221,7 @@ public class Gun : MonoBehaviour
         bulletsLeft = bulletsPerMag;
         readyToShoot = true;
     }
-    public void ActivateAddon()
+    public void ActivateAddon(InputAction.CallbackContext obj)
     {
         addon?.Activate();
     }

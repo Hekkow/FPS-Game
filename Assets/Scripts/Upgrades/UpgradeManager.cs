@@ -196,7 +196,6 @@ public class UpgradeManager : MonoBehaviour
                 break;
             }
         }
-
         gun.upgradeSlot = gunSlots[index].gunSlot;
         if (gunSlots[index].gun != null) gunSlots[index].gun.upgradeSlot = null;
         gunSlots[index].gun = gun;
