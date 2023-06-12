@@ -13,8 +13,9 @@ public class Gun : MonoBehaviour
     [SerializeField] GameObject hitImpact;
 
     [Header("Stats")]
-    public Addon addon = null;
-    public GunSlot upgradeSlot = new GunSlot();
+    [SerializeReference, SubclassPicker] public Addon addon = null;
+    public UpgradeSlot lockedUpgrades;
+    public GunSlot upgradeSlot;
     public int bulletsPerShot = 1;
     public int bulletsPerTap = 1;
     public float bulletSize = 0.1f;
@@ -54,7 +55,6 @@ public class Gun : MonoBehaviour
     Coroutine reloadCoroutine;
     Transform cameraTransform;
     float particleLength = 0.3f;
-
     public static event Action onShot;
     public static event Action onBeforeReload;
     public static event Action onAfterReload;

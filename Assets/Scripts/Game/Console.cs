@@ -94,7 +94,7 @@ public class Console : MonoBehaviour
                 if (words.Length > 2) amount = int.Parse(words[2]);
                 for (int i = 0; i < amount; i++)
                 {
-                    UpgradeManager.DeactivateUpgrade(upgrade);
+                    //UpgradeManager.DeactivateUpgrade(upgrade);
                 }
             }
             else

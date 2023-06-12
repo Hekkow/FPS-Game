@@ -23,7 +23,7 @@ public class UI : MonoBehaviour {
             upgrades.gameObject.SetActive(false);
             guns.gameObject.SetActive(false);
             guns.DestroyAllChildren();
-            for (int i = 0; i < UpgradeManager.gunSlots.Length; i++)
+            for (int i = 0; i < UpgradeManager.allGunSlots.Length; i++)
             {
                 upgrades.GetChild(i).DestroyAllChildren();
             }
@@ -32,31 +32,42 @@ public class UI : MonoBehaviour {
         else
         {
             InputManager.SwitchActionMap(InputManager.playerInput.UI);
-
+            Debug.Log(Inventory.guns[0].upgradeSlot);
             upgrades.gameObject.SetActive(true);
             guns.gameObject.SetActive(true);
             float width = guns.GetComponent<RectTransform>().rect.width;
             float height = guns.GetComponent<RectTransform>().rect.height;
-            for (int i = 0; i < UpgradeManager.gunSlots.Length; i++)
+            for (int i = 0; i < UpgradeManager.allGunSlots.Length; i++)
             {
-                if (UpgradeManager.gunSlots[i].gun != null)
+                Debug.Log(UpgradeManager.allGunSlots[i]);
+                if (UpgradeManager.allGunSlots[i].gun != null)
                 {
                     Vector3 position = new Vector3((width / 3 * i) - (width / 2) + (width / 3 / 2), height / 2 - gunsDistanceFromTop, 0);
-                    GameObject gun = Instantiate(UpgradeManager.gunSlots[i].gun.gameObject);
-                    Destroy(gun.GetComponent<Gun>());
+                    GameObject gun = Instantiate(UpgradeManager.allGunSlots[i].gun.gameObject);
+                    if (UpgradeManager.allGunSlots[i].gun.gameObject.activeSelf)
+                    {
+                        Animator animator = gun.GetComponent<Animator>();
+                        animator.Rebind();
+                        animator.Update(0f);
+                    }
+                    foreach (Component component in gun.GetComponents<Component>())
+                    {
+                        if (component is not Transform) Destroy(component);
+                    }
                     gun.transform.SetParent(guns);
                     gun.transform.localPosition = position;
                     gun.ApplyLayerToChildren("UI");
                     gun.transform.localScale = new Vector3(30, 30, 30);
+                    gun.transform.localRotation = Quaternion.identity;
                     gun.SetActive(true);
                 }
-                for (int j = 0; j < UpgradeManager.gunSlots[i].gunSlot.upgrades.Count; j++)
+                for (int j = 0; j < UpgradeManager.allGunSlots[i].upgrades.Count; j++)
                 {
-                    for (int n = 0; n < UpgradeManager.gunSlots[i].gunSlot.upgrades[j].amount; n++)
+                    for (int n = 0; n < UpgradeManager.allGunSlots[i].upgrades[j].amount; n++)
                     {
                         GameObject upgradeBox = Instantiate(Resources.Load<GameObject>("Prefabs/Upgrade UI"), upgrades.GetChild(i));
                         TMP_Text text = upgradeBox.GetComponentInChildren<TMP_Text>();
-                        text.text = UpgradeManager.gunSlots[i].gunSlot.upgrades[j].upgrade.upgradeName;
+                        text.text = UpgradeManager.allGunSlots[i].upgrades[j].upgrade.upgradeName;
                     }
                 }
             }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -5,7 +6,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public abstract class Addon : MonoBehaviour
+[Serializable]
+public abstract class Addon
 {
     protected float cooldown;
     public abstract void Activate();
@@ -33,7 +35,7 @@ public static class AddonManager
         switch (name)
         {
             case AddonName.Hook:
-                Inventory.guns[0].addon = Inventory.guns[0].gameObject.AddComponent<Hook>();
+                Inventory.guns[0].addon = new Hook();
                 break;
         }
     }

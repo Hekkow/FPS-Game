@@ -12144,6 +12144,46 @@ PrefabInstance:
       propertyPath: explosionUpForce
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698567]
+      value: Assembly-CSharp Pellets
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698567].gun
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.data[0].amount
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.data[0].locked
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.data[0].upgrade
+      value: 3722705841845698567
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698567].category
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698567].maxAmount
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.data[0].upgradeSlot
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698567].upgradeName
+      value: Pellets
+      objectReference: {fileID: 0}
     - target: {fileID: 6724796096853527081, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -18527,6 +18567,10 @@ PrefabInstance:
       value: mewgim
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: addon
+      value: 3722705841845698561
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: explosionForce
       value: 30
       objectReference: {fileID: 0}
@@ -18537,6 +18581,190 @@ PrefabInstance:
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: explosionUpForce
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[-2]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: ugpage.upgrades.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.Array.data[0]
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.Array.data[1]
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: upgradeSlot.upgrades.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.Array.data[0].amount
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.Array.data[0].upgrade
+      value: 3722705841845698563
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.Array.data[1].upgrade
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698560]
+      value: Assembly-CSharp AttackSpeed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698561]
+      value: Assembly-CSharp Hook
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698562]
+      value: Assembly-CSharp AttackSpeed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698563]
+      value: Assembly-CSharp AttackSpeed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698564]
+      value: Assembly-CSharp AttackSpeed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.Array.data[0].upgradeSlot
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.Array.data[1].upgradeSlot
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: ugpage.upgrades.Array.data[0].upgradeSlot
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: upgradeSlot.upgrades.Array.data[0].amount
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: upgradeSlot.upgrades.Array.data[0].locked
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698560].gun
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698562].gun
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698563].gun
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698564].gun
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: upgradeSlot.upgrades.Array.data[0].upgrade
+      value: 3722705841845698562
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.data[0].amount
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.data[0].locked
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.data[0].upgrade
+      value: 3722705841845698564
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: upgradeSlot.upgrades.Array.data[0].upgradeSlot
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698560].category
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698562].category
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698563].category
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698564].category
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698560].maxAmount
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698562].maxAmount
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698563].maxAmount
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698564].maxAmount
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.data[0].upgradeSlot
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698560].upgradeName
+      value: Attack Speed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698562].upgradeName
+      value: Attack Speed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698563].upgradeName
+      value: Attack Speed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705841845698564].upgradeName
+      value: Attack Speed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: ugpage.upgrades.Array.data[0].upgradeSlot.upgrades.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: ugpage.upgrades.Array.data[0].upgradeSlot.upgrades.Array.data[0].amount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418344, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: m_Size.x
+      value: 5.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418344, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: m_Size.z
+      value: 0.79
       objectReference: {fileID: 0}
     - target: {fileID: 6724796096853527081, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: m_RootOrder

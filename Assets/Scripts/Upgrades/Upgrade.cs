@@ -1,5 +1,6 @@
+using System;
 using UnityEngine;
-
+[Serializable]
 public abstract class Upgrade
 {
     public enum Category  {
@@ -16,7 +17,7 @@ public abstract class Upgrade
 }
 public class AttackSpeed : Upgrade
 {
-    public AttackSpeed(params float[] parameters)
+    public AttackSpeed()
     {
         upgradeName = "Attack Speed";
         maxAmount = 100;
@@ -32,7 +33,7 @@ public class AttackSpeed : Upgrade
 }
 public class BulletDamage : Upgrade
 {
-    public BulletDamage(params float[] parameters)
+    public BulletDamage()
     {
         upgradeName = "Bullet Damage";
         maxAmount = 100;
@@ -45,7 +46,7 @@ public class BulletDamage : Upgrade
 }
 public class ReloadSpeed : Upgrade
 {
-    public ReloadSpeed(params float[] parameters)
+    public ReloadSpeed()
     {
         upgradeName = "Reload Speed";
         maxAmount = 100;
@@ -58,7 +59,7 @@ public class ReloadSpeed : Upgrade
 }
 public class Dash : Upgrade
 {
-    public Dash(params float[] parameters)
+    public Dash()
     {
         upgradeName = "Dash";
         maxAmount = 100;
@@ -72,7 +73,7 @@ public class Dash : Upgrade
 }
 public class Pellets : Upgrade
 {
-    public Pellets(params float[] parameters)
+    public Pellets()
     {
         upgradeName = "Pellets";
         maxAmount = 100;
@@ -97,7 +98,7 @@ public class Pellets : Upgrade
 }
 public class Minigun : Upgrade
 {
-    public Minigun(params float[] parameters)
+    public Minigun()
     {
         upgradeName = "Minigun";
         maxAmount = 100;
@@ -118,7 +119,7 @@ public class Minigun : Upgrade
 }
 public class HealthBoost : Upgrade
 {
-    public HealthBoost(params float[] parameters)
+    public HealthBoost()
     {
         upgradeName = "Health Boost";
         maxAmount = 100;
@@ -138,7 +139,7 @@ public class HealthBoost : Upgrade
 }
 public class Bouncer : Upgrade
 {
-    public Bouncer(params float[] parameters)
+    public Bouncer()
     {
         upgradeName = "Bouncer";
         maxAmount = 1;

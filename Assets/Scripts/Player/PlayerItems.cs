@@ -37,6 +37,7 @@ public class PlayerItems : MonoBehaviour
     {
         InputManager.playerInput.Player.Interact.Disable();
         InputManager.playerInput.Player.Throw.Disable();
+        InputManager.playerInput.Player.SwitchDown.Disable();
     }
     void FixedUpdate()
     {
@@ -91,10 +92,16 @@ public class PlayerItems : MonoBehaviour
         if (Inventory.HasGuns() >= 3)
         {
             UpgradeManager.SwitchGuns(Inventory.guns[0], item.gameObject.GetComponent<Gun>());
+            Inventory.PickupGun(item.gameObject.GetComponent<Gun>());
+             
             DropGun();
         }
-        else UpgradeManager.GetFirstOpenSlot(item.gameObject.GetComponent<Gun>());
-        Inventory.PickupGun(item.gameObject.GetComponent<Gun>());
+        else
+        {
+            Inventory.PickupGun(item.gameObject.GetComponent<Gun>());
+
+            UpgradeManager.GetFirstOpenSlot(item.gameObject.GetComponent<Gun>());
+        }
         if (Inventory.HasGuns() > 1)
         {
             Inventory.guns[1].gameObject.SetActive(false);
