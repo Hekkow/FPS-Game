@@ -746,6 +746,22 @@ PrefabInstance:
       propertyPath: explosionUpForce
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.data[0].upgrade
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418344, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: m_Size.x
+      value: 5.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418344, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: m_Size.z
+      value: 0.79
+      objectReference: {fileID: 0}
     - target: {fileID: 6724796096853527081, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -7582,6 +7598,7 @@ GameObject:
   - component: {fileID: 784729607}
   - component: {fileID: 784729608}
   - component: {fileID: 784729609}
+  - component: {fileID: 784729610}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -7602,7 +7619,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &784729601
 MonoBehaviour:
@@ -7696,6 +7713,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   reloadInitialData: 0
+--- !u!114 &784729610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784729599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49aeed6dbed17ba4480057d81ff2b6ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allGunSlots: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &800306213
 GameObject:
   m_ObjectHideFlags: 0
@@ -9835,7 +9868,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1019141438}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -19.66, y: 0.97, z: -8.3}
+  m_LocalPosition: {x: -19.66, y: 0.97, z: -35.5}
   m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -12048,7 +12081,7 @@ Transform:
   m_GameObject: {fileID: 1292608483}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 9.23, y: 3.91, z: 11.69}
-  m_LocalScale: {x: 5, y: 5, z: 1}
+  m_LocalScale: {x: 5, y: 5.707, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1138807528}
@@ -12153,12 +12186,16 @@ PrefabInstance:
       value: Assembly-CSharp Pellets
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705864451424361]
+      value: Assembly-CSharp AttackSpeed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: managedReferences[3722705841845698567].gun
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: lockedUpgrades.upgrades.Array.data[0].amount
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: lockedUpgrades.upgrades.Array.data[0].locked
@@ -12166,14 +12203,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: lockedUpgrades.upgrades.Array.data[0].upgrade
-      value: 3722705841845698567
+      value: 3722705864451424361
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: managedReferences[3722705841845698567].category
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705864451424361].category
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: managedReferences[3722705841845698567].maxAmount
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705864451424361].maxAmount
       value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
@@ -12183,6 +12228,18 @@ PrefabInstance:
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: managedReferences[3722705841845698567].upgradeName
       value: Pellets
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705864451424361].upgradeName
+      value: Attack Speed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418344, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: m_Size.x
+      value: 5.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418344, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: m_Size.z
+      value: 0.79
       objectReference: {fileID: 0}
     - target: {fileID: 6724796096853527081, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: m_RootOrder
@@ -12730,7 +12787,7 @@ RectTransform:
   - {fileID: 1411235595}
   - {fileID: 1547695789}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -13168,7 +13225,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1350870819}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -16960,7 +17017,7 @@ Transform:
   - {fileID: 625731530}
   - {fileID: 1983743188}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1965521387
 MonoBehaviour:
@@ -18205,6 +18262,14 @@ PrefabInstance:
       propertyPath: explosionUpForce
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418344, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: m_Size.x
+      value: 5.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418344, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: m_Size.z
+      value: 0.79
+      objectReference: {fileID: 0}
     - target: {fileID: 6724796096853527081, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -18608,7 +18673,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: lockedUpgrades.upgrades.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: lockedUpgrades.Array.data[0].amount
@@ -18641,6 +18706,10 @@ PrefabInstance:
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: managedReferences[3722705841845698564]
       value: Assembly-CSharp AttackSpeed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705864451424360]
+      value: Assembly-CSharp Bouncer
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: lockedUpgrades.Array.data[0].upgradeSlot
@@ -18691,8 +18760,20 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.data[1].amount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.data[1].locked
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: lockedUpgrades.upgrades.Array.data[0].upgrade
       value: 3722705841845698564
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: lockedUpgrades.upgrades.Array.data[1].upgrade
+      value: 3722705864451424360
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: upgradeSlot.upgrades.Array.data[0].upgradeSlot
@@ -18715,6 +18796,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705864451424360].category
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: managedReferences[3722705841845698560].maxAmount
       value: 100
       objectReference: {fileID: 0}
@@ -18729,6 +18814,10 @@ PrefabInstance:
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: managedReferences[3722705841845698564].maxAmount
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705864451424360].maxAmount
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: lockedUpgrades.upgrades.Array.data[0].upgradeSlot
@@ -18749,6 +18838,10 @@ PrefabInstance:
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: managedReferences[3722705841845698564].upgradeName
       value: Attack Speed
+      objectReference: {fileID: 0}
+    - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
+      propertyPath: managedReferences[3722705864451424360].upgradeName
+      value: Bouncer
       objectReference: {fileID: 0}
     - target: {fileID: 6546544006610418340, guid: afb01dbb9c1d9cb49b3cccd155afb5c4, type: 3}
       propertyPath: ugpage.upgrades.Array.data[0].upgradeSlot.upgrades.Array.size

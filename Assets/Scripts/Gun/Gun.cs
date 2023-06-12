@@ -15,33 +15,33 @@ public class Gun : MonoBehaviour
     [Header("Stats")]
     [SerializeReference, SubclassPicker] public Addon addon = null;
     public UpgradeSlot lockedUpgrades;
-    public GunSlot upgradeSlot;
-    public int bulletsPerShot = 1;
-    public int bulletsPerTap = 1;
-    public float bulletSize = 0.1f;
-    public float bulletSpeed = 200;
-    public float bulletDamage = 34;
-    public float bulletKnockback = 5000000;
-    public float attackSpeed = 1;
-    public float bulletSpread = 0;
-    public float reloadSpeed = 1f;
-    public int bulletsPerMag = 6;
-    public int bulletsLeft = 6;
-    public int shotsPerMag = 6;
+    public GunSlot gunSlot;
+    //public int bulletsPerShot = 1;
+    //public int bulletsPerTap = 1;
+    //public float bulletSize = 0.1f;
+    //public float bulletSpeed = 200;
+    //public float bulletDamage = 34;
+    //public float bulletKnockback = 5000000;
+    //public float attackSpeed = 1;
+    //public float bulletSpread = 0;
+    //public float reloadSpeed = 1f;
+    //public int bulletsPerMag = 6;
+    //public int bulletsLeft = 6;
+    //public int shotsPerMag = 6;
     
-    [Header("Pellets")]
-    [HideInInspector] public int pelletLayers = 0;
-    [HideInInspector] public float pelletSpread = 0;
-    [HideInInspector] public List<int> pelletsPerLayer = new List<int>();
+    //[Header("Pellets")]
+    //[HideInInspector] public int pelletLayers = 0;
+    //[HideInInspector] public float pelletSpread = 0;
+    //[HideInInspector] public List<int> pelletsPerLayer = new List<int>();
 
-    [Header("Explosive Bullets")]
-    [Rename("Radius")] public float explosionRadius = 5;
-    [Rename("Force")] public float explosionForce = 30;
-    [Rename("Up Force")] public float explosionUpForce = 1;
-    [Rename("Damage")] public float explosionDamage = 15;
+    //[Header("Explosive Bullets")]
+    //[Rename("Radius")] public float explosionRadius = 5;
+    //[Rename("Force")] public float explosionForce = 30;
+    //[Rename("Up Force")] public float explosionUpForce = 1;
+    //[Rename("Damage")] public float explosionDamage = 15;
 
-    [Header("Upgrades")]
-    public bool bouncer = false;
+    //[Header("Upgrades")]
+    //public bool bouncer = false;
     
     enum ForceDirection
     {
@@ -69,7 +69,7 @@ public class Gun : MonoBehaviour
     }
     void OnEnable()
     {
-        if (bulletsLeft <= 0)
+        if (gunSlot.bulletsLeft <= 0)
         {
             reloadCoroutine = StartCoroutine(WaitThenReload(0));
         }
@@ -93,7 +93,7 @@ public class Gun : MonoBehaviour
     }
     void Update()
     {
-        if (shooting && readyToShoot && bulletsLeft > 0) Shoot();
+        if (shooting && readyToShoot && gunSlot.bulletsLeft > 0) Shoot();
     }
 
     void Shoot()
@@ -103,15 +103,15 @@ public class Gun : MonoBehaviour
         readyToShoot = false;
         float multiplier = 0.1f;
 
-        float originalX = UnityEngine.Random.Range(-bulletSpread * multiplier, bulletSpread * multiplier);
-        float originalY = UnityEngine.Random.Range(-bulletSpread * multiplier, bulletSpread * multiplier);
+        float originalX = UnityEngine.Random.Range(-gunSlot.bulletSpread * multiplier, gunSlot.bulletSpread * multiplier);
+        float originalY = UnityEngine.Random.Range(-gunSlot.bulletSpread * multiplier, gunSlot.bulletSpread * multiplier);
         Lazer(originalX, originalY, 0f);
-        for (int i = 0; i < pelletLayers; i++)
+        for (int i = 0; i < gunSlot.pelletLayers; i++)
         {
-            for (int j = 0; j < pelletsPerLayer[i]; j++)
+            for (int j = 0; j < gunSlot.pelletsPerLayer[i]; j++)
             {
-                float radius = (i + 1) * pelletSpread;
-                float angle = 360 * Mathf.Deg2Rad / pelletsPerLayer[i];
+                float radius = (i + 1) * gunSlot.pelletSpread;
+                float angle = 360 * Mathf.Deg2Rad / gunSlot.pelletsPerLayer[i];
                 float x = radius * Mathf.Cos(j * angle) + originalX;
                 float y = radius * Mathf.Sin(j * angle) + originalY;
                 Lazer(x, y, 0f);
@@ -121,11 +121,11 @@ public class Gun : MonoBehaviour
         StartCoroutine(ResetShot());
 
         shootAnimator.Play("shoot", 0, 0f);
-        shootAnimator.speed = upgradeSlot.attackSpeed;
+        shootAnimator.speed = gunSlot.attackSpeed;
 
-        if (bulletsLeft <= 0)
+        if (gunSlot.bulletsLeft <= 0)
         {
-            reloadCoroutine = StartCoroutine(WaitThenReload(1 / upgradeSlot.attackSpeed));
+            reloadCoroutine = StartCoroutine(WaitThenReload(1 / gunSlot.attackSpeed));
         }
 
         onShot?.Invoke();
@@ -134,10 +134,10 @@ public class Gun : MonoBehaviour
     }
     void Lazer(float x, float y, float hitDelay)
     {
-        bulletsLeft--;
+        gunSlot.bulletsLeft--;
         RaycastHit hit;
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward + cameraTransform.right * x + cameraTransform.up * y);
-        if (Physics.SphereCast(ray, bulletSize, out hit) && !hit.transform.GetComponent<Player>()) 
+        if (Physics.SphereCast(ray, gunSlot.bulletSize, out hit) && !hit.transform.GetComponent<Player>()) 
         { 
             StartCoroutine(Hit(ray, hit, hitDelay, ForceDirection.towardPlayer));
         }
@@ -146,7 +146,7 @@ public class Gun : MonoBehaviour
     {
         RaycastHit hit;
         Ray ray = new Ray(originalHit.point, Quaternion.AngleAxis(x, Vector3.up) * Quaternion.AngleAxis(y, Vector3.right) * Vector3.Reflect(originalRay.direction, originalHit.normal));
-        if (Physics.SphereCast(ray, bulletSize, out hit) && !hit.transform.GetComponent<Player>())
+        if (Physics.SphereCast(ray, gunSlot.bulletSize, out hit) && !hit.transform.GetComponent<Player>())
         {
             StartCoroutine(Hit(ray, hit, hitDelay, ForceDirection.hitNormal));
         }
@@ -157,15 +157,15 @@ public class Gun : MonoBehaviour
         //yield return new WaitForSeconds(hit.distance/bulletSpeed);
         if (hit.transform.TryGetComponentInParent(out IDamageable damage))
         {
-            damage.Damaged(bulletDamage, hit.collider, this);
+            damage.Damaged(gunSlot.bulletDamage, hit.collider, this);
         }
         ForceMode forceMode = ForceMode.Force;
         if (hit.rigidbody != null)
         {
-            if (mode == ForceDirection.towardPlayer) hit.rigidbody.AddForce(Camera.main.transform.forward * bulletKnockback, forceMode);
-            else if (mode == ForceDirection.hitNormal) hit.rigidbody.AddForce(-hit.normal * bulletKnockback, forceMode);
+            if (mode == ForceDirection.towardPlayer) hit.rigidbody.AddForce(Camera.main.transform.forward * gunSlot.bulletKnockback, forceMode);
+            else if (mode == ForceDirection.hitNormal) hit.rigidbody.AddForce(-hit.normal * gunSlot.bulletKnockback, forceMode);
         }
-        if (bouncer && hit.collider != null)
+        if (gunSlot.bouncer && hit.collider != null)
         {
             LazerFromPoint(0, 0, 0.1f, ray, hit);
         }
@@ -173,12 +173,12 @@ public class Gun : MonoBehaviour
     }
     IEnumerator ResetShot()
     {
-        yield return new WaitForSeconds(1 / (upgradeSlot.attackSpeed));
+        yield return new WaitForSeconds(1 / (gunSlot.attackSpeed));
         readyToShoot = true;
     }
     void Reload(InputAction.CallbackContext obj)
     {
-        if (!reloading && bulletsPerMag > bulletsLeft && gameObject.activeSelf)
+        if (!reloading && gunSlot.bulletsPerMag > gunSlot.bulletsLeft && gameObject.activeSelf)
         {
             reloadCoroutine = StartCoroutine(WaitThenReload(0));
         }
@@ -194,15 +194,15 @@ public class Gun : MonoBehaviour
         onBeforeReload?.Invoke();
         reloading = true;
         shootAnimator.Play("reload", 0, 0f);
-        shootAnimator.speed = reloadSpeed;
-        yield return new WaitForSeconds(1/reloadSpeed);
+        shootAnimator.speed = gunSlot.reloadSpeed;
+        yield return new WaitForSeconds(1 / gunSlot.reloadSpeed);
         reloading = false;
         ResetBullets();
         onAfterReload?.Invoke();
     }
     public void ResetBullets()
     {
-        bulletsLeft = bulletsPerMag;
+        gunSlot.bulletsLeft = gunSlot.bulletsPerMag;
         readyToShoot = true;
     }
     public void ResetBulletsAfterUpgrade()
@@ -210,7 +210,7 @@ public class Gun : MonoBehaviour
         if (gameObject.activeSelf) StartCoroutine(ResetBulletsAfterUpgradeCoroutine());
         else
         {
-            bulletsLeft = bulletsPerMag;
+            gunSlot.bulletsLeft = gunSlot.bulletsPerMag;
             readyToShoot = true; 
         }
     }
@@ -218,7 +218,7 @@ public class Gun : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        bulletsLeft = bulletsPerMag;
+        if (gunSlot != null) gunSlot.bulletsLeft = gunSlot.bulletsPerMag; 
         readyToShoot = true;
     }
     public void ActivateAddon(InputAction.CallbackContext obj)

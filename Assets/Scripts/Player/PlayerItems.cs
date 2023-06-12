@@ -57,19 +57,20 @@ public class PlayerItems : MonoBehaviour
         item.gameObject.ApplyLayerToChildren("Ground");
         holdingItem = false;
     }
-    void DropGun()
+    void DropGun(Gun gun)
     {
-        Transform item = Inventory.guns[0].transform;
+        Transform item = gun.transform;
         item.gameObject.MakePhysical(true);
-        Inventory.guns[0].shootAnimator.Play("idle", 0, 0);
-        Inventory.guns[0].enabled = false;
+        gun.shootAnimator.Rebind();
+        gun.shootAnimator.Update(0f);
+        gun.enabled = false;
         item.gameObject.GetComponent<Animator>().enabled = false;
         item.localScale *= 2;
         item.parent = gunsParent;
         item.AddComponent<Pickup>();
         item.gameObject.ApplyLayerToChildren("Ground");
         item.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
-        Inventory.DropGun();
+        
     }
     void PickupItem(Transform item)
     {
@@ -89,18 +90,19 @@ public class PlayerItems : MonoBehaviour
     }
     void PickupGun(Transform item)
     {
+        Gun gun = item.GetComponent<Gun>();
+        Gun gunToDrop = Inventory.guns?[0];
         if (Inventory.HasGuns() >= 3)
         {
-            UpgradeManager.SwitchGuns(Inventory.guns[0], item.gameObject.GetComponent<Gun>());
-            Inventory.PickupGun(item.gameObject.GetComponent<Gun>());
-             
-            DropGun();
+            Inventory.PickupGun(gun);
+            DropGun(gunToDrop);
+            UpgradeManager.SwitchGuns(gunToDrop, gun);
         }
         else
         {
-            Inventory.PickupGun(item.gameObject.GetComponent<Gun>());
+            Inventory.PickupGun(gun);
 
-            UpgradeManager.GetFirstOpenSlot(item.gameObject.GetComponent<Gun>());
+            UpgradeManager.GetFirstOpenSlot(gun);
         }
         if (Inventory.HasGuns() > 1)
         {
@@ -135,7 +137,8 @@ public class PlayerItems : MonoBehaviour
     {
         GameObject item = Inventory.guns[0].gameObject;
         UpgradeManager.DropGun(Inventory.guns[0]);
-        DropGun();
+        DropGun(Inventory.guns[0]);
+        Inventory.DropGun();
         CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
         if (item.TryGetComponent(out Rigidbody rb))
         {

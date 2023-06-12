@@ -60,7 +60,7 @@ public class HUD : MonoBehaviour
         yield return new WaitForEndOfFrame();
         if (Inventory.HasGun())
         {
-            bulletsText.text = Inventory.guns[0].bulletsLeft + "/" + Inventory.guns[0].bulletsPerMag;
+            bulletsText.text = Inventory.guns[0].gunSlot.bulletsLeft + "/" + Inventory.guns[0].gunSlot.bulletsPerMag;
         }
     }
 }

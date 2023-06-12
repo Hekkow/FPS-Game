@@ -34,9 +34,9 @@ public class Reticle : MonoBehaviour
     IEnumerator ShotBloom()
     {
         float startTime = Time.time;
-        while (Inventory.HasGun() && Time.time - startTime < (1 / Inventory.guns[0].attackSpeed))
+        while (Inventory.HasGun() && Time.time - startTime < (1 / Inventory.guns[0].gunSlot.attackSpeed))
         {
-            reticleHoleSize = mainReticleSize + (shotCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].attackSpeed) * reticleBloomAmount);
+            reticleHoleSize = mainReticleSize + (shotCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].gunSlot.attackSpeed) * reticleBloomAmount);
             armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
             yield return new WaitForEndOfFrame();
         }
@@ -44,9 +44,9 @@ public class Reticle : MonoBehaviour
     IEnumerator ReloadBloom()
     {
         float startTime = Time.time;
-        while (Inventory.HasGun() && Time.time - startTime < (1 / Inventory.guns[0].reloadSpeed))
+        while (Inventory.HasGun() && Time.time - startTime < (1 / Inventory.guns[0].gunSlot.reloadSpeed))
         {
-            reticleHoleSize = mainReticleSize + (reloadCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].reloadSpeed) * reticleBloomAmount);
+            reticleHoleSize = mainReticleSize + (reloadCurve.Evaluate((Time.time - startTime) * Inventory.guns[0].gunSlot.reloadSpeed) * reticleBloomAmount);
             armedReticle.sizeDelta = new Vector2(reticleHoleSize, reticleHoleSize);
             yield return new WaitForEndOfFrame(); 
         }
@@ -55,7 +55,7 @@ public class Reticle : MonoBehaviour
     {
         if (Inventory.HasGun())
         {
-            mainReticleSize = Inventory.guns[0].pelletLayers * Inventory.guns[0].pelletSpread * 600 + Inventory.guns[0].bulletSpread * 60 + defaultReticleHoleSize;
+            mainReticleSize = Inventory.guns[0].gunSlot.pelletLayers * Inventory.guns[0].gunSlot.pelletSpread * 600 + Inventory.guns[0].gunSlot.bulletSpread * 60 + defaultReticleHoleSize;
             unarmedReticle.SetActive(false);
             armedReticle.gameObject.SetActive(true);
             reticleHoleSize = mainReticleSize;

@@ -27,7 +27,7 @@ public class UpgradeManager : MonoBehaviour
 {
     public static List<Upgrade> allUpgrades;
     public static GunSlot[] allGunSlots = new GunSlot[3];
-    public static event Action onUpgrade;
+    public static event Action onUpgrade; 
     
     void Start()
     {
@@ -49,7 +49,7 @@ public class UpgradeManager : MonoBehaviour
     public static bool ActivateUpgrade(Upgrade upgrade)
     {
         if (upgrade == null) return false;
-        int index = FindSlot(Inventory.guns[0].upgradeSlot);
+        int index = FindSlot(Inventory.guns[0].gunSlot);
         int upgradeIndex = HasUpgrade(upgrade, allGunSlots[index]);
         if (upgradeIndex == -1)
         {
@@ -67,12 +67,9 @@ public class UpgradeManager : MonoBehaviour
         onUpgrade?.Invoke();
         return true;
     }
-    public static void DeactivateUpgrade(Upgrade upgrade)
+    public static void DeactivateUpgrade(Upgrade upgrade, UpgradeSlot upgradeSlot)
     {
         if (upgrade == null) return;
-        UpgradeSlot upgradeSlot;
-        if (upgrade.category == Upgrade.Category.Gun) upgradeSlot = Inventory.guns[0].upgradeSlot;
-        else upgradeSlot = Player.slot;
         int upgradeIndex = HasUpgrade(upgrade, upgradeSlot);
         if (upgradeIndex == -1) return;
         if (upgradeSlot.upgrades[upgradeIndex].locked) return;
@@ -86,7 +83,7 @@ public class UpgradeManager : MonoBehaviour
     {
         for (int i = 0; i < upgradeSlot.upgrades.Count; i++)
         {
-            if (upgradeSlot.upgrades[i].upgrade == upgrade) return i;
+            if (upgradeSlot.upgrades[i].upgrade.upgradeName == upgrade.upgradeName) return i;
         }
         return -1;
     }
@@ -127,58 +124,58 @@ public class UpgradeManager : MonoBehaviour
     }
     public static void SwitchGuns(Gun switchFrom, Gun switchTo)
     {
-        GunSlot gunSlot = switchFrom.upgradeSlot;
-        switchFrom.upgradeSlot = null;
-        switchTo.upgradeSlot = gunSlot;
+        GunSlot gunSlot = switchFrom.gunSlot;
+        switchFrom.gunSlot = null;
+        switchTo.gunSlot = gunSlot;
         int slotIndex = FindSlot(gunSlot);
         allGunSlots[slotIndex].gun = switchTo;
+        switchFrom.gunSlot = null;
     }
     public static void GetFirstOpenSlot(Gun gun)
     {
         int index = -1;
-        // if upgrade slot is already used on a gun, prioritize that one
-        for (int i = 0; i < allGunSlots.Length; i++)
-        {
-            if (gun.upgradeSlot == allGunSlots[i])
-            {
-                allGunSlots[i].used = true;
-            }
-        }
         // find next open slot
         for (int i = 0; i < allGunSlots.Length; i++)
-        {
             if (!allGunSlots[i].used)
             {
                 index = i;
                 break;
             }
-        }
-        gun.upgradeSlot = allGunSlots[index];
+        gun.gunSlot = allGunSlots[index];
+        if (allGunSlots[index].gun != null) allGunSlots[index].gun.gunSlot = null;
         allGunSlots[index].gun = gun;
         allGunSlots[index].used = true;
+
         for (int i = 0; i < Inventory.guns[0].lockedUpgrades.upgrades.Count; i++)
             for (int j = 0; j < Inventory.guns[0].lockedUpgrades.upgrades[i].amount; j++)
                 ActivateUpgrade(Inventory.guns[0].lockedUpgrades.upgrades[i].upgrade);
-        //if (allGunSlots[index].gun != null) allGunSlots[index].gun.upgradeSlot = null;
     }
     public static void DropGun(Gun gun)
     {
+        int index = -1;
         for (int i = 0; i < allGunSlots.Length; i++)
         {
-            if (gun.upgradeSlot == allGunSlots[i]) 
+            if (gun.gunSlot == allGunSlots[i]) 
             {
-                allGunSlots[i].used = false;
+                index = i;
+                
                 break;
             }
         }
+        for (int i = 0; i < gun.lockedUpgrades.upgrades.Count; i++)
+            for (int j = 0; j < gun.lockedUpgrades.upgrades[i].amount; j++)
+                DeactivateUpgrade(gun.lockedUpgrades.upgrades[i].upgrade, allGunSlots[index]);
+        allGunSlots[index].used = false;
+        allGunSlots[index].gun.gunSlot = null;
+        allGunSlots[index].gun = null;
         (allGunSlots[0], allGunSlots[1], allGunSlots[2]) = (allGunSlots[1], allGunSlots[2], allGunSlots[0]);
     }
     public static int FindSlot(UpgradeSlot upgradeSlot)
     {
-        for (int i = 0; i < allGunSlots.Length; i++) {
-            if (allGunSlots[i].gun == upgradeSlot.gun) return i;
+        for (int i = 0; i < allGunSlots.Length; i++)
+        { 
+            if (upgradeSlot.gun != null && allGunSlots[i].gun == upgradeSlot.gun) return i; 
         }
-
         return -1;
     }
 }

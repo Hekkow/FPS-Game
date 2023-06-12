@@ -32,7 +32,7 @@ public class UI : MonoBehaviour {
         else
         {
             InputManager.SwitchActionMap(InputManager.playerInput.UI);
-            Debug.Log(Inventory.guns[0].upgradeSlot);
+            Debug.Log(Inventory.guns[0].gunSlot);
             upgrades.gameObject.SetActive(true);
             guns.gameObject.SetActive(true);
             float width = guns.GetComponent<RectTransform>().rect.width;
