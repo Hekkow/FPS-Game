@@ -27,7 +27,8 @@ public class AttackSpeed : Upgrade
     }
     public override void Deactivate(UpgradeSlot slot)
     {
-        Inventory.guns[0].gunSlot.attackSpeed /= 2;
+        GunSlot gunSlot = slot as GunSlot;
+        gunSlot.attackSpeed /= 2;
     }
 }
 public class BulletDamage : Upgrade

@@ -46,35 +46,39 @@ public class UpgradeManager : MonoBehaviour
             allGunSlots[i] = new GunSlot();
         }
     }
-    public static bool ActivateUpgrade(Upgrade upgrade)
+    public static bool ActivateUpgrade(Upgrade upgrade, int amount = 1)
     {
         if (upgrade == null) return false;
         int index = FindSlot(Inventory.guns[0].gunSlot);
-        int upgradeIndex = HasUpgrade(upgrade, allGunSlots[index]);
-        if (upgradeIndex == -1)
+        for (int i = 0; i < amount; i++)
         {
-            upgrade.Activate();
-            UpgradeInfo upgradeInfo = new UpgradeInfo(upgrade, 1);
-            allGunSlots[index].upgrades.Add(upgradeInfo);
+            int upgradeIndex = HasUpgrade(upgrade, allGunSlots[index]);
+            if (upgradeIndex == -1)
+            {
+                upgrade.Activate();
+                UpgradeInfo upgradeInfo = new UpgradeInfo(upgrade, 1);
+                allGunSlots[index].upgrades.Add(upgradeInfo);
+            }
+            else if (allGunSlots[index].upgrades[upgradeIndex].amount < upgrade.maxAmount)
+            {
+                upgrade.Activate();
+                allGunSlots[index].upgrades[upgradeIndex].ChangeAmount(1);
+            }
+            else return false;
         }
-        else if (allGunSlots[index].upgrades[upgradeIndex].amount < upgrade.maxAmount)
-        {
-            upgrade.Activate();
-            allGunSlots[index].upgrades[upgradeIndex].ChangeAmount(1);
-        }
-        else return false;
         Inventory.ResetBulletsAfterUpgrade();
         onUpgrade?.Invoke();
         return true;
     }
-    public static void DeactivateUpgrade(Upgrade upgrade, UpgradeSlot upgradeSlot)
+    public static void DeactivateUpgrade(Upgrade upgrade, UpgradeSlot upgradeSlot, int amount = 1)
     {
         if (upgrade == null) return;
         int upgradeIndex = HasUpgrade(upgrade, upgradeSlot);
         if (upgradeIndex == -1) return;
         if (upgradeSlot.upgrades[upgradeIndex].locked) return;
-        upgrade.Deactivate(upgradeSlot);
-        upgradeSlot.upgrades[upgradeIndex].ChangeAmount(-1);
+        for (int i = 0; i < amount; i++)
+            upgrade.Deactivate(upgradeSlot);
+        upgradeSlot.upgrades[upgradeIndex].ChangeAmount(-amount);
         if (upgradeSlot.upgrades[upgradeIndex].amount <= 0) upgradeSlot.upgrades.RemoveAt(upgradeIndex);
         Inventory.ResetBulletsAfterUpgrade();
         onUpgrade?.Invoke();
@@ -124,6 +128,7 @@ public class UpgradeManager : MonoBehaviour
     }
     public static void SwitchGuns(Gun switchFrom, Gun switchTo)
     {
+        DeactivateLockedUpgrades(switchFrom);
         GunSlot gunSlot = switchFrom.gunSlot;
         switchFrom.gunSlot = null;
         switchTo.gunSlot = gunSlot;
@@ -145,10 +150,18 @@ public class UpgradeManager : MonoBehaviour
         if (allGunSlots[index].gun != null) allGunSlots[index].gun.gunSlot = null;
         allGunSlots[index].gun = gun;
         allGunSlots[index].used = true;
-
-        for (int i = 0; i < Inventory.guns[0].lockedUpgrades.upgrades.Count; i++)
-            for (int j = 0; j < Inventory.guns[0].lockedUpgrades.upgrades[i].amount; j++)
-                ActivateUpgrade(Inventory.guns[0].lockedUpgrades.upgrades[i].upgrade);
+        ActivateLockedUpgrades(gun);
+        
+    }
+    public static void ActivateLockedUpgrades(Gun gun)
+    {
+        for (int i = 0; i < gun.lockedUpgrades.upgrades.Count; i++)
+            ActivateUpgrade(gun.lockedUpgrades.upgrades[i].upgrade, gun.lockedUpgrades.upgrades[i].amount);
+    }
+    public static void DeactivateLockedUpgrades(Gun gun)
+    {
+        for (int i = 0; i < gun.lockedUpgrades.upgrades.Count; i++)
+            DeactivateUpgrade(gun.lockedUpgrades.upgrades[i].upgrade, gun.gunSlot, gun.lockedUpgrades.upgrades[i].amount);
     }
     public static void DropGun(Gun gun)
     {
@@ -162,9 +175,7 @@ public class UpgradeManager : MonoBehaviour
                 break;
             }
         }
-        for (int i = 0; i < gun.lockedUpgrades.upgrades.Count; i++)
-            for (int j = 0; j < gun.lockedUpgrades.upgrades[i].amount; j++)
-                DeactivateUpgrade(gun.lockedUpgrades.upgrades[i].upgrade, allGunSlots[index]);
+        DeactivateLockedUpgrades(gun);
         allGunSlots[index].used = false;
         allGunSlots[index].gun.gunSlot = null;
         allGunSlots[index].gun = null;
@@ -178,5 +189,6 @@ public class UpgradeManager : MonoBehaviour
         }
         return -1;
     }
+
 }
 
