@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
+using Unity.VisualScripting;
 
 public class UI : MonoBehaviour {
     [HideInInspector] public static bool inMenu = false;
     [SerializeField] Transform upgrades;
     [SerializeField] Transform guns;
+    [SerializeField] Transform upgradeMenu;
     [SerializeField] GameObject canvas;
     [SerializeField] float gunsDistanceFromTop;
     void OnEnable()
@@ -20,8 +23,9 @@ public class UI : MonoBehaviour {
         if (inMenu)
         {
             InputManager.SwitchActionMap(InputManager.playerInput.Player);
-            upgrades.gameObject.SetActive(false);
-            guns.gameObject.SetActive(false);
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            upgradeMenu.gameObject.SetActive(false);
             guns.DestroyAllChildren();
             for (int i = 0; i < UpgradeManager.allGunSlots.Length; i++)
             {
@@ -32,14 +36,13 @@ public class UI : MonoBehaviour {
         else
         {
             InputManager.SwitchActionMap(InputManager.playerInput.UI);
-            Debug.Log(Inventory.guns[0].gunSlot);
-            upgrades.gameObject.SetActive(true);
-            guns.gameObject.SetActive(true);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            upgradeMenu.gameObject.SetActive(true);
             float width = guns.GetComponent<RectTransform>().rect.width;
             float height = guns.GetComponent<RectTransform>().rect.height;
             for (int i = 0; i < UpgradeManager.allGunSlots.Length; i++)
             {
-                Debug.Log(UpgradeManager.allGunSlots[i]);
                 if (UpgradeManager.allGunSlots[i].gun != null)
                 {
                     Vector3 position = new Vector3((width / 3 * i) - (width / 2) + (width / 3 / 2), height / 2 - gunsDistanceFromTop, 0);
@@ -65,7 +68,8 @@ public class UI : MonoBehaviour {
                 {
                     for (int n = 0; n < UpgradeManager.allGunSlots[i].upgrades[j].amount; n++)
                     {
-                        GameObject upgradeBox = Instantiate(Resources.Load<GameObject>("Prefabs/Upgrade UI"), upgrades.GetChild(i));
+                        GameObject upgradeBox = Instantiate(Resources.Load<GameObject>("Prefabs/Button"), upgrades.GetChild(i));
+                        upgradeBox.AddComponent<UpgradeMenuButton>().Init(UpgradeManager.allGunSlots[i].upgrades[j].upgrade, UpgradeManager.allGunSlots[i]);
                         TMP_Text text = upgradeBox.GetComponentInChildren<TMP_Text>();
                         text.text = UpgradeManager.allGunSlots[i].upgrades[j].upgrade.upgradeName;
                     }
@@ -73,5 +77,9 @@ public class UI : MonoBehaviour {
             }
             inMenu = true;
         }
+    }
+    public void Test()
+    {
+        Debug.Log("test");
     }
 }

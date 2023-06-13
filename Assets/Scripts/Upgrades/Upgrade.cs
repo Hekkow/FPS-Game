@@ -13,6 +13,24 @@ public abstract class Upgrade
     public Category category;
     public abstract void Activate();
     public abstract void Deactivate(UpgradeSlot slot);
+    public string CategoryToString(Category category)
+    {
+        switch (category)
+        {
+            case Category.Gun:
+                return "Gun";
+            case Category.Mobility:
+                return "Mobility";
+            case Category.Health:
+                return "Health";
+            default:
+                return "???";
+        }
+    }
+    public override string ToString()
+    {
+        return $"{upgradeName}\nCategory: {CategoryToString(category)}\nMax amount: {maxAmount}"; 
+    }
 }
 public class AttackSpeed : Upgrade
 {

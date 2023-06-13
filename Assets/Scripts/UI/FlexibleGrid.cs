@@ -52,8 +52,8 @@ public class FlexibleGrid : LayoutGroup
         float parentWidth = rectTransform.rect.width;
         float parentHeight = rectTransform.rect.height;
 
-        float cellWidth = (parentWidth / columns) - (spacing.x / ((float)columns / (columns - 1))) - (padding.left / (float)columns) - (padding.right / (float)columns);
-        float cellHeight = (parentHeight / rows) - (spacing.y / ((float)rows / (rows - 1))) - (padding.top / (float)rows) - (padding.bottom / (float)rows);
+        float cellWidth = Mathf.Abs((parentWidth / columns) - (spacing.x / ((float)columns / (columns - 1))) - (padding.left / (float)columns) - (padding.right / (float)columns));
+        float cellHeight = Mathf.Abs((parentHeight / rows) - (spacing.y / ((float)rows / (rows - 1))) - (padding.top / (float)rows) - (padding.bottom / (float)rows));
         if (fitType == FitType.Upgrades)
         {
             cellHeight = cellWidth;

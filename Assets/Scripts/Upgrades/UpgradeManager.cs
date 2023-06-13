@@ -7,20 +7,18 @@ public class UpgradeInfo
 {
     [SerializeReference, SubclassPicker] public Upgrade upgrade;
     public int amount = 0;
-    public bool locked;
     public void ChangeAmount(int changeBy)
     {
         amount += changeBy;
     }
-    public UpgradeInfo(Upgrade upgrade, int amount, bool locked = false)
+    public UpgradeInfo(Upgrade upgrade, int amount)
     {
         this.upgrade = upgrade;
         this.amount = amount;
-        this.locked = locked;
     }
     public override string ToString()
     {
-        return $"{amount} x {upgrade} (locked = {locked})";
+        return $"{amount} x {upgrade}";
     }
 }
 public class UpgradeManager : MonoBehaviour
@@ -75,7 +73,6 @@ public class UpgradeManager : MonoBehaviour
         if (upgrade == null) return;
         int upgradeIndex = HasUpgrade(upgrade, upgradeSlot);
         if (upgradeIndex == -1) return;
-        if (upgradeSlot.upgrades[upgradeIndex].locked) return;
         for (int i = 0; i < amount; i++)
             upgrade.Deactivate(upgradeSlot);
         upgradeSlot.upgrades[upgradeIndex].ChangeAmount(-amount);
@@ -139,9 +136,8 @@ public class UpgradeManager : MonoBehaviour
     public static void GetFirstOpenSlot(Gun gun)
     {
         int index = -1;
-        // find next open slot
         for (int i = 0; i < allGunSlots.Length; i++)
-            if (!allGunSlots[i].used)
+            if (allGunSlots[i].gun == null)
             {
                 index = i;
                 break;
@@ -149,7 +145,6 @@ public class UpgradeManager : MonoBehaviour
         gun.gunSlot = allGunSlots[index];
         if (allGunSlots[index].gun != null) allGunSlots[index].gun.gunSlot = null;
         allGunSlots[index].gun = gun;
-        allGunSlots[index].used = true;
         ActivateLockedUpgrades(gun);
         
     }
@@ -176,7 +171,6 @@ public class UpgradeManager : MonoBehaviour
             }
         }
         DeactivateLockedUpgrades(gun);
-        allGunSlots[index].used = false;
         allGunSlots[index].gun.gunSlot = null;
         allGunSlots[index].gun = null;
         (allGunSlots[0], allGunSlots[1], allGunSlots[2]) = (allGunSlots[1], allGunSlots[2], allGunSlots[0]);
