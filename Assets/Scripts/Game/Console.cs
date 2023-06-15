@@ -151,7 +151,7 @@ public class Console : MonoBehaviour
         }
         else if (words[0] == "hurt")
         {
-            GameObject.Find("Player").GetComponent<PlayerHealth>().Damaged(int.Parse(words[1]), null, null);
+            GameObject.Find("Player").GetComponent<PlayerHealth>().Damaged(int.Parse(words[1]), Vector3.zero, null);
         }
         else
         {

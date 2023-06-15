@@ -15,7 +15,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         health = GetComponent<Health>();
     }
-    public void Damaged(float amount, object collision, object origin)
+    public void Damaged(float amount, Vector3 hitPoint, Component origin)
     {
         float realAmount = amount;
         if (canHurt)

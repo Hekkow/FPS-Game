@@ -117,12 +117,11 @@ public static class Extensions
             {
                 launchables.Add(launchable);
                 launchable.Launch(position, force, upForce);
-
             }
             if (collider.TryGetComponentInParent(out IDamageable damageable) && !damageables.Contains(damageable))
             {
                 damageables.Add(damageable);
-                damageable.Damaged(damage, collider, null);
+                damageable.Damaged(damage, collider.transform.position, null);
             }
         }
     }

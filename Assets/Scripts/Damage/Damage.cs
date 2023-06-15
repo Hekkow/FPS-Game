@@ -8,5 +8,4 @@ public class Damage : MonoBehaviour
 {
     public float damage;
     public bool didDamage = false;
-    
 }

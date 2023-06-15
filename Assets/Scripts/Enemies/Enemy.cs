@@ -26,6 +26,7 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] float viewAngleAfterDetected;
     [SerializeField] float detectionTime;
     [SerializeField] float visionInterval;
+    [SerializeField] bool looks;
     float viewRadius;
     float viewAngle;
     float timeDetected;
@@ -87,10 +88,11 @@ public class Enemy : MonoBehaviour, IDamageable
             yield return new WaitForSeconds(visionInterval);
         }
     }
-    public virtual void Damaged(float amount, object collision, object origin)
+    public virtual void Damaged(float amount, Vector3 hitPoint, Component origin)
     {
-        
-        if (health.alive && amount >= 1)
+        DamageNumber dn = Instantiate(Resources.Load<DamageNumber>("Prefabs/DamageNumbers"), GameObject.Find("HUD").transform);
+        dn.Init(amount, hitPoint);
+        if (health.alive && amount > 0)
         {
             health.health -= amount;
             if (health.health <= 0 && canDie)
@@ -98,7 +100,7 @@ public class Enemy : MonoBehaviour, IDamageable
                 Killed();
             }
         }
-        if (!playerDetected) StartCoroutine(LookAround());
+        if (!playerDetected && looks) StartCoroutine(LookAround());
     }
     public virtual void Killed()
     {
@@ -110,6 +112,7 @@ public class Enemy : MonoBehaviour, IDamageable
         Destroy(rb);
         Destroy(animator);
         Destroy(agent);
+        Destroy(this);
     }
     public virtual IEnumerator LookAround()
     {

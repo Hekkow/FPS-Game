@@ -22,7 +22,7 @@ public class PickupUpgrade : MonoBehaviour, IDamageable
             upgradeBoxes[i].GetComponent<PickupUpgrade>().onUpgradeShot += () => upgraded = true;
         }
     }
-    public void Damaged(float amount, object collision, object origin)
+    public void Damaged(float amount, Vector3 hitPoint, Component origin)
     {
         if (upgraded) return;
         Killed();

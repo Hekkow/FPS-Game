@@ -4,14 +4,9 @@ using UnityEngine;
 
 public class UpgradeLoot : Loot
 {
-    Transform player;
-    void Awake()
+    public override void Damaged(float amount, Vector3 hitPoint, Component origin)
     {
-        player = GameObject.Find("Player").transform;
-    }
-    public override void Damaged(float amount, object collision, object origin)
-    {
-        base.Damaged(amount, collision, origin);
+        base.Damaged(amount, hitPoint, origin);
     }
     public override void Killed()
     {

@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Hitbox : Damage
 {
-    void OnTriggerEnter(Collider collision)
+    void OnTriggerEnter(Collider collider)
     {
         if (didDamage) return;
-        if (!collision.gameObject.TryGetComponent(out IDamageable damageable)) return;
-        if (collision.gameObject.transform.root == transform.root) return;
-        damageable.Damaged(damage, collision, this);
+        if (!collider.gameObject.TryGetComponent(out IDamageable damageable)) return;
+        if (collider.gameObject.transform.root == transform.root) return;
+        damageable.Damaged(damage, collider.transform.position, this);
         didDamage = true;
         Destroy(this);
     }
@@ -18,7 +18,7 @@ public class Hitbox : Damage
         if (didDamage) return;
         if (!collision.gameObject.TryGetComponent(out IDamageable damageable)) return;
         if (collision.gameObject.transform.root == transform.root) return;
-        damageable.Damaged(damage, collision, this);
+        damageable.Damaged(damage, collision.GetContact(0).point, this);
         didDamage = true;
         Destroy(this);
     }

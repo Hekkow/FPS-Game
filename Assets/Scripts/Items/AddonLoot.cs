@@ -6,11 +6,11 @@ using UnityEngine;
 public class AddonLoot : Loot
 {
     public AddonManager.AddonName addon;
-    public override void Damaged(float amount, object collision, object origin)
+    public override void Damaged(float amount, Vector3 hitPoint, Component origin)
     {
         if (origin is Gun)
         {
-            base.Damaged(amount, collision, origin);
+            base.Damaged(amount, hitPoint, origin);
         }
     }
     public override void Killed()

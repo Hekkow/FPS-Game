@@ -91,6 +91,7 @@ public class PlayerItems : MonoBehaviour
     void PickupGun(Transform item)
     {
         Gun gun = item.GetComponent<Gun>();
+        if (item.TryGetComponent(out GunThrowDamage gunThrow)) Destroy(gunThrow);
         Gun gunToDrop = Inventory.guns?[0];
         if (Inventory.HasGuns() >= 3)
         {
@@ -101,7 +102,6 @@ public class PlayerItems : MonoBehaviour
         else
         {
             Inventory.PickupGun(gun);
-
             UpgradeManager.GetFirstOpenSlot(gun);
         }
         if (Inventory.HasGuns() > 1)
@@ -126,7 +126,7 @@ public class PlayerItems : MonoBehaviour
         GameObject item = leftHandLocation.GetChild(0).gameObject;
         item.SetActive(true);
         DropItem();
-        CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
+        item.AddComponent<ThrowDamage>();
         if (item.TryGetComponent(out Rigidbody rb))
         {
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
@@ -139,7 +139,9 @@ public class PlayerItems : MonoBehaviour
         UpgradeManager.DropGun(Inventory.guns[0]);
         DropGun(Inventory.guns[0]);
         Inventory.DropGun();
-        CustomPhysics.ThrowItem(item, player.throwStartDistance, player.throwForce);
+        
+        item.AddComponent<ThrowDamage>();
+
         if (item.TryGetComponent(out Rigidbody rb))
         {
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;

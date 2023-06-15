@@ -4,6 +4,6 @@ using UnityEngine;
 
 public interface IDamageable
 {
-    void Damaged(float amount, object collision, object origin);
+    void Damaged(float amount, Vector3 hitPoint, Component origin);
     void Killed();
 }

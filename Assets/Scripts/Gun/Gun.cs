@@ -129,8 +129,6 @@ public class Gun : MonoBehaviour
         }
 
         onShot?.Invoke();
-
-        
     }
     void Lazer(float x, float y, float hitDelay)
     {
@@ -157,7 +155,7 @@ public class Gun : MonoBehaviour
         //yield return new WaitForSeconds(hit.distance/bulletSpeed);
         if (hit.transform.TryGetComponentInParent(out IDamageable damage))
         {
-            damage.Damaged(gunSlot.bulletDamage, hit.collider, this);
+            damage.Damaged(gunSlot.bulletDamage, hit.point, this);
         }
         ForceMode forceMode = ForceMode.Force;
         if (hit.rigidbody != null)
